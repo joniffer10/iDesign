@@ -1,0 +1,67 @@
+{
+  "name": "@idesign/vue",
+  "private": false,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Apple Liquid Glass design system — Vue 3 & Nuxt 3 component library with copy-paste SFCs, design tokens, and composables.",
+  "keywords": [
+    "vue",
+    "vue3",
+    "nuxt3",
+    "design-system",
+    "apple",
+    "liquid-glass",
+    "component-library",
+    "ui"
+  ],
+  "author": "Idesign",
+  "license": "MIT",
+  "main": "./dist/idesign.umd.js",
+  "module": "./dist/idesign.es.js",
+  "types": "./src/index.d.ts",
+  "bin": {
+    "idesign": "./bin/idesign.js"
+  },
+  "exports": {
+    ".": {
+      "types": "./src/index.d.ts",
+      "import": "./dist/idesign.es.js",
+      "require": "./dist/idesign.umd.js"
+    },
+    "./dist/idesign.css": "./dist/idesign.css",
+    "./styles.css": "./dist/idesign.css",
+    "./tokens": "./src/styles/tokens.css",
+    "./styles": "./src/styles/tokens.css"
+  },
+  "files": [
+    "dist",
+    "bin",
+    "src/styles",
+    "src/components/idesign",
+    "src/composables",
+    "src/index.js",
+    "src/index.d.ts"
+  ],
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "scripts": {
+    "dev": "npx vite",
+    "build": "npx vite build",
+    "build:lib": "npx vite build --mode lib",
+    "preview": "npx vite preview",
+    "test": "npx vitest run"
+  },
+  "dependencies": {
+    "@lucide/vue": "^1.31.0",
+    "lucide-vue-next": "^1.0.0",
+    "vue": ">=3.3.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.0.4",
+    "vite": "^5.1.6"
+  },
+  "peerDependencies": {
+    "vue": ">=3.3.0"
+  }
+}
