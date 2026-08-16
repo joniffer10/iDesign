@@ -1,23 +1,23 @@
 <template>
-  <div :class="['id-table-wrapper', `variant-${variant}`, { 'is-compact': compact, 'is-selectable': selectable }]">
+  <div :class="['id-table-wrapper', `variant-${currentVariant}`, `radius-${currentRadius}`, { 'is-compact': isCompact, 'is-selectable': selectable }, config.mergedUi.value.base]">
     <!-- Header Control Bar (optional title, search, global actions) -->
-    <div v-if="title || $slots.header || searchable || $slots.headerActions" class="table-header-bar">
+    <div v-if="title || $slots.header || searchable || $slots.headerActions" :class="['table-header-bar', config.mergedUi.value.headerBar]">
       <div class="table-title-group">
         <slot name="header">
-          <h3 v-if="title" class="table-title">{{ title }}</h3>
+          <h3 v-if="title" :class="['table-title', config.mergedUi.value.title]">{{ title }}</h3>
           <span v-if="displayCount !== null && displayCount !== undefined" class="table-count-badge">{{ displayCount }}</span>
         </slot>
       </div>
 
       <div class="table-header-actions">
         <!-- Live Table Search Input -->
-        <div v-if="searchable" class="table-search-box">
+        <div v-if="searchable" :class="['table-search-box', config.mergedUi.value.searchBox]">
           <Search :size="14" class="table-search-icon" />
           <input
             v-model="searchQuery"
             type="text"
             placeholder="Filter table..."
-            class="table-search-input"
+            :class="['table-search-input', config.mergedUi.value.searchInput]"
           />
         </div>
         <slot name="headerActions" />
@@ -26,16 +26,16 @@
 
     <!-- Main Table Surface -->
     <div class="table-scroll-container">
-      <table class="id-table">
-        <thead>
-          <tr>
+      <table :class="['id-table', config.mergedUi.value.table]">
+        <thead :class="config.mergedUi.value.thead">
+          <tr :class="config.mergedUi.value.tr">
             <!-- Select All Checkbox -->
-            <th v-if="selectable" class="col-checkbox">
+            <th v-if="selectable" :class="['col-checkbox', config.mergedUi.value.th]">
               <input
                 type="checkbox"
                 :checked="isAllSelected"
                 :indeterminate="isPartiallySelected"
-                class="id-table-checkbox"
+                :class="['id-table-checkbox', config.mergedUi.value.checkbox]"
                 @change="toggleSelectAll"
               />
             </th>
@@ -45,7 +45,7 @@
               v-for="col in columns"
               :key="col.key"
               :style="{ width: col.width, textAlign: col.align || 'left' }"
-              :class="{ 'is-sortable': col.sortable }"
+              :class="[{ 'is-sortable': col.sortable }, config.mergedUi.value.th]"
               @click="col.sortable && handleSort(col.key)"
             >
               <div class="th-content" :style="{ justifyContent: col.align === 'right' ? 'flex-end' : col.align === 'center' ? 'center' : 'flex-start' }">
@@ -59,25 +59,25 @@
             </th>
 
             <!-- Action Column Header -->
-            <th v-if="$slots.actions || hasRowActions" class="col-actions" style="text-align: right;">
+            <th v-if="$slots.actions || hasRowActions" :class="['col-actions', config.mergedUi.value.th]" style="text-align: right;">
               Actions
             </th>
           </tr>
         </thead>
 
-        <tbody>
+        <tbody :class="config.mergedUi.value.tbody">
           <tr
             v-for="(row, rIdx) in filteredData"
             :key="rIdx"
-            :class="{ 'is-selected': isSelected(row), 'is-clickable': hoverable || $listeners?.['row-click'] }"
+            :class="[{ 'is-selected': isSelected(row), 'is-clickable': hoverable }, config.mergedUi.value.tr]"
             @click="onRowClick(row, $event)"
           >
             <!-- Checkbox Row Selection -->
-            <td v-if="selectable" class="col-checkbox" @click.stop>
+            <td v-if="selectable" :class="['col-checkbox', config.mergedUi.value.td]" @click.stop>
               <input
                 type="checkbox"
                 :checked="isSelected(row)"
-                class="id-table-checkbox"
+                :class="['id-table-checkbox', config.mergedUi.value.checkbox]"
                 @change="toggleSelectRow(row)"
               />
             </td>
@@ -87,6 +87,7 @@
               v-for="col in columns"
               :key="col.key"
               :style="{ textAlign: col.align || 'left' }"
+              :class="config.mergedUi.value.td"
             >
               <slot :name="`col-${col.key}`" :row="row" :value="row[col.key]" :index="rIdx">
                 {{ row[col.key] }}
@@ -94,9 +95,9 @@
             </td>
 
             <!-- Row Actions Column -->
-            <td v-if="$slots.actions || hasRowActions" class="col-actions" style="text-align: right;" @click.stop>
+            <td v-if="$slots.actions || hasRowActions" :class="['col-actions', config.mergedUi.value.td]" style="text-align: right;" @click.stop>
               <slot name="actions" :row="row" :index="rIdx">
-                <button type="button" class="row-action-btn" aria-label="Row actions">
+                <button type="button" :class="['row-action-btn', config.mergedUi.value.actions]" aria-label="Row actions">
                   <MoreHorizontal :size="16" />
                 </button>
               </slot>
@@ -104,8 +105,8 @@
           </tr>
 
           <!-- Empty State -->
-          <tr v-if="!filteredData || filteredData.length === 0">
-            <td :colspan="totalColspan" class="table-empty">
+          <tr v-if="!filteredData || filteredData.length === 0" :class="config.mergedUi.value.tr">
+            <td :colspan="totalColspan" :class="['table-empty', config.mergedUi.value.td]">
               <slot name="empty">
                 <div class="empty-wrap">
                   <Search :size="20" class="empty-icon" />
@@ -123,16 +124,16 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { Search, MoreHorizontal, ChevronUp, ChevronDown } from '@lucide/vue'
+import { useIdesignConfig } from '../../composables/useIdesignConfig'
 
 const props = defineProps({
-  columns: { type: Array, required: true }, // [{ key: 'id', label: 'ID', sortable?: boolean, align?: 'left'|'right'|'center' }]
+  columns: { type: Array, required: true },
   data: { type: Array, default: () => [] },
   title: String,
   count: [Number, String],
   variant: {
     type: String,
-    default: 'default',
-    validator: v => ['default', 'striped', 'glass', 'compact', 'borderless'].includes(v)
+    default: undefined
   },
   compact: Boolean,
   selectable: Boolean,
@@ -140,10 +141,19 @@ const props = defineProps({
   searchable: Boolean,
   selectedRows: { type: Array, default: () => [] },
   hasRowActions: Boolean,
-  emptyText: { type: String, default: 'No records found.' }
+  emptyText: { type: String, default: 'No records found.' },
+  size: { type: String, default: undefined },
+  radius: { type: String, default: undefined },
+  ui: { type: Object, default: () => ({}) }
 })
 
 const emit = defineEmits(['update:selectedRows', 'row-click', 'sort'])
+
+const config = useIdesignConfig('Table', props)
+const currentSize = computed(() => config.resolvedSize.value || 'md')
+const currentRadius = computed(() => config.resolvedRadius.value || 'xl')
+const currentVariant = computed(() => config.resolvedVariant.value || 'default')
+const isCompact = computed(() => props.compact || currentSize.value === 'sm')
 
 const searchQuery = ref('')
 const sortKey = ref(null)
@@ -235,6 +245,13 @@ const onRowClick = (row, evt) => {
   background: var(--surface); box-shadow: var(--sh-card); overflow: hidden;
   transition: all 0.2s var(--ease-out-quart);
 }
+
+/* Radius Classes */
+.radius-none { border-radius: var(--r-none) !important; }
+.radius-sm { border-radius: var(--r-chip) !important; }
+.radius-md { border-radius: var(--r-thumb) !important; }
+.radius-lg { border-radius: var(--r-card) !important; }
+.radius-full { border-radius: var(--r-pill) !important; }
 
 .variant-glass {
   background: rgba(255, 255, 255, 0.75); backdrop-filter: saturate(180%) blur(16px);

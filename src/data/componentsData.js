@@ -1398,7 +1398,15 @@ const open = ref(false)
     tags: ['sheet', 'mobile', 'overlay'],
     props: {
       title: { type: 'text', default: 'Sheet Actions', description: 'Header title.' },
-      description: { type: 'text', default: 'Choose an action to proceed.', description: 'Subheader description.' }
+      description: { type: 'text', default: 'Choose an action to proceed.', description: 'Subheader description.' },
+      variant: { type: 'select', options: ['default', 'inset', 'persistent'], default: 'default', description: 'Sheet frame style variant.' },
+      position: { type: 'select', options: ['bottom', 'bottom-start', 'bottom-end', 'top', 'top-start', 'top-end', 'left', 'right', 'center'], default: 'bottom', description: 'Screen alignment anchor position.' },
+      showGrabber: { type: 'boolean', default: true, description: 'Shows the drag grabber handle.' },
+      closeOnBackdrop: { type: 'boolean', default: true, description: 'Closes when backdrop is clicked.' },
+      closeOnEsc: { type: 'boolean', default: true, description: 'Closes when Escape key is pressed.' },
+      dismissible: { type: 'boolean', default: true, description: 'Shows left close button.' },
+      height: { type: 'text', default: '', description: 'Configurable height (e.g. 50vh, 400px).' },
+      maxHeight: { type: 'text', default: '85vh', description: 'Max-height of bottom sheet.' }
     },
     vueCode: (p) => `<script setup>
 import { ref } from 'vue'
@@ -1408,13 +1416,33 @@ const open = ref(false)
 </script>
 
 <template>
-  <IdBottomSheet v-model="open" title="${p.title}" description="${p.description}">
+  <IdBottomSheet
+    v-model="open"
+    title="${p.title}"
+    description="${p.description}"
+    :show-grabber="${p.showGrabber}"
+    :close-on-backdrop="${p.closeOnBackdrop}"
+    :close-on-esc="${p.closeOnEsc}"
+    :dismissible="${p.dismissible}"
+    ${p.height ? `height="${p.height}"` : ''}
+    max-height="${p.maxHeight}"
+  >
     <p>Sheet body content.</p>
   </IdBottomSheet>
 </template>`,
     nuxtCode: (p) => `<!-- Nuxt 3 Auto-Import -->
 <template>
-  <IdBottomSheet v-model="open" title="${p.title}" description="${p.description}">
+  <IdBottomSheet
+    v-model="open"
+    title="${p.title}"
+    description="${p.description}"
+    :show-grabber="${p.showGrabber}"
+    :close-on-backdrop="${p.closeOnBackdrop}"
+    :close-on-esc="${p.closeOnEsc}"
+    :dismissible="${p.dismissible}"
+    ${p.height ? `height="${p.height}"` : ''}
+    max-height="${p.maxHeight}"
+  >
     <p>Sheet content</p>
   </IdBottomSheet>
 </template>`,
@@ -1874,7 +1902,8 @@ import { IdStat } from '@idesign/vue'
       title: { type: 'text', default: 'No Data Available', description: 'Title header text.' },
       description: { type: 'text', default: 'Create your first item to get started.', description: 'Body guidance description.' },
       icon: { type: 'select', options: ['🔍', '📂', '📦', '⚡', 'Search', 'FolderOpen'], default: '🔍', description: 'Center graphic icon symbol.' },
-      actionLabel: { type: 'text', default: 'Create New', description: 'Action button text.' }
+      actionLabel: { type: 'text', default: 'Create New', description: 'Action button text.' },
+      noBg: { type: 'boolean', default: false, description: 'Strips container background and border styles.' }
     },
     vueCode: (p) => `<script setup>
 import { IdEmpty } from '@idesign/vue'
@@ -1886,6 +1915,7 @@ import { IdEmpty } from '@idesign/vue'
     description="${p.description}"
     icon="${p.icon}"
     action-label="${p.actionLabel}"
+    ${p.noBg ? 'no-bg' : ''}
   />
 </template>`,
     nuxtCode: (p) => `<!-- Nuxt 3 Auto-Import -->
@@ -1895,9 +1925,10 @@ import { IdEmpty } from '@idesign/vue'
     description="${p.description}"
     icon="${p.icon}"
     action-label="${p.actionLabel}"
+    ${p.noBg ? 'no-bg' : ''}
   />
 </template>`,
-    htmlCode: (p) => `<div class="id-empty-state">
+    htmlCode: (p) => `<div class="id-empty-state${p.noBg ? ' no-bg' : ''}">
   <div class="empty-icon">${p.icon}</div>
   <h3 class="empty-title">${p.title}</h3>
   <p class="empty-desc">${p.description}</p>

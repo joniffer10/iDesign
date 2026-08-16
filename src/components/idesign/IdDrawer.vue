@@ -1,25 +1,31 @@
 <template>
   <Teleport to="body" :disabled="!teleport">
     <Transition name="drawer-slide">
-      <div v-if="modelValue" class="drawer-backdrop" @click.self="$emit('update:modelValue', false)">
-        <div :class="['drawer-surface', `pos-${position}`, `variant-${variant}`]" role="dialog" aria-modal="true" :aria-label="title || 'Drawer'">
-          <div v-if="title || description || $slots.header" class="drawer-header">
+      <div v-if="modelValue" :class="['drawer-backdrop', config.mergedUi.value.backdrop]" @click.self="$emit('update:modelValue', false)">
+        <div :class="['drawer-surface', `pos-${position}`, `variant-${currentVariant}`, `size-${currentSize}`, config.mergedUi.value.surface]" role="dialog" aria-modal="true" :aria-label="title || 'Drawer'">
+          <div v-if="title || description || $slots.header || $slots.title || $slots.description || $slots.desc" :class="['drawer-header', config.mergedUi.value.header]">
             <slot name="header">
               <div class="drawer-header-content">
-                <h3 v-if="title" class="drawer-title">{{ title }}</h3>
-                <p v-if="description" class="drawer-desc">{{ description }}</p>
+                <slot name="title">
+                  <h3 v-if="title" :class="['drawer-title', config.mergedUi.value.title]">{{ title }}</h3>
+                </slot>
+                <slot name="description">
+                  <slot name="desc">
+                    <p v-if="description" :class="['drawer-desc', config.mergedUi.value.description || config.mergedUi.value.desc]">{{ description }}</p>
+                  </slot>
+                </slot>
               </div>
             </slot>
-            <button type="button" class="drawer-close" aria-label="Close drawer" @click="$emit('update:modelValue', false)">
+            <button type="button" :class="['drawer-close', config.mergedUi.value.closeButton || config.mergedUi.value.close]" aria-label="Close drawer" @click="$emit('update:modelValue', false)">
               <X :size="16" />
             </button>
           </div>
 
-          <div class="drawer-body">
+          <div :class="['drawer-body', config.mergedUi.value.body]">
             <slot>{{ body }}</slot>
           </div>
 
-          <div v-if="$slots.footer" class="drawer-footer">
+          <div v-if="$slots.footer" :class="['drawer-footer', config.mergedUi.value.footer]">
             <slot name="footer" />
           </div>
         </div>
@@ -29,8 +35,9 @@
 </template>
 
 <script setup>
-import { watch } from 'vue'
+import { watch, computed } from 'vue'
 import { X } from '@lucide/vue'
+import { useIdesignConfig } from '../../composables/useIdesignConfig'
 
 const props = defineProps({
   modelValue: Boolean,
@@ -38,14 +45,20 @@ const props = defineProps({
   description: String,
   body: String,
   position: { type: String, default: 'right', validator: v => ['right', 'left'].includes(v) },
-  variant: { type: String, default: 'default', validator: v => ['default', 'floating-sheet'].includes(v) },
-  teleport: { type: Boolean, default: true }
+  variant: { type: String, default: undefined },
+  teleport: { type: Boolean, default: true },
+  size: { type: String, default: undefined },
+  ui: { type: Object, default: () => ({}) }
 })
 
 defineEmits(['update:modelValue'])
 
+const config = useIdesignConfig('Drawer', props)
+const currentVariant = computed(() => config.resolvedVariant.value || 'default')
+const currentSize = computed(() => config.resolvedSize.value || 'md')
+
 watch(() => props.modelValue, (v) => {
-  if (props.teleport) document.body.style.overflow = v ? 'hidden' : ''
+  if (props.teleport && typeof document !== 'undefined') document.body.style.overflow = v ? 'hidden' : ''
 })
 </script>
 
@@ -64,11 +77,25 @@ watch(() => props.modelValue, (v) => {
 .pos-right { top: 0; right: 0; bottom: 0; border-right: none; }
 .pos-left { top: 0; left: 0; bottom: 0; border-left: none; }
 
+/* Size Variants */
+.size-sm.drawer-surface { max-width: 320px; }
+.size-md.drawer-surface { max-width: 420px; }
+.size-lg.drawer-surface { max-width: 580px; }
+.size-xl.drawer-surface { max-width: 760px; }
+
+/* Variant Floating Sheet */
 .variant-floating-sheet {
   top: 16px; bottom: 16px; height: calc(100vh - 32px); border-radius: 24px;
 }
 .pos-right.variant-floating-sheet { right: 16px; }
 .pos-left.variant-floating-sheet { left: 16px; }
+
+/* Variant Glass */
+.variant-glass {
+  background: rgba(255, 255, 255, 0.78); backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+}
+:root.dark .variant-glass { background: rgba(28, 28, 30, 0.82); }
 
 .drawer-header {
   display: flex; align-items: flex-start; justify-content: space-between; gap: 12px;

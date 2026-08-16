@@ -2,41 +2,51 @@
   <div
     :class="[
       'id-separator',
-      `orientation-${orientation}`,
-      `variant-${variant}`,
-      `spacing-${spacing}`,
-      { 'has-content': $slots.default || label }
+      `orientation-${currentOrientation}`,
+      `variant-${currentVariant}`,
+      `spacing-${currentSize}`,
+      { 'has-content': $slots.default || label },
+      config.mergedUi.value.base
     ]"
     role="separator"
-    :aria-orientation="orientation"
+    :aria-orientation="currentOrientation"
   >
-    <div v-if="orientation === 'horizontal' && ($slots.default || label)" class="separator-line before" />
-    <span v-if="orientation === 'horizontal' && ($slots.default || label)" class="separator-content">
+    <div v-if="currentOrientation === 'horizontal' && ($slots.default || label)" :class="['separator-line before', config.mergedUi.value.line]" />
+    <span v-if="currentOrientation === 'horizontal' && ($slots.default || label)" :class="['separator-content', config.mergedUi.value.content || config.mergedUi.value.label]">
       <slot>{{ label }}</slot>
     </span>
-    <div v-if="orientation === 'horizontal' && ($slots.default || label)" class="separator-line after" />
+    <div v-if="currentOrientation === 'horizontal' && ($slots.default || label)" :class="['separator-line after', config.mergedUi.value.line]" />
   </div>
 </template>
 
 <script setup>
-defineProps({
+import { computed } from 'vue'
+import { useIdesignConfig } from '../../composables/useIdesignConfig'
+
+const props = defineProps({
   orientation: {
     type: String,
-    default: 'horizontal',
-    validator: v => ['horizontal', 'vertical'].includes(v)
+    default: undefined
   },
   label: String,
   spacing: {
     type: String,
-    default: 'md',
-    validator: v => ['none', 'sm', 'md', 'lg', 'xl'].includes(v)
+    default: undefined
   },
   variant: {
     type: String,
-    default: 'hairline',
-    validator: v => ['hairline', 'faint', 'gradient', 'dashed'].includes(v)
+    default: undefined
+  },
+  ui: {
+    type: Object,
+    default: () => ({})
   }
 })
+
+const config = useIdesignConfig('Separator', props)
+const currentOrientation = computed(() => config.resolvedDirection.value || 'horizontal')
+const currentVariant = computed(() => config.resolvedVariant.value || 'hairline')
+const currentSize = computed(() => config.resolvedSize.value || props.spacing || 'md')
 </script>
 
 <style scoped>

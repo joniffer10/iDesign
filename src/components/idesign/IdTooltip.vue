@@ -1,26 +1,32 @@
 <template>
-  <div class="id-tooltip-wrapper" @mouseenter="show = true" @mouseleave="show = false" @focus="show = true" @blur="show = false">
+  <div :class="['id-tooltip-wrapper', config.mergedUi.value.base]" @mouseenter="show = true" @mouseleave="show = false" @focus="show = true" @blur="show = false">
     <slot />
     <Transition name="tooltip-pop">
-      <div v-if="show" :class="['id-tooltip', `pos-${position}`]" role="tooltip">
-        <span class="tooltip-text">{{ text }}</span>
+      <div v-if="show" :class="['id-tooltip', `pos-${currentPosition}`, config.mergedUi.value.tooltip]" role="tooltip">
+        <span :class="['tooltip-text', config.mergedUi.value.text]">{{ text }}</span>
       </div>
     </Transition>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
+import { useIdesignConfig } from '../../composables/useIdesignConfig'
 
-defineProps({
+const props = defineProps({
   text: { type: String, required: true },
   position: {
     type: String,
-    default: 'top',
-    validator: v => ['top', 'bottom', 'left', 'right'].includes(v)
+    default: undefined
+  },
+  ui: {
+    type: Object,
+    default: () => ({})
   }
 })
 
+const config = useIdesignConfig('Tooltip', props)
+const currentPosition = computed(() => props.position || 'top')
 const show = ref(false)
 </script>
 

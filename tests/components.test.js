@@ -25,6 +25,8 @@ import IdPanelRow from '../src/components/idesign/IdPanelRow.vue'
 import IdDivider from '../src/components/idesign/IdDivider.vue'
 import IdBreadcrumbs from '../src/components/idesign/IdBreadcrumbs.vue'
 import IdPagination from '../src/components/idesign/IdPagination.vue'
+import IdEmpty from '../src/components/idesign/IdEmpty.vue'
+import IdBottomSheet from '../src/components/idesign/IdBottomSheet.vue'
 
 // Compound Form System
 import IdForm from '../src/components/idesign/IdForm.vue'
@@ -408,5 +410,162 @@ describe('Idesign Component Suite — Comprehensive Tests', () => {
     expect(typeof bp.isMobile).toBe('function')
     expect(typeof bp.isTablet).toBe('function')
     expect(typeof bp.isDesktop).toBe('function')
+  })
+
+  // ── 13. UI Customization prop and API Resolution ──
+  it('applies per-part class customization via the ui prop', () => {
+    const wrapper = mount(IdButton, {
+      props: {
+        ui: {
+          base: 'custom-btn-base-class',
+          label: 'custom-btn-label-class'
+        }
+      },
+      slots: { default: 'Click me' }
+    })
+    expect(wrapper.classes()).toContain('custom-btn-base-class')
+    const labelSpan = wrapper.find('.btn-label')
+    expect(labelSpan.classes()).toContain('custom-btn-label-class')
+  })
+
+  it('resolves backward-compatible variant and color aliases correctly', () => {
+    // Subtle variant mapping to subtle/soft
+    const wrapperSubtle = mount(IdButton, {
+      props: { variant: 'subtle', color: 'green' }
+    })
+    expect(wrapperSubtle.classes()).toContain('btn-subtle')
+    expect(wrapperSubtle.classes()).toContain('color-green')
+
+    // Standard mapping alias primary -> default (which maps to btn-primary)
+    const wrapperPrimary = mount(IdButton, {
+      props: { variant: 'primary', color: 'primary' }
+    })
+    expect(wrapperPrimary.classes()).toContain('btn-primary')
+    expect(wrapperPrimary.classes()).toContain('color-blue')
+  })
+
+  it('verifies global defaults resolve and cascade correctly', () => {
+    // Inject custom config via createUI
+    const plugin = createUI({
+      ui: {
+        components: {
+          Button: {
+            defaultProps: {
+              size: 'lg',
+              variant: 'outline'
+            },
+            ui: {
+              base: 'global-custom-base'
+            }
+          }
+        }
+      }
+    })
+
+    // Mount using the custom config context
+    const App = {
+      components: { IdButton },
+      template: '<IdButton>Global Custom Button</IdButton>'
+    }
+
+    const wrapper = mount(App, {
+      global: {
+        plugins: [plugin]
+      }
+    })
+
+    const button = wrapper.findComponent(IdButton)
+    expect(button.classes()).toContain('size-lg')
+    expect(button.classes()).toContain('btn-outline')
+    expect(button.classes()).toContain('global-custom-base')
+  })
+
+  it('verifies IdTable custom sizing, radius, and ui prop customization', () => {
+    const wrapper = mount(IdTable, {
+      props: {
+        columns: [
+          { key: 'name', label: 'Name' },
+          { key: 'role', label: 'Role' }
+        ],
+        data: [
+          { name: 'Alice', role: 'Engineer' }
+        ],
+        size: 'sm',
+        radius: 'lg',
+        ui: {
+          base: 'custom-table-base',
+          thead: 'custom-table-thead'
+        }
+      }
+    })
+    expect(wrapper.classes()).toContain('custom-table-base')
+    expect(wrapper.classes()).toContain('is-compact')
+    expect(wrapper.classes()).toContain('radius-lg')
+    const thead = wrapper.find('thead')
+    expect(thead.classes()).toContain('custom-table-thead')
+  })
+
+  it('verifies IdTabs resolved size, variant, and ui customization', () => {
+    const wrapper = mount(IdTabs, {
+      props: {
+        modelValue: 'tab1',
+        tabs: [
+          { value: 'tab1', label: 'Tab 1' },
+          { value: 'tab2', label: 'Tab 2' }
+        ],
+        size: 'lg',
+        variant: 'pill',
+        ui: {
+          list: 'custom-tabs-list',
+          tab: 'custom-tabs-tab',
+          active: 'custom-active-tab'
+        }
+      }
+    })
+    expect(wrapper.classes()).toContain('size-lg')
+    expect(wrapper.classes()).toContain('variant-pill')
+    expect(wrapper.find('.tabs-list').classes()).toContain('custom-tabs-list')
+    const triggers = wrapper.findAll('.tab-trigger')
+    expect(triggers[0].classes()).toContain('custom-tabs-tab')
+    expect(triggers[0].classes()).toContain('custom-active-tab')
+  })
+
+  it('verifies IdEmpty customization, dynamic ui classes, and noBg prop', () => {
+    const wrapper = mount(IdEmpty, {
+      props: {
+        title: 'Custom Empty Title',
+        noBg: true,
+        ui: {
+          base: 'custom-empty-base',
+          title: 'custom-empty-title-text'
+        }
+      }
+    })
+    expect(wrapper.classes()).toContain('custom-empty-base')
+    expect(wrapper.classes()).toContain('no-bg')
+    expect(wrapper.find('.empty-title').classes()).toContain('custom-empty-title-text')
+  })
+
+  it('verifies IdBottomSheet customizable features, actions, teleport, and responsiveness properties', () => {
+    const wrapper = mount(IdBottomSheet, {
+      props: {
+        modelValue: true,
+        title: 'Custom Sheet Title',
+        description: 'Custom Description Text',
+        showGrabber: true,
+        height: '60vh',
+        teleport: false,
+        ui: {
+          surface: 'custom-surface-class',
+          title: 'custom-title-class'
+        }
+      }
+    })
+    expect(wrapper.find('.sheet-surface').classes()).toContain('custom-surface-class')
+    expect(wrapper.find('.sheet-surface').attributes('style')).toContain('height: 60vh')
+    expect(wrapper.find('.sheet-grabber').exists()).toBe(true)
+    expect(wrapper.find('.sheet-title').text()).toBe('Custom Sheet Title')
+    expect(wrapper.find('.sheet-title').classes()).toContain('custom-title-class')
+    expect(wrapper.find('.sheet-desc').text()).toBe('Custom Description Text')
   })
 })

@@ -1,19 +1,19 @@
 <template>
-  <div :class="['id-accordion', `size-${size}`, `variant-${variant}`]" role="presentation">
-    <div v-for="(item, idx) in items" :key="idx" class="accordion-item">
+  <div :class="['id-accordion', `size-${currentSize}`, `variant-${currentVariant}`, config.mergedUi.value.base]" role="presentation">
+    <div v-for="(item, idx) in items" :key="idx" :class="['accordion-item', config.mergedUi.value.item]">
       <h3>
         <button
           :id="`accordion-header-${uid}-${idx}`"
           :ref="el => { if (el) triggerRefs[idx] = el }"
           type="button"
-          class="accordion-trigger"
+          :class="['accordion-trigger', config.mergedUi.value.trigger]"
           :aria-expanded="openItems.includes(idx)"
           :aria-controls="`accordion-panel-${uid}-${idx}`"
           @click="toggleItem(idx)"
           @keydown="handleKeydown($event, idx)"
         >
-          <span class="accordion-title">{{ item.title }}</span>
-          <svg :class="['accordion-chevron', { rotated: openItems.includes(idx) }]" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <span :class="['accordion-title', config.mergedUi.value.title]">{{ item.title }}</span>
+          <svg :class="['accordion-chevron', { rotated: openItems.includes(idx) }, config.mergedUi.value.chevron]" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
             <path d="M6 9l6 6 6-6"/>
           </svg>
         </button>
@@ -22,11 +22,11 @@
         <div
           v-if="openItems.includes(idx)"
           :id="`accordion-panel-${uid}-${idx}`"
-          class="accordion-content"
+          :class="['accordion-content', config.mergedUi.value.content]"
           role="region"
           :aria-labelledby="`accordion-header-${uid}-${idx}`"
         >
-          <div class="accordion-body">
+          <div :class="['accordion-body', config.mergedUi.value.body]">
             <slot :name="`item-${idx}`">{{ item.content }}</slot>
           </div>
         </div>
@@ -36,18 +36,20 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
+import { useIdesignConfig } from '../../composables/useIdesignConfig'
 
 const props = defineProps({
   items: { type: Array, required: true },
   multiple: { type: Boolean, default: false },
-  size: { type: String, default: 'md', validator: v => ['sm', 'md', 'lg'].includes(v) },
-  variant: {
-    type: String,
-    default: 'default',
-    validator: v => ['default', 'separated', 'glass'].includes(v)
-  }
+  size: { type: String, default: undefined },
+  variant: { type: String, default: undefined },
+  ui: { type: Object, default: () => ({}) }
 })
+
+const config = useIdesignConfig('Accordion', props)
+const currentSize = computed(() => config.resolvedSize.value || 'md')
+const currentVariant = computed(() => config.resolvedVariant.value || 'default')
 
 const uid = Math.random().toString(36).substring(2, 8)
 const openItems = ref([0])

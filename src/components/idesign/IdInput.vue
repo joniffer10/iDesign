@@ -3,20 +3,22 @@
     :class="[
       'id-input-group',
       `size-${currentSize}`,
+      `radius-${currentRadius}`,
       {
-        'has-error': variant === 'error' || hasError,
-        'has-success': variant === 'success' || hasSuccess,
-        'has-warning': variant === 'warning' || hasWarning,
+        'has-error': currentVariant === 'error' || hasError,
+        'has-success': currentVariant === 'success' || hasSuccess,
+        'has-warning': currentVariant === 'warning' || hasWarning,
         'is-disabled': disabled,
         'is-readonly': readonly,
         'is-loading': loading
-      }
+      },
+      config.mergedUi.value.base
     ]"
     :data-size="currentSize"
     :data-disabled="disabled || undefined"
     :data-readonly="readonly || undefined"
   >
-    <label v-if="label || $slots.label" :for="inputId" class="input-label">
+    <label v-if="label || $slots.label" :for="inputId" :class="['input-label', config.mergedUi.value.label]">
       <slot name="label">{{ label }}</slot>
       <span v-if="required" class="required-star" aria-hidden="true">*</span>
     </label>
@@ -26,15 +28,16 @@
         'input-wrapper',
         {
           'is-focused': isFocused,
-          'is-search': variant === 'search'
-        }
+          'is-search': currentVariant === 'search'
+        },
+        config.mergedUi.value.wrapper
       ]"
     >
       <!-- Prefix / Left Icon -->
-      <span v-if="variant === 'search' || $slots.prefix || $slots.iconLeft || iconLeft" class="input-icon left">
+      <span v-if="currentVariant === 'search' || $slots.prefix || $slots.iconLeft || iconLeft" :class="['input-icon left', config.mergedUi.value.icon]">
         <slot name="prefix">
           <slot name="iconLeft">
-            <Search v-if="variant === 'search'" :size="iconSize" />
+            <Search v-if="currentVariant === 'search'" :size="iconSize" />
             <component :is="iconLeft" v-else-if="isComponent(iconLeft)" :size="iconSize" />
             <span v-else>{{ iconLeft }}</span>
           </slot>
@@ -46,13 +49,13 @@
         ref="inputRef"
         :type="type"
         :value="modelValue"
-        :placeholder="placeholder || (variant === 'search' ? 'Search...' : '')"
+        :placeholder="placeholder || (currentVariant === 'search' ? 'Search...' : '')"
         :disabled="disabled || loading"
         :readonly="readonly"
         :required="required"
-        :aria-invalid="variant === 'error' || hasError"
+        :aria-invalid="currentVariant === 'error' || hasError"
         :aria-describedby="hint || errorText || description ? `${inputId}-hint` : undefined"
-        class="id-input"
+        :class="['id-input', config.mergedUi.value.input]"
         @input="handleInput"
         @change="$emit('change', $event)"
         @focus="handleFocus"
@@ -60,7 +63,7 @@
       />
 
       <!-- Loading Spinner -->
-      <span v-if="loading" class="input-icon loading-icon">
+      <span v-if="loading" :class="['input-icon loading-icon', config.mergedUi.value.spinner]">
         <Loader2 class="input-spinner" :size="iconSize" />
       </span>
 
@@ -68,7 +71,7 @@
       <button
         v-else-if="clearable && modelValue && !disabled && !readonly"
         type="button"
-        class="clear-btn"
+        :class="['clear-btn', config.mergedUi.value.clearButton]"
         aria-label="Clear text"
         tabindex="-1"
         @click="handleClear"
@@ -77,7 +80,7 @@
       </button>
 
       <!-- Suffix / Right Icon -->
-      <span v-if="$slots.suffix || $slots.iconRight || trailingText || iconRight" class="input-icon right">
+      <span v-if="$slots.suffix || $slots.iconRight || trailingText || iconRight" :class="['input-icon right', config.mergedUi.value.icon]">
         <slot name="suffix">
           <slot name="iconRight">
             <span v-if="trailingText" class="trailing-text">{{ trailingText }}</span>
@@ -92,7 +95,7 @@
     <span
       v-if="displayHint"
       :id="`${inputId}-hint`"
-      :class="['input-hint', { 'error-msg': variant === 'error' || hasError, 'success-msg': variant === 'success' || hasSuccess, 'warning-msg': variant === 'warning' || hasWarning }]"
+      :class="['input-hint', { 'error-msg': currentVariant === 'error' || hasError, 'success-msg': currentVariant === 'success' || hasSuccess, 'warning-msg': currentVariant === 'warning' || hasWarning }, config.mergedUi.value.hint]"
     >
       {{ displayHint }}
     </span>
@@ -116,8 +119,8 @@ const props = defineProps({
   warning: [Boolean, String],
   trailingText: String,
   type: { type: String, default: 'text' },
-  size: { type: String, default: undefined, validator: v => !v || ['xs', 'sm', 'md', 'lg', 'xl'].includes(v) },
-  variant: { type: String, default: 'default', validator: v => ['default', 'search', 'error', 'success', 'warning'].includes(v) },
+  size: { type: String, default: undefined },
+  variant: { type: String, default: undefined },
   iconLeft: [Object, Function, String],
   iconRight: [Object, Function, String],
   clearable: Boolean,
@@ -125,13 +128,19 @@ const props = defineProps({
   readonly: Boolean,
   required: Boolean,
   loading: Boolean,
-  id: String
+  id: String,
+  radius: { type: String, default: undefined },
+  color: { type: String, default: undefined },
+  ui: { type: Object, default: () => ({}) }
 })
 
 const emit = defineEmits(['update:modelValue', 'update:value', 'change', 'focus', 'blur', 'clear', 'input'])
 
-const config = useIdesignConfig({ size: props.size })
-const currentSize = computed(() => props.size || config.size || 'md')
+const config = useIdesignConfig('Input', props)
+const currentSize = computed(() => config.resolvedSize.value || 'md')
+const currentRadius = computed(() => config.resolvedRadius.value || 'md')
+const currentVariant = computed(() => config.resolvedVariant.value || 'default')
+
 const isFocused = ref(false)
 const inputRef = ref(null)
 
@@ -219,6 +228,13 @@ defineExpose({
 .size-md .input-wrapper { height: var(--size-md, 42px); border-radius: 10px; font-size: 14.5px; }
 .size-lg .input-wrapper { height: var(--size-lg, 48px); border-radius: var(--radius-md, 12px); font-size: 16px; }
 .size-xl .input-wrapper { height: var(--size-xl, 54px); border-radius: 14px; font-size: 17.5px; }
+
+/* Radius Classes */
+.radius-none .input-wrapper { border-radius: var(--r-none) !important; }
+.radius-sm .input-wrapper { border-radius: var(--r-chip) !important; }
+.radius-md .input-wrapper { border-radius: var(--r-thumb) !important; }
+.radius-lg .input-wrapper { border-radius: var(--r-card) !important; }
+.radius-full .input-wrapper { border-radius: var(--r-pill) !important; }
 
 .input-wrapper.is-search { border-radius: var(--r-pill); }
 .input-wrapper.is-focused { border-color: var(--accent); box-shadow: 0 0 0 3px var(--color-ring); }

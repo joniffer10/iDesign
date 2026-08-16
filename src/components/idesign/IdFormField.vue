@@ -7,25 +7,26 @@
         'has-success': Boolean(success),
         'has-warning': Boolean(warning),
         'is-disabled': disabled
-      }
+      },
+      config.mergedUi.value.base
     ]"
   >
     <!-- Label -->
     <slot name="label">
-      <IdFormLabel v-if="label" :required="required" :for="name">
+      <IdFormLabel v-if="label" :required="required" :for="name" :class="config.mergedUi.value.label">
         {{ label }}
       </IdFormLabel>
     </slot>
 
     <!-- Description (above input if placed here) -->
     <slot name="description">
-      <IdFormDescription v-if="description">
+      <IdFormDescription v-if="description" :class="config.mergedUi.value.description">
         {{ description }}
       </IdFormDescription>
     </slot>
 
     <!-- Main Input / Control Slot -->
-    <div class="form-field-control">
+    <div :class="['form-field-control', config.mergedUi.value.control || config.mergedUi.value.fieldControl]">
       <slot />
     </div>
 
@@ -37,6 +38,7 @@
         :success="success"
         :warning="warning"
         :message="message || hint"
+        :class="config.mergedUi.value.message"
       />
     </slot>
   </div>
@@ -47,6 +49,7 @@ import { provide, computed } from 'vue'
 import IdFormLabel from './IdFormLabel.vue'
 import IdFormDescription from './IdFormDescription.vue'
 import IdFormMessage from './IdFormMessage.vue'
+import { useIdesignConfig } from '../../composables/useIdesignConfig'
 
 const props = defineProps({
   name: String,
@@ -58,8 +61,11 @@ const props = defineProps({
   success: [Boolean, String],
   warning: [Boolean, String],
   required: Boolean,
-  disabled: Boolean
+  disabled: Boolean,
+  ui: { type: Object, default: () => ({}) }
 })
+
+const config = useIdesignConfig('FormField', props)
 
 provide('id-form-field-context', {
   name: computed(() => props.name),

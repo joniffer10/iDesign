@@ -1,19 +1,19 @@
 <template>
-  <nav :class="['id-pagination', `size-${size}`, `variant-${variant}`, `color-${color}`]" aria-label="Pagination">
-    <button type="button" class="page-btn" :disabled="modelValue <= 1" aria-label="Previous page" @click="go(modelValue - 1)">
+  <nav :class="['id-pagination', `size-${currentSize}`, `variant-${currentVariant}`, `color-${currentColor}`, `radius-${currentRadius}`, config.mergedUi.value.base]" aria-label="Pagination">
+    <button type="button" :class="['page-btn', config.mergedUi.value.button]" :disabled="modelValue <= 1" aria-label="Previous page" @click="go(modelValue - 1)">
       <ChevronLeft :size="arrowSize" />
     </button>
     <button
       v-for="p in visiblePages"
       :key="p"
       type="button"
-      :class="['page-btn', 'page-num', { active: p === modelValue, ellipsis: p === '...' }]"
+      :class="['page-btn', 'page-num', { active: p === modelValue, ellipsis: p === '...' }, config.mergedUi.value.button, p === modelValue ? config.mergedUi.value.active : '']"
       :disabled="p === '...'"
       @click="p !== '...' && go(p)"
     >
       {{ p }}
     </button>
-    <button type="button" class="page-btn" :disabled="modelValue >= totalPages" aria-label="Next page" @click="go(modelValue + 1)">
+    <button type="button" :class="['page-btn', config.mergedUi.value.button]" :disabled="modelValue >= totalPages" aria-label="Next page" @click="go(modelValue + 1)">
       <ChevronRight :size="arrowSize" />
     </button>
   </nav>
@@ -22,19 +22,34 @@
 <script setup>
 import { computed } from 'vue'
 import { ChevronLeft, ChevronRight } from '@lucide/vue'
+import { useIdesignConfig } from '../../composables/useIdesignConfig'
 
 const props = defineProps({
   modelValue: { type: Number, required: true },
   totalPages: { type: Number, required: true },
   siblings: { type: Number, default: 1 },
-  size: { type: String, default: 'md', validator: v => ['sm', 'md', 'lg'].includes(v) },
-  variant: { type: String, default: 'default', validator: v => ['default', 'pill', 'glass'].includes(v) },
-  color: { type: String, default: 'blue', validator: v => ['blue', 'green', 'purple'].includes(v) }
+  size: { type: String, default: undefined },
+  variant: { type: String, default: undefined },
+  color: { type: String, default: undefined },
+  radius: { type: String, default: undefined },
+  ui: { type: Object, default: () => ({}) }
 })
 
 const emit = defineEmits(['update:modelValue'])
 
-const arrowSize = computed(() => props.size === 'sm' ? 14 : props.size === 'lg' ? 18 : 16)
+const config = useIdesignConfig('Pagination', props)
+const currentSize = computed(() => config.resolvedSize.value || 'md')
+const currentVariant = computed(() => config.resolvedVariant.value || 'default')
+const currentColor = computed(() => {
+  const c = config.resolvedColor.value || 'blue'
+  if (c === 'default' || c === 'primary') return 'blue'
+  if (c === 'success') return 'green'
+  if (c === 'warning') return 'purple'
+  return c
+})
+const currentRadius = computed(() => config.resolvedRadius.value || 'full')
+
+const arrowSize = computed(() => currentSize.value === 'sm' ? 14 : currentSize.value === 'lg' ? 18 : 16)
 
 const go = (p) => { if (p >= 1 && p <= props.totalPages) emit('update:modelValue', p) }
 
@@ -64,6 +79,13 @@ const visiblePages = computed(() => {
 .size-sm .page-btn { min-width: 30px; height: 30px; font-size: 12.5px; }
 .size-md .page-btn { min-width: 36px; height: 36px; font-size: 14px; }
 .size-lg .page-btn { min-width: 44px; height: 44px; font-size: 15.5px; }
+
+/* Radius mappings */
+.radius-none .page-btn { border-radius: var(--r-none); }
+.radius-sm .page-btn { border-radius: var(--r-chip); }
+.radius-md .page-btn { border-radius: var(--r-thumb); }
+.radius-lg .page-btn { border-radius: var(--r-card); }
+.radius-full .page-btn { border-radius: var(--r-pill); }
 
 .page-btn {
   border-radius: var(--r-pill); border: none; background: transparent;

@@ -1,6 +1,6 @@
 <template>
   <div
-    :class="['id-skeleton', `variant-${variant}`, `size-${size}`, { 'is-animated': animated }]"
+    :class="['id-skeleton', `variant-${currentVariant}`, `size-${currentSize}`, `radius-${currentRadius}`, { 'is-animated': animated }, config.mergedUi.value.base]"
     :style="customStyle"
     role="status"
     aria-label="Loading..."
@@ -9,6 +9,7 @@
 
 <script setup>
 import { computed } from 'vue'
+import { useIdesignConfig } from '../../composables/useIdesignConfig'
 
 const props = defineProps({
   variant: {
@@ -18,14 +19,20 @@ const props = defineProps({
   },
   size: {
     type: String,
-    default: 'md',
-    validator: v => ['sm', 'md', 'lg'].includes(v)
+    default: undefined
   },
   width: String,
   height: String,
   borderRadius: String,
-  animated: { type: Boolean, default: true }
+  animated: { type: Boolean, default: true },
+  radius: { type: String, default: undefined },
+  ui: { type: Object, default: () => ({}) }
 })
+
+const config = useIdesignConfig('Skeleton', props)
+const currentSize = computed(() => config.resolvedSize.value || 'md')
+const currentRadius = computed(() => config.resolvedRadius.value || 'md')
+const currentVariant = computed(() => config.resolvedVariant.value || 'rect')
 
 const defaultHeights = computed(() => ({
   sm: { text: '12px', circle: '36px', card: '100px', rect: '60px' },
@@ -34,7 +41,7 @@ const defaultHeights = computed(() => ({
 }))
 
 const customStyle = computed(() => {
-  const hMap = defaultHeights.value[props.size] || defaultHeights.value.md
+  const hMap = defaultHeights.value[currentSize.value] || defaultHeights.value.md
   return {
     width: props.width || (props.variant === 'circle' ? hMap.circle : '100%'),
     height: props.height || hMap[props.variant] || '100px',
@@ -48,6 +55,13 @@ const customStyle = computed(() => {
   background: var(--hover);
   display: block;
 }
+
+/* Radius Classes */
+.radius-none { border-radius: var(--r-none) !important; }
+.radius-sm { border-radius: var(--r-chip) !important; }
+.radius-md { border-radius: var(--r-thumb) !important; }
+.radius-lg { border-radius: var(--r-card) !important; }
+.radius-full { border-radius: var(--r-pill) !important; }
 
 :root.dark .id-skeleton {
   background: rgba(255, 255, 255, 0.08);

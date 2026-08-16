@@ -340,8 +340,19 @@
           <template v-else-if="component.id === 'bottom-sheet'">
             <div style="display: flex; flex-direction: column; align-items: center; gap: 12px;">
               <IdButton variant="primary" @click="demoSheetOpen = true">Open Bottom Sheet</IdButton>
-              <IdBottomSheet v-model="demoSheetOpen" :title="propState.title || 'Sheet Actions'" :description="propState.description || 'Choose an action to proceed.'">
-                <p style="color: var(--text-2);">Bottom sheet with edge-anchored slide animation.</p>
+              <IdBottomSheet
+                v-model="demoSheetOpen"
+                :title="propState.title || 'Sheet Actions'"
+                :description="propState.description || 'Choose an action to proceed.'"
+                :show-grabber="propState.showGrabber"
+                :close-on-backdrop="propState.closeOnBackdrop"
+                :close-on-esc="propState.closeOnEsc"
+                :dismissible="propState.dismissible"
+                :height="propState.height"
+                :max-height="propState.maxHeight || '85vh'"
+              >
+                <p style="color: var(--text-2); margin-bottom: 16px;">Bottom sheet with edge-anchored slide animation.</p>
+                <IdButton variant="secondary" size="sm" block @click="demoSheetOpen = false">Close</IdButton>
               </IdBottomSheet>
             </div>
           </template>
@@ -491,6 +502,7 @@
               :description="propState.description || 'Deploy your Vue 3 application to see live metrics.'"
               :icon="getEmptyIcon(propState.icon)"
               :action-label="propState.actionLabel || 'Deploy Now'"
+              :no-bg="propState.noBg"
               @action="toast.info('Action button clicked!')"
             />
           </template>
@@ -1035,12 +1047,6 @@
           <h4 class="customization-docs-title">Component Customization & Theming Guide</h4>
           <div class="customization-tabs">
             <button
-              :class="['cust-tab-btn', { active: activeCustomTab === 'props' }]"
-              @click="activeCustomTab = 'props'"
-            >
-              Composition API (Props)
-            </button>
-            <button
               :class="['cust-tab-btn', { active: activeCustomTab === 'slots' }]"
               @click="activeCustomTab = 'slots'"
             >
@@ -1050,7 +1056,7 @@
               :class="['cust-tab-btn', { active: activeCustomTab === 'theme' }]"
               @click="activeCustomTab = 'theme'"
             >
-              Theme (Global UI Config)
+              Theme
             </button>
           </div>
         </div>
@@ -1299,7 +1305,7 @@ const copyCode = () => {
   }, 2000)
 }
 
-const activeCustomTab = ref('props')
+const activeCustomTab = ref('slots')
 const custCopied = ref(false)
 
 const copyCustomizationCode = () => {
@@ -1508,134 +1514,306 @@ const modelValue = ref(null)
 </template>`
     }
   } else if (activeCustomTab.value === 'slots') {
-    // 2. Slots
-    if (id === 'input') {
-      return `<template>
-  <IdInput v-model="searchQuery" placeholder="Search components...">
-    <!-- Leading Icon / Prefix Slot -->
-    <template #prefix>
-      <span class="icon">🔍</span>
-    </template>
-
-    <!-- Trailing Action / Suffix Slot -->
-    <template #suffix>
-      <kbd class="shortcut-key">⌘K</kbd>
-    </template>
-  </IdInput>
-</template>`
-    } else if (id === 'button') {
-      return `<template>
-  <IdButton variant="primary" size="md">
-    <!-- Leading Icon Slot -->
+    // 2. Slots (Accurate dynamic slots mapping)
+    const componentSlotsTemplates = {
+      button: `<template>
+  <IdButton variant="primary">
+    <!-- ⚡ Leading Icon Slot -->
     <template #iconLeft>
-      <span class="btn-icon">⚡</span>
+      <span>🌟</span>
     </template>
 
-    <!-- Default Content Slot -->
-    <span>Generate Production Bundle</span>
+    <!-- ✍️ Default Slot (Label text) -->
+    <span>Get Started</span>
 
-    <!-- Trailing Icon Slot -->
+    <!-- ⚡ Trailing Icon Slot -->
     <template #iconRight>
-      <span class="btn-chevron">→</span>
+      <span>→</span>
     </template>
   </IdButton>
-</template>`
-    } else if (id === 'card') {
-      return `<template>
-  <IdCard variant="glass" padding="lg">
-    <!-- Header Slot -->
-    <template #header>
-      <div class="tag">ENTERPRISE</div>
-      <IdCardTitle>Dedicated Cluster</IdCardTitle>
-      <IdCardDescription>High-throughput edge processing.</IdCardDescription>
+</template>`,
+      input: `<template>
+  <IdInput v-model="searchQuery" placeholder="Search components...">
+    <!-- 🔍 Leading Icon Slot -->
+    <template #prefix>
+      <span>🔍</span>
     </template>
 
-    <!-- Default Content Slot -->
-    <div class="card-body">
-      <p>Content rendered seamlessly on the unified panel surface.</p>
-    </div>
+    <!-- ⌨️ Trailing Action Slot -->
+    <template #suffix>
+      <kbd>⌘K</kbd>
+    </template>
+  </IdInput>
+</template>`,
+      select: `<template>
+  <IdSelect v-model="selectedValue" :options="['US', 'UK', 'CA']">
+    <!-- 🔍 Leading Icon Slot -->
+    <template #prefix>
+      <span>🌐</span>
+    </template>
 
-    <!-- Footer / Actions Slot -->
+    <!-- ⌨️ Trailing Action Slot -->
+    <template #suffix>
+      <span>Value: {{ selectedValue }}</span>
+    </template>
+  </IdSelect>
+</template>`,
+      card: `<template>
+  <IdCard>
+    <!-- 📋 Card Header Override Slot -->
+    <template #header>
+      <h3>Dedicated Cluster</h3>
+      <p>Manage raw spatial server operations.</p>
+    </template>
+
+    <!-- ✍️ Default Slot (Body content) -->
+    <p>Unified card panel body text rendered dynamically.</p>
+
+    <!-- ⚙️ Card Footer/Actions Slot -->
     <template #footer>
-      <IdButton size="sm" variant="primary">Deploy Node →</IdButton>
+      <IdButton variant="secondary" size="sm">Details</IdButton>
+      <IdButton variant="primary" size="sm">Launch Node</IdButton>
     </template>
   </IdCard>
-</template>`
-    } else if (id === 'modal' || id === 'dialog') {
-      return `<template>
-  <IdDialog v-model="isOpen" title="Confirm Action">
-    <!-- Header Slot Override -->
-    <template #header>
-      <div class="dialog-icon-badge">🔒</div>
-      <h3>Two-Factor Authentication</h3>
+</template>`,
+      modal: `<template>
+  <IdModal v-model="isOpen" title="Save Changes">
+    <!-- 🔒 Custom Header Slot Override (Optional) -->
+    <!-- Or customize only #title and #subtitle below -->
+    <template #title>
+      <h3>Custom Modal Title</h3>
+    </template>
+    
+    <template #subtitle>
+      <p>Custom subtitle layout details.</p>
     </template>
 
-    <!-- Default Body Slot -->
-    <p>Enter the 6-digit verification code from your authenticator app.</p>
+    <!-- ✍️ Default Slot (Modal Body Content) -->
+    <p>Form fields or configuration details go here.</p>
 
-    <!-- Footer Actions Slot -->
+    <!-- ⚙️ Modal Actions/Footer Slot -->
+    <template #actions>
+      <IdButton variant="secondary" @click="isOpen = false">Cancel</IdButton>
+      <IdButton variant="primary" @click="save">Save Changes</IdButton>
+    </template>
+  </IdModal>
+</template>`,
+      dialog: `<template>
+  <IdDialog v-model="isOpen" title="Confirmation">
+    <!-- 🔒 Custom Header Slot Override (Optional) -->
+    <template #title>
+      <h3>Delete Account</h3>
+    </template>
+
+    <!-- ✍️ Default Slot (Dialog Body Content) -->
+    <p>Are you sure you want to delete this workspace? This action is irreversible.</p>
+
+    <!-- ⚙️ Dialog Actions/Footer Slot -->
     <template #footer>
-      <IdButton variant="ghost" @click="isOpen = false">Cancel</IdButton>
-      <IdButton variant="primary" @click="verify">Verify Token</IdButton>
+      <IdButton variant="secondary" @click="isOpen = false">Cancel</IdButton>
+      <IdButton variant="danger" @click="deleteAccount">Delete</IdButton>
     </template>
   </IdDialog>
-</template>`
-    } else if (id === 'table') {
-      return `<template>
-  <IdTable :columns="columns" :data="data">
-    <!-- Custom Column Cell Slot (#col-{key}) -->
+</template>`,
+      drawer: `<template>
+  <IdDrawer v-model="isOpen" title="Drawer Menu">
+    <!-- 📋 Header Title Slot Override -->
+    <template #title>
+      <h3>Advanced Settings</h3>
+    </template>
+
+    <!-- 📋 Header Description Slot Override -->
+    <template #description>
+      <p>Configure hardware options and settings.</p>
+    </template>
+
+    <!-- ✍️ Default Slot (Drawer Body Content) -->
+    <div class="space-y-4">
+      <p>First settings configuration row.</p>
+      <p>Second settings configuration row.</p>
+    </div>
+  </IdDrawer>
+</template>`,
+      'bottom-sheet': `<template>
+  <IdBottomSheet v-model="isOpen" title="Choose Option">
+    <!-- 📋 Header Title Slot Override -->
+    <template #title>
+      <h3>Select Export Mode</h3>
+    </template>
+
+    <!-- ✍️ Default Slot (Sheet Body Content) -->
+    <div class="sheet-actions">
+      <button>Export as CSV</button>
+      <button>Export as PDF</button>
+    </div>
+  </IdBottomSheet>
+</template>`,
+      table: `<template>
+  <IdTable :columns="columns" :data="users">
+    <!-- 🎨 Custom Column Cell Render (#col-{key}) -->
     <template #col-status="{ value }">
-      <IdTag :variant="value === 'Active' ? 'success' : 'warning'" size="sm">
+      <IdTag :variant="value === 'Active' ? 'success' : 'warning'">
         {{ value }}
       </IdTag>
     </template>
 
-    <!-- Row Actions Slot -->
+    <!-- ⚙️ Row Actions Column Override -->
     <template #actions="{ row }">
       <IdButton size="xs" variant="ghost">Edit</IdButton>
     </template>
+
+    <!-- 🔍 Custom Empty State Slot Override -->
+    <template #empty>
+      <div class="text-center py-8">No results match your search query.</div>
+    </template>
   </IdTable>
-</template>`
-    } else {
-      return `<template>
-  <${tag}>
-    <!-- Default Slot -->
-    <span>Custom slotted content inside ${tag}</span>
-  </${tag}>
+</template>`,
+      tabs: `<template>
+  <IdTabs v-model="activeTab" :tabs="tabOptions">
+    <!-- ✍️ Slotted content per tab value (using slot matching tab value) -->
+    <template #overview>
+      <p>Overview dashboard content panel.</p>
+    </template>
+    <template #settings>
+      <p>System settings configuration form.</p>
+    </template>
+  </IdTabs>
+</template>`,
+      accordion: `<template>
+  <IdAccordion :items="accordionItems">
+    <!-- ✍️ Custom Item Content Overrides by Index -->
+    <template #item-0>
+      <p>Custom HTML or media rendered inside the first accordion panel.</p>
+    </template>
+  </IdAccordion>
+</template>`,
+      'dropdown-menu': `<template>
+  <IdDropdownMenu :items="menuItems">
+    <!-- 🖱️ Trigger Slot (Element that toggles the dropdown) -->
+    <template #trigger>
+      <IdButton variant="secondary">Options ▾</IdButton>
+    </template>
+  </IdDropdownMenu>
+</template>`,
+      popover: `<template>
+  <IdPopover title="Info Bubble">
+    <!-- 🖱️ Trigger Slot (Anchor element) -->
+    <template #trigger>
+      <span class="info-icon">❓</span>
+    </template>
+
+    <!-- ✍️ Default Slot (Popover content) -->
+    <p>Provides additional context for the setting.</p>
+  </IdPopover>
+</template>`,
+      banner: `<template>
+  <IdBanner message="Maintenance window tomorrow.">
+    <!-- 🔔 Custom Leading Icon Slot -->
+    <template #icon>
+      <span>📢</span>
+    </template>
+
+    <!-- ⚡ Custom Action Slot -->
+    <template #action>
+      <IdButton size="sm" variant="outline">Learn More</IdButton>
+    </template>
+  </IdBanner>
+</template>`,
+      'empty-state': `<template>
+  <IdEmpty title="No Active Subscriptions" description="Subscribe to a plan to start analytics.">
+    <!-- 🔔 Custom Graphics/Icon Slot override -->
+    <template #icon>
+      <span>💎</span>
+    </template>
+
+    <!-- ⚡ Custom Action Button Slot override -->
+    <template #action>
+      <IdButton variant="primary">Choose Plan</IdButton>
+    </template>
+  </IdEmpty>
 </template>`
     }
+
+    if (componentSlotsTemplates[id]) {
+      return componentSlotsTemplates[id]
+    }
+
+    return `<template>
+  <${tag}>
+    <!-- ✍️ Default Slot -->
+    <span>Slotted content inside ${tag}</span>
+  </${tag}>
+</template>`
   } else {
-    // 3. Theme (Global UI Config)
-    return `// 1. In your application entry point (main.ts / app.ts)
+    // 3. Theme (Global UI Config - Dynamic component-specific customizable keys mapping)
+    const componentUiKeysMap = {
+      button: ['base', 'label', 'iconLeft', 'iconRight', 'spinner'],
+      'segmented-control': ['base', 'list', 'item', 'active'],
+      input: ['base', 'label', 'input', 'prefix', 'suffix', 'hint', 'error'],
+      textarea: ['base', 'label', 'input', 'hint'],
+      select: ['base', 'label', 'select', 'hint', 'arrow'],
+      checkbox: ['base', 'checkbox', 'label'],
+      'radio-group': ['base', 'label', 'optionsContainer', 'option', 'radio', 'optionLabel'],
+      toggle: ['base', 'switch', 'handle', 'label'],
+      slider: ['base', 'label', 'track', 'fill', 'thumb', 'value'],
+      tag: ['base', 'label', 'iconLeft', 'iconRight', 'closeButton'],
+      badge: ['base', 'badge'],
+      alert: ['base', 'icon', 'title', 'description', 'closeButton'],
+      progress: ['base', 'label', 'value', 'track', 'fill'],
+      spinner: ['base', 'spinner', 'label'],
+      avatar: ['base', 'avatar', 'image', 'fallback', 'status'],
+      skeleton: ['base'],
+      panel: ['base'],
+      card: ['base', 'header', 'title', 'description', 'body', 'footer'],
+      modal: ['backdrop', 'surface', 'header', 'title', 'subtitle', 'close', 'closeButton', 'body', 'footer'],
+      dialog: ['backdrop', 'surface', 'header', 'title', 'subtitle', 'close', 'closeButton', 'body', 'footer'],
+      divider: ['base'],
+      stack: ['base'],
+      tooltip: ['base', 'tooltip', 'text'],
+      'dropdown-menu': ['base', 'trigger', 'menu', 'item', 'label', 'shortcut'],
+      drawer: ['backdrop', 'surface', 'header', 'title', 'description', 'desc', 'close', 'closeButton', 'body', 'footer'],
+      'bottom-sheet': ['backdrop', 'surface', 'grabber', 'handle', 'header', 'title', 'description', 'desc', 'body', 'footer'],
+      table: ['base', 'headerBar', 'title', 'searchBox', 'searchInput', 'table', 'thead', 'tr', 'th', 'tbody', 'td', 'actions', 'checkbox'],
+      tabs: ['base', 'list', 'tab', 'trigger', 'active', 'indicator', 'panel'],
+      accordion: ['base', 'item', 'trigger', 'title', 'chevron', 'content', 'body'],
+      'avatar-group': ['base', 'container', 'item', 'overflow', 'label'],
+      breadcrumbs: ['base', 'list', 'item', 'sep', 'separator', 'link', 'current'],
+      pagination: ['base', 'button', 'active'],
+      banner: ['base', 'inner', 'message', 'action', 'closeButton'],
+      popover: ['base', 'trigger', 'card', 'content', 'title', 'subtitle', 'body'],
+      'confirm-dialog': ['base', 'iconBox', 'title', 'message', 'actions', 'footer'],
+      form: ['base'],
+      'form-field': ['base', 'label', 'description', 'control', 'fieldControl', 'message'],
+      'form-group': ['base'],
+      'form-actions': ['base'],
+      kbd: ['base', 'key', 'kbdKey'],
+      separator: ['base', 'line', 'content', 'label'],
+      'empty-state': ['base', 'iconBox', 'icon', 'title', 'description', 'desc', 'action']
+    }
+
+    const uiKeys = componentUiKeysMap[id] || ['base']
+    const uiKeysObjStr = uiKeys.map(k => `        ${k}: 'custom-${id}-${k}-class'`).join(',\n')
+    const localUiPropStr = uiKeys.slice(0, 2).map(k => `${k}: 'my-custom-${k}'`).join(', ')
+
+    return `// ─── 1. GLOBAL OVERRIDES (main.js / app.js) ───
 import { createApp } from 'vue'
+import { createIdesign } from '@idesign/vue'
 import App from './App.vue'
-import Idesign, { createIdesign } from '@idesign/vue'
 
 const app = createApp(App)
 
-// 🌐 Register Global UI Configuration
 app.use(createIdesign({
-  theme: 'auto',          // 'light' | 'dark' | 'auto'
-  density: 'comfortable',  // 'compact' | 'comfortable' | 'spacious'
-
   ui: {
-    // 🎨 Design Tokens (Overrides CSS variables globally)
-    colors: {
-      primary: '#0071e3',  // System Blue accent
-      surface: '#ffffff',
-      border: 'rgba(0, 0, 0, 0.07)'
-    },
-    radius: {
-      md: '12px',
-      lg: '18px',
-      full: '999px'
-    },
-
-    // ⚙️ Component-Level Defaults
     components: {
       ${baseName}: {
-        size: 'md',
-        variant: 'primary'
+        // Default properties for all instances
+        defaultProps: {
+          size: 'md'
+        },
+        // Component-specific customizable key classes
+        ui: {
+${uiKeysObjStr}
+        }
       }
     }
   }
@@ -1643,17 +1821,11 @@ app.use(createIdesign({
 
 app.mount('#app')
 
-// 2. Runtime Customization in any Vue Component
-// <script setup>
-// import { useIdesignConfig } from '@idesign/vue'
-// const { setUi, setTheme, setDensity } = useIdesignConfig()
-//
-// // Update tokens or component defaults dynamically
-// setUi({
-//   colors: { primary: '#5e5ce6' },
-//   components: { ${baseName}: { size: 'lg' } }
-// })
-// <\/script>`
+// ─── 2. LOCAL PROP CUSTOMIZATION (SFC File) ───
+<!-- Customize per-part styles locally on this instance -->
+<template>
+  <${tag} :ui="{ ${localUiPropStr} }" />
+</template>`
   }
 })
 </script>

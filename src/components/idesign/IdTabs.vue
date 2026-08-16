@@ -1,8 +1,8 @@
 <template>
-  <div :class="['id-tabs', `size-${size}`, `variant-${variant}`, `color-${color}`]">
+  <div :class="['id-tabs', `size-${currentSize}`, `variant-${currentVariant}`, `color-${currentColor}`, config.mergedUi.value.base]">
     <div
       ref="tablistRef"
-      class="tabs-list"
+      :class="['tabs-list', config.mergedUi.value.list]"
       role="tablist"
       :aria-label="ariaLabel || 'Navigation Tabs'"
       @keydown="handleKeydown"
@@ -14,7 +14,7 @@
         :ref="el => { if (el) tabRefs[idx] = el }"
         type="button"
         role="tab"
-        :class="['tab-trigger', { active: modelValue === tab.val }]"
+        :class="['tab-trigger', { active: modelValue === tab.val }, config.mergedUi.value.tab || config.mergedUi.value.trigger, modelValue === tab.val ? config.mergedUi.value.active : '']"
         :aria-selected="modelValue === tab.val"
         :aria-controls="`tabpanel-${uid}-${tab.val}`"
         :tabindex="modelValue === tab.val ? 0 : -1"
@@ -23,12 +23,12 @@
         <component :is="tab.icon" v-if="tab.icon" class="tab-icon" :size="iconSize" />
         <span>{{ tab.lbl }}</span>
       </button>
-      <div v-if="variant === 'default'" class="tab-indicator" :style="indicatorStyle" />
+      <div v-if="currentVariant === 'default'" :class="['tab-indicator', config.mergedUi.value.indicator]" :style="indicatorStyle" />
     </div>
 
     <div
       :id="`tabpanel-${uid}-${modelValue}`"
-      class="tab-panel"
+      :class="['tab-panel', config.mergedUi.value.panel]"
       role="tabpanel"
       :aria-labelledby="`tab-${uid}-${modelValue}`"
       tabindex="0"
@@ -41,17 +41,30 @@
 
 <script setup>
 import { ref, computed } from 'vue'
+import { useIdesignConfig } from '../../composables/useIdesignConfig'
 
 const props = defineProps({
   modelValue: { type: [String, Number], required: true },
   tabs: { type: Array, required: true },
-  size: { type: String, default: 'md', validator: v => ['sm', 'md', 'lg'].includes(v) },
-  variant: { type: String, default: 'default', validator: v => ['default', 'pill', 'glass'].includes(v) },
-  color: { type: String, default: 'blue', validator: v => ['blue', 'green', 'purple'].includes(v) },
-  ariaLabel: String
+  size: { type: String, default: undefined },
+  variant: { type: String, default: undefined },
+  color: { type: String, default: undefined },
+  ariaLabel: String,
+  ui: { type: Object, default: () => ({}) }
 })
 
 const emit = defineEmits(['update:modelValue', 'change'])
+
+const config = useIdesignConfig('Tabs', props)
+const currentSize = computed(() => config.resolvedSize.value || 'md')
+const currentVariant = computed(() => config.resolvedVariant.value || 'default')
+const currentColor = computed(() => {
+  const c = config.resolvedColor.value || 'blue'
+  if (c === 'default' || c === 'primary') return 'blue'
+  if (c === 'success') return 'green'
+  if (c === 'warning') return 'purple'
+  return c
+})
 
 const uid = Math.random().toString(36).substring(2, 8)
 const tablistRef = ref(null)
@@ -75,7 +88,7 @@ const activeIndex = computed(() => {
   return idx >= 0 ? idx : 0
 })
 
-const iconSize = computed(() => props.size === 'sm' ? 14 : props.size === 'lg' ? 18 : 16)
+const iconSize = computed(() => currentSize.value === 'sm' ? 14 : currentSize.value === 'lg' ? 18 : 16)
 
 const indicatorStyle = computed(() => {
   const count = normalizedTabs.value.length || 1

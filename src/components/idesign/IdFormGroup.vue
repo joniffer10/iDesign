@@ -2,8 +2,9 @@
   <div
     :class="[
       'id-form-group',
-      `layout-${direction}`,
-      { 'is-inline': inline }
+      `layout-${currentDirection}`,
+      { 'is-inline': inline },
+      config.mergedUi.value.base
     ]"
     :style="columns ? { gridTemplateColumns: `repeat(${columns}, 1fr)` } : {}"
   >
@@ -12,15 +13,21 @@
 </template>
 
 <script setup>
-defineProps({
+import { computed } from 'vue'
+import { useIdesignConfig } from '../../composables/useIdesignConfig'
+
+const props = defineProps({
   direction: {
     type: String,
-    default: 'vertical',
-    validator: v => ['vertical', 'horizontal', 'grid'].includes(v)
+    default: undefined
   },
   inline: Boolean,
-  columns: [Number, String]
+  columns: [Number, String],
+  ui: { type: Object, default: () => ({}) }
 })
+
+const config = useIdesignConfig('FormGroup', props)
+const currentDirection = computed(() => config.resolvedDirection.value || 'vertical')
 </script>
 
 <style scoped>

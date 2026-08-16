@@ -1,25 +1,25 @@
 <template>
-  <nav :class="['id-breadcrumbs', `size-${size}`, `variant-${variant}`, `color-${color}`]" aria-label="Breadcrumb">
-    <ol class="crumbs-list">
-      <li v-for="(crumb, idx) in items" :key="idx" class="crumb-item">
-        <span v-if="idx > 0" class="crumb-sep">
+  <nav :class="['id-breadcrumbs', `size-${currentSize}`, `variant-${currentVariant}`, `color-${currentColor}`, config.mergedUi.value.base]" aria-label="Breadcrumb">
+    <ol :class="['crumbs-list', config.mergedUi.value.list]">
+      <li v-for="(crumb, idx) in items" :key="idx" :class="['crumb-item', config.mergedUi.value.item]">
+        <span v-if="idx > 0" :class="['crumb-sep', config.mergedUi.value.sep || config.mergedUi.value.separator]">
           <ChevronRight :size="sepSize" />
         </span>
         <a
           v-if="crumb.href && idx < items.length - 1"
           :href="crumb.href"
-          class="crumb-link"
+          :class="['crumb-link', config.mergedUi.value.link]"
           @click="$emit('navigate', crumb, $event)"
         >
-          <template v-if="variant === 'with-icons'">
+          <template v-if="currentVariant === 'with-icons'">
             <component :is="crumb.icon" v-if="crumb.icon && typeof crumb.icon !== 'string'" :size="iconSize" class="crumb-icon" />
             <span v-else-if="typeof crumb.icon === 'string' && crumb.icon" class="crumb-icon-str">{{ crumb.icon }}</span>
             <component :is="getFallbackIcon(idx)" v-else :size="iconSize" class="crumb-icon" />
           </template>
           <span>{{ crumb.label }}</span>
         </a>
-        <span v-else class="crumb-current" aria-current="page">
-          <template v-if="variant === 'with-icons'">
+        <span v-else :class="['crumb-current', config.mergedUi.value.current]" aria-current="page">
+          <template v-if="currentVariant === 'with-icons'">
             <component :is="crumb.icon" v-if="crumb.icon && typeof crumb.icon !== 'string'" :size="iconSize" class="crumb-icon" />
             <span v-else-if="typeof crumb.icon === 'string' && crumb.icon" class="crumb-icon-str">{{ crumb.icon }}</span>
             <component :is="getFallbackIcon(idx)" v-else :size="iconSize" class="crumb-icon" />
@@ -34,22 +34,31 @@
 <script setup>
 import { computed } from 'vue'
 import { ChevronRight, Home, Folder, FileText } from '@lucide/vue'
+import { useIdesignConfig } from '../../composables/useIdesignConfig'
 
 const props = defineProps({
   items: { type: Array, required: true },
-  variant: {
-    type: String,
-    default: 'default',
-    validator: v => ['default', 'with-icons', 'glass'].includes(v)
-  },
-  size: { type: String, default: 'md', validator: v => ['sm', 'md', 'lg'].includes(v) },
-  color: { type: String, default: 'blue', validator: v => ['blue', 'purple', 'green', 'gray'].includes(v) }
+  variant: { type: String, default: undefined },
+  size: { type: String, default: undefined },
+  color: { type: String, default: undefined },
+  ui: { type: Object, default: () => ({}) }
 })
 
 defineEmits(['navigate'])
 
-const iconSize = computed(() => props.size === 'sm' ? 13 : props.size === 'lg' ? 16 : 14)
-const sepSize = computed(() => props.size === 'sm' ? 12 : props.size === 'lg' ? 16 : 14)
+const config = useIdesignConfig('Breadcrumbs', props)
+const currentSize = computed(() => config.resolvedSize.value || 'md')
+const currentVariant = computed(() => config.resolvedVariant.value || 'default')
+const currentColor = computed(() => {
+  const c = config.resolvedColor.value || 'blue'
+  if (c === 'default' || c === 'primary') return 'blue'
+  if (c === 'success') return 'green'
+  if (c === 'warning') return 'purple'
+  return c
+})
+
+const iconSize = computed(() => currentSize.value === 'sm' ? 13 : currentSize.value === 'lg' ? 16 : 14)
+const sepSize = computed(() => currentSize.value === 'sm' ? 12 : currentSize.value === 'lg' ? 16 : 14)
 
 const getFallbackIcon = (idx) => {
   if (idx === 0) return Home

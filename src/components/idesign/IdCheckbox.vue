@@ -2,14 +2,15 @@
   <label
     :class="[
       'id-checkbox',
-      `size-${size}`,
-      `color-${color}`,
+      `size-${currentSize}`,
+      `color-${currentColor}`,
       {
         'is-checked': modelValue,
         'is-indeterminate': indeterminate,
         'is-disabled': disabled,
         'has-error': error
-      }
+      },
+      config.mergedUi.value.base
     ]"
   >
     <input
@@ -18,10 +19,10 @@
       :disabled="disabled"
       :aria-checked="indeterminate ? 'mixed' : modelValue"
       :aria-invalid="error"
-      class="sr-only"
+      :class="['sr-only', config.mergedUi.value.input]"
       @change="$emit('update:modelValue', $event.target.checked)"
     />
-    <span :class="['checkbox-box', { checked: modelValue || indeterminate }]">
+    <span :class="['checkbox-box', { checked: modelValue || indeterminate }, config.mergedUi.value.box]">
       <!-- Indeterminate Dash -->
       <svg v-if="indeterminate && !modelValue" :width="checkSize" :height="checkSize" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round">
         <line x1="5" y1="12" x2="19" y2="12" />
@@ -31,12 +32,13 @@
         <path d="M20 6L9 17l-5-5"/>
       </svg>
     </span>
-    <span v-if="label || $slots.default" class="checkbox-label"><slot>{{ label }}</slot></span>
+    <span v-if="label || $slots.default" :class="['checkbox-label', config.mergedUi.value.label]"><slot>{{ label }}</slot></span>
   </label>
 </template>
 
 <script setup>
 import { computed } from 'vue'
+import { useIdesignConfig } from '../../composables/useIdesignConfig'
 
 const props = defineProps({
   modelValue: { type: Boolean, default: false },
@@ -44,13 +46,25 @@ const props = defineProps({
   label: String,
   disabled: Boolean,
   error: Boolean,
-  size: { type: String, default: 'md', validator: v => ['sm', 'md', 'lg'].includes(v) },
-  color: { type: String, default: 'blue', validator: v => ['blue', 'green', 'purple', 'orange', 'red'].includes(v) }
+  size: { type: String, default: undefined },
+  color: { type: String, default: undefined },
+  ui: { type: Object, default: () => ({}) }
 })
 
 defineEmits(['update:modelValue'])
 
-const checkSize = computed(() => props.size === 'sm' ? 11 : props.size === 'lg' ? 16 : 13)
+const config = useIdesignConfig('Checkbox', props)
+const currentSize = computed(() => config.resolvedSize.value || 'md')
+const currentColor = computed(() => {
+  const c = config.resolvedColor.value || 'blue'
+  if (c === 'default' || c === 'primary') return 'blue'
+  if (c === 'success') return 'green'
+  if (c === 'warning') return 'orange'
+  if (c === 'danger') return 'red'
+  return c
+})
+
+const checkSize = computed(() => currentSize.value === 'sm' ? 11 : currentSize.value === 'lg' ? 16 : 13)
 </script>
 
 <style scoped>

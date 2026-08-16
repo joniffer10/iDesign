@@ -1,29 +1,30 @@
 <template>
-  <div :class="['id-textarea-group', `size-${size}`, `variant-${variant}`]">
-    <label v-if="label" class="textarea-label">{{ label }}</label>
+  <div :class="['id-textarea-group', `size-${currentSize}`, `variant-${currentVariant}`, `radius-${currentRadius}`, config.mergedUi.value.base]">
+    <label v-if="label" :class="['textarea-label', config.mergedUi.value.label]">{{ label }}</label>
     <textarea
       :value="modelValue"
       :placeholder="placeholder"
       :disabled="disabled"
       :rows="rows"
       :maxlength="maxlength"
-      :class="['id-textarea', { 'is-focused': isFocused }]"
+      :class="['id-textarea', { 'is-focused': isFocused }, config.mergedUi.value.textarea]"
       :aria-label="label"
       @input="$emit('update:modelValue', $event.target.value)"
       @focus="isFocused = true"
       @blur="isFocused = false"
     />
-    <div v-if="hint || maxlength" class="textarea-footer">
-      <span v-if="hint" class="textarea-hint">{{ hint }}</span>
-      <span v-if="maxlength" class="textarea-count">{{ (modelValue || '').length }}/{{ maxlength }}</span>
+    <div v-if="hint || maxlength" :class="['textarea-footer', config.mergedUi.value.footer]">
+      <span v-if="hint" :class="['textarea-hint', config.mergedUi.value.hint]">{{ hint }}</span>
+      <span v-if="maxlength" :class="['textarea-count', config.mergedUi.value.count]">{{ (modelValue || '').length }}/{{ maxlength }}</span>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
+import { useIdesignConfig } from '../../composables/useIdesignConfig'
 
-defineProps({
+const props = defineProps({
   modelValue: { type: String, default: '' },
   label: String,
   placeholder: String,
@@ -31,11 +32,18 @@ defineProps({
   rows: { type: Number, default: 4 },
   maxlength: Number,
   disabled: Boolean,
-  size: { type: String, default: 'md', validator: v => ['sm', 'md', 'lg'].includes(v) },
-  variant: { type: String, default: 'default', validator: v => ['default', 'glass', 'error'].includes(v) }
+  size: { type: String, default: undefined },
+  variant: { type: String, default: undefined },
+  radius: { type: String, default: undefined },
+  ui: { type: Object, default: () => ({}) }
 })
 
 defineEmits(['update:modelValue'])
+
+const config = useIdesignConfig('Textarea', props)
+const currentSize = computed(() => config.resolvedSize.value || 'md')
+const currentRadius = computed(() => config.resolvedRadius.value || 'md')
+const currentVariant = computed(() => config.resolvedVariant.value || 'default')
 
 const isFocused = ref(false)
 </script>
@@ -44,9 +52,19 @@ const isFocused = ref(false)
 .id-textarea-group { display: flex; flex-direction: column; gap: 6px; width: 100%; font-family: var(--font); }
 .textarea-label { font-size: 13px; font-weight: 600; color: var(--text-2); }
 
+/* Size variants */
+.size-xs .id-textarea { padding: 6px 8px; font-size: 12px; border-radius: 6px; }
 .size-sm .id-textarea { padding: 8px 10px; font-size: 13px; border-radius: 8px; }
 .size-md .id-textarea { padding: 10px 14px; font-size: 14.5px; border-radius: 10px; }
 .size-lg .id-textarea { padding: 14px 18px; font-size: 16px; border-radius: 12px; }
+.size-xl .id-textarea { padding: 16px 22px; font-size: 17.5px; border-radius: 14px; }
+
+/* Radius Classes */
+.radius-none .id-textarea { border-radius: var(--r-none) !important; }
+.radius-sm .id-textarea { border-radius: var(--r-chip) !important; }
+.radius-md .id-textarea { border-radius: var(--r-thumb) !important; }
+.radius-lg .id-textarea { border-radius: var(--r-card) !important; }
+.radius-full .id-textarea { border-radius: var(--r-pill) !important; }
 
 .id-textarea {
   width: 100%; background: var(--surface); border: 1px solid var(--hairline);

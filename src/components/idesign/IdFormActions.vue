@@ -2,8 +2,9 @@
   <div
     :class="[
       'id-form-actions',
-      `align-${align}`,
-      { 'is-sticky': sticky }
+      `align-${currentAlign}`,
+      { 'is-sticky': sticky },
+      config.mergedUi.value.base
     ]"
   >
     <slot />
@@ -11,14 +12,20 @@
 </template>
 
 <script setup>
-defineProps({
+import { computed } from 'vue'
+import { useIdesignConfig } from '../../composables/useIdesignConfig'
+
+const props = defineProps({
   align: {
     type: String,
-    default: 'right',
-    validator: v => ['left', 'center', 'right', 'between'].includes(v)
+    default: undefined
   },
-  sticky: Boolean
+  sticky: Boolean,
+  ui: { type: Object, default: () => ({}) }
 })
+
+const config = useIdesignConfig('FormActions', props)
+const currentAlign = computed(() => props.align || 'right')
 </script>
 
 <style scoped>

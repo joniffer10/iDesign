@@ -6,20 +6,22 @@
     :class="[
       'id-btn',
       `btn-${currentVariant}`,
-      `color-${color}`,
+      `color-${currentColor}`,
       `size-${currentSize}`,
       `density-${currentDensity}`,
-      { 'is-disabled': disabled || loading, 'is-block': block, 'is-loading': loading }
+      `radius-${currentRadius}`,
+      { 'is-disabled': disabled || loading, 'is-block': block, 'is-loading': loading },
+      config.mergedUi.value.base
     ]"
     :disabled="disabled || loading"
     :aria-disabled="disabled || loading"
     :aria-busy="loading"
     @click="$emit('click', $event)"
   >
-    <Loader2 v-if="loading" class="btn-spinner" :size="iconSize" />
+    <Loader2 v-if="loading" :class="['btn-spinner', config.mergedUi.value.spinner]" :size="iconSize" />
     <template v-else>
       <!-- Left Icon (via slot or iconLeft prop) -->
-      <span v-if="$slots.iconLeft || iconLeft" class="btn-icon left">
+      <span v-if="$slots.iconLeft || iconLeft" :class="['btn-icon left', config.mergedUi.value.icon]">
         <slot name="iconLeft">
           <component :is="iconLeft" v-if="isComponent(iconLeft)" :size="iconSize" />
           <span v-else>{{ iconLeft }}</span>
@@ -27,12 +29,12 @@
       </span>
 
       <!-- Button Label -->
-      <span v-if="$slots.default || label" class="btn-label">
+      <span v-if="$slots.default || label" :class="['btn-label', config.mergedUi.value.label]">
         <slot>{{ label }}</slot>
       </span>
 
       <!-- Right Icon (via slot or iconRight prop) -->
-      <span v-if="$slots.iconRight || iconRight" class="btn-icon right">
+      <span v-if="$slots.iconRight || iconRight" :class="['btn-icon right', config.mergedUi.value.icon]">
         <slot name="iconRight">
           <component :is="iconRight" v-if="isComponent(iconRight)" :size="iconSize" />
           <span v-else>{{ iconRight }}</span>
@@ -49,33 +51,43 @@ import { useIdesignConfig } from '../../composables/useIdesignConfig'
 
 const props = defineProps({
   label: String,
-  variant: {
-    type: String,
-    default: 'primary',
-    validator: v => ['primary', 'secondary', 'outline', 'glass', 'dark', 'ghost', 'danger', 'subtle'].includes(v)
-  },
-  color: {
-    type: String,
-    default: 'blue',
-    validator: v => ['blue', 'green', 'purple', 'orange', 'red', 'black', 'gray'].includes(v)
-  },
-  size: { type: String, default: undefined, validator: v => !v || ['xs', 'sm', 'md', 'lg', 'xl'].includes(v) },
-  density: { type: String, default: undefined, validator: v => !v || ['compact', 'comfortable', 'spacious'].includes(v) },
+  variant: { type: String, default: undefined },
+  color: { type: String, default: undefined },
+  size: { type: String, default: undefined },
+  density: { type: String, default: undefined },
   iconLeft: [Object, Function, String],
   iconRight: [Object, Function, String],
   href: String,
   type: { type: String, default: 'button' },
   disabled: Boolean,
   loading: Boolean,
-  block: Boolean
+  block: Boolean,
+  radius: { type: String, default: undefined },
+  ui: { type: Object, default: () => ({}) }
 })
 
 defineEmits(['click'])
 
-const config = useIdesignConfig({ size: props.size, density: props.density })
-const currentSize = computed(() => props.size || config.size || 'md')
-const currentDensity = computed(() => props.density || config.density || 'comfortable')
-const currentVariant = computed(() => props.variant || 'primary')
+const config = useIdesignConfig('Button', props)
+const currentSize = computed(() => config.resolvedSize.value || 'md')
+const currentDensity = computed(() => config.resolvedDensity.value || 'comfortable')
+const currentRadius = computed(() => config.resolvedRadius.value || 'full')
+
+const currentVariant = computed(() => {
+  const v = config.resolvedVariant.value || 'default'
+  if (v === 'default' || v === 'primary') return 'primary'
+  if (v === 'soft' || v === 'subtle') return 'subtle'
+  return v
+})
+
+const currentColor = computed(() => {
+  const c = config.resolvedColor.value || 'blue'
+  if (c === 'default' || c === 'primary') return 'blue'
+  if (c === 'success') return 'green'
+  if (c === 'warning') return 'orange'
+  if (c === 'danger') return 'red'
+  return c
+})
 
 const tag = computed(() => props.href ? 'a' : 'button')
 const iconSize = computed(() => {
@@ -99,6 +111,13 @@ const isComponent = (val) => typeof val === 'object' || typeof val === 'function
 }
 .id-btn.is-block { width: 100%; display: flex; }
 .id-btn:active:not(.is-disabled) { transform: scale(0.97); }
+
+/* Radius Classes */
+.radius-none { border-radius: var(--r-none) !important; }
+.radius-sm { border-radius: var(--r-chip) !important; }
+.radius-md { border-radius: var(--r-thumb) !important; }
+.radius-lg { border-radius: var(--r-card) !important; }
+.radius-full { border-radius: var(--r-pill) !important; }
 
 /* Size Variants */
 .size-xs { height: 28px; padding: 0 10px; font-size: 12px; font-weight: 550; }
@@ -178,4 +197,27 @@ const isComponent = (val) => typeof val === 'object' || typeof val === 'function
 
 .btn-spinner { animation: btn-spin 0.8s linear infinite; }
 @keyframes btn-spin { to { transform: rotate(360deg); } }
+
+@media (max-width: 640px) {
+  /* Collapse button text and leave only the icon on small screens */
+  .id-btn:has(.btn-icon):has(.btn-label) .btn-label,
+  .id-btn:has(.btn-spinner):has(.btn-label) .btn-label {
+    display: none;
+  }
+  .id-btn:has(.btn-icon):has(.btn-label),
+  .id-btn:has(.btn-spinner):has(.btn-label) {
+    padding: 0 !important;
+    justify-content: center;
+  }
+  .id-btn:has(.btn-icon):has(.btn-label).size-xs,
+  .id-btn:has(.btn-spinner):has(.btn-label).size-xs { width: 28px; }
+  .id-btn:has(.btn-icon):has(.btn-label).size-sm,
+  .id-btn:has(.btn-spinner):has(.btn-label).size-sm { width: 36px; }
+  .id-btn:has(.btn-icon):has(.btn-label).size-md,
+  .id-btn:has(.btn-spinner):has(.btn-label).size-md { width: 44px; }
+  .id-btn:has(.btn-icon):has(.btn-label).size-lg,
+  .id-btn:has(.btn-spinner):has(.btn-label).size-lg { width: 50px; }
+  .id-btn:has(.btn-icon):has(.btn-label).size-xl,
+  .id-btn:has(.btn-spinner):has(.btn-label).size-xl { width: 56px; }
+}
 </style>

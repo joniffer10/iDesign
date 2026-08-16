@@ -2,10 +2,10 @@
   <Transition name="banner-slide">
     <div
       v-if="isVisible"
-      :class="['id-banner', `variant-${variant}`, `align-${align}`, { 'is-sticky': sticky }]"
+      :class="['id-banner', `variant-${currentVariant}`, `align-${align}`, `size-${currentSize}`, `radius-${currentRadius}`, { 'is-sticky': sticky }, config.mergedUi.value.base]"
       role="banner"
     >
-      <div class="banner-inner">
+      <div :class="['banner-inner', config.mergedUi.value.inner]">
         <!-- Icon / Leading Slot -->
         <div v-if="$slots.icon || icon" class="banner-icon">
           <slot name="icon">
@@ -14,12 +14,12 @@
         </div>
 
         <!-- Banner Content -->
-        <div class="banner-message">
+        <div :class="['banner-message', config.mergedUi.value.message]">
           <slot>{{ message }}</slot>
         </div>
 
         <!-- Action Button Slot -->
-        <div v-if="$slots.action || actionLabel" class="banner-action">
+        <div v-if="$slots.action || actionLabel" :class="['banner-action', config.mergedUi.value.action]">
           <slot name="action">
             <button type="button" class="banner-action-btn" @click="$emit('action')">
               {{ actionLabel }}
@@ -31,7 +31,7 @@
         <button
           v-if="dismissible"
           type="button"
-          class="banner-close-btn"
+          :class="['banner-close-btn', config.mergedUi.value.closeButton]"
           aria-label="Dismiss banner"
           @click="dismiss"
         >
@@ -45,7 +45,8 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
+import { useIdesignConfig } from '../../composables/useIdesignConfig'
 
 const props = defineProps({
   modelValue: {
@@ -65,17 +66,37 @@ const props = defineProps({
   },
   align: {
     type: String,
-    default: 'center',
-    validator: v => ['center', 'left', 'between'].includes(v)
+    default: 'center'
   },
   variant: {
     type: String,
-    default: 'accent',
-    validator: v => ['accent', 'glass', 'warning', 'success', 'rainbow-glow'].includes(v)
+    default: undefined
+  },
+  size: {
+    type: String,
+    default: undefined
+  },
+  radius: {
+    type: String,
+    default: undefined
+  },
+  ui: {
+    type: Object,
+    default: () => ({})
   }
 })
 
 const emit = defineEmits(['update:modelValue', 'dismiss', 'action'])
+
+const config = useIdesignConfig('Banner', props)
+const currentVariant = computed(() => {
+  const v = config.resolvedVariant.value || 'accent'
+  // Map color variant aliases
+  if (v === 'default' || v === 'primary') return 'accent'
+  return v
+})
+const currentSize = computed(() => config.resolvedSize.value || 'md')
+const currentRadius = computed(() => config.resolvedRadius.value || 'none')
 
 const isVisible = ref(props.modelValue)
 

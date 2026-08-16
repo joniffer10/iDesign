@@ -1,8 +1,19 @@
 <template>
-  <div :class="['id-divider', direction, `variant-${variant}`]" role="separator" />
+  <div :class="['id-divider', currentDirection, `variant-${currentVariant}`, config.mergedUi.value.base]" role="separator" />
 </template>
 <script setup>
-defineProps({ direction: { type: String, default: 'horizontal' }, variant: { type: String, default: 'hairline' } })
+import { computed } from 'vue'
+import { useIdesignConfig } from '../../composables/useIdesignConfig'
+
+const props = defineProps({
+  direction: { type: String, default: undefined },
+  variant: { type: String, default: undefined },
+  ui: { type: Object, default: () => ({}) }
+})
+
+const config = useIdesignConfig('Divider', props)
+const currentDirection = computed(() => config.resolvedDirection.value || 'horizontal')
+const currentVariant = computed(() => config.resolvedVariant.value || 'hairline')
 </script>
 <style scoped>
 .id-divider.horizontal { width: 100%; height: 1px; }

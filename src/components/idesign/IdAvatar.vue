@@ -1,37 +1,42 @@
 <template>
-  <div :class="['id-avatar-wrap', `size-${size}`, { 'has-status': !!status }]" role="img" :aria-label="alt || name || 'Avatar'">
-    <div :class="['id-avatar', `shape-${shape}`, { 'is-framed': framed }]">
+  <div :class="['id-avatar-wrap', `size-${currentSize}`, { 'has-status': !!status }, config.mergedUi.value.base]" role="img" :aria-label="alt || name || 'Avatar'">
+    <div :class="['id-avatar', `shape-${shape}`, { 'is-framed': framed }, config.mergedUi.value.avatar]">
       <slot>
-        <img v-if="src && !imgError" :src="src" :alt="alt || name" class="avatar-img" @error="imgError = true" />
+        <img v-if="src && !imgError" :src="src" :alt="alt || name" :class="['avatar-img', config.mergedUi.value.image]" @error="imgError = true" />
         
         <slot v-else name="icon">
-          <span v-if="typeof icon === 'string' && icon.length <= 4" class="avatar-emoji">{{ icon }}</span>
-          <component :is="icon" v-else-if="icon" class="avatar-icon-svg" />
-          <span v-else class="avatar-initials">{{ initials }}</span>
+          <span v-if="typeof icon === 'string' && icon.length <= 4" :class="['avatar-emoji', config.mergedUi.value.emoji]">{{ icon }}</span>
+          <component :is="icon" v-else-if="icon" :class="['avatar-icon-svg', config.mergedUi.value.icon]" />
+          <span v-else :class="['avatar-initials', config.mergedUi.value.initials]">{{ initials }}</span>
         </slot>
       </slot>
     </div>
 
     <!-- Status indicator badge dot placed outside overflow:hidden clip path -->
-    <span v-if="status" :class="['avatar-status', `status-${status}`, `shape-${shape}`]" title="Status" />
+    <span v-if="status" :class="['avatar-status', `status-${status}`, `shape-${shape}`, config.mergedUi.value.status]" title="Status" />
   </div>
 </template>
 
 <script setup>
 import { computed, ref } from 'vue'
+import { useIdesignConfig } from '../../composables/useIdesignConfig'
 
 const props = defineProps({
   src: String,
   name: { type: String, default: '' },
   icon: [String, Object, Function],
   alt: String,
-  size: { type: String, default: 'md', validator: v => ['xs', 'sm', 'md', 'lg', 'xl'].includes(v) },
+  size: { type: String, default: undefined },
   shape: { type: String, default: 'circle', validator: v => ['circle', 'squircle'].includes(v) },
   framed: Boolean,
-  status: { type: String, default: null, validator: v => [null, 'online', 'offline', 'busy'].includes(v) }
+  status: { type: String, default: null, validator: v => [null, 'online', 'offline', 'busy'].includes(v) },
+  ui: { type: Object, default: () => ({}) }
 })
 
 const imgError = ref(false)
+
+const config = useIdesignConfig('Avatar', props)
+const currentSize = computed(() => config.resolvedSize.value || 'md')
 
 const initials = computed(() => {
   if (!props.name) return '?'

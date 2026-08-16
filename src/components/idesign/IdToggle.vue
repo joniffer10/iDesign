@@ -1,21 +1,24 @@
 <template>
-  <div :class="['id-toggle-container', `size-${size}`, { 'is-disabled': disabled }]">
-    <span v-if="label" class="toggle-label">{{ label }}</span>
+  <div :class="['id-toggle-container', `size-${currentSize}`, { 'is-disabled': disabled }, config.mergedUi.value.base]">
+    <span v-if="label" :class="['toggle-label', config.mergedUi.value.label]">{{ label }}</span>
     <button
       type="button"
       role="switch"
       :aria-checked="modelValue"
-      :class="['id-toggle', `variant-${variant}`, { 'is-active': modelValue }]"
+      :class="['id-toggle', `variant-${currentColor}`, { 'is-active': modelValue }, config.mergedUi.value.track]"
       :disabled="disabled"
       @click="$emit('update:modelValue', !modelValue)"
     >
-      <span class="toggle-thumb" />
+      <span :class="['toggle-thumb', config.mergedUi.value.thumb]" />
     </button>
   </div>
 </template>
 
 <script setup>
-defineProps({
+import { computed } from 'vue'
+import { useIdesignConfig } from '../../composables/useIdesignConfig'
+
+const props = defineProps({
   modelValue: {
     type: Boolean,
     default: false
@@ -23,18 +26,36 @@ defineProps({
   label: String,
   variant: {
     type: String,
-    default: 'success',
-    validator: v => ['success', 'primary', 'purple', 'orange', 'red'].includes(v)
+    default: undefined
+  },
+  color: {
+    type: String,
+    default: undefined
   },
   size: {
     type: String,
-    default: 'md',
-    validator: v => ['sm', 'md', 'lg'].includes(v)
+    default: undefined
   },
-  disabled: Boolean
+  disabled: Boolean,
+  ui: {
+    type: Object,
+    default: () => ({})
+  }
 })
 
 defineEmits(['update:modelValue'])
+
+const config = useIdesignConfig('Toggle', props)
+const currentSize = computed(() => config.resolvedSize.value || 'md')
+const currentColor = computed(() => {
+  const c = props.color || config.resolvedColor.value || props.variant || 'success'
+  if (c === 'default') return 'success'
+  if (c === 'primary') return 'primary'
+  if (c === 'success') return 'success'
+  if (c === 'warning') return 'orange'
+  if (c === 'danger') return 'red'
+  return c
+})
 </script>
 
 <style scoped>

@@ -1,14 +1,15 @@
 <template>
   <IdModal
     :model-value="modelValue"
-    :title="variant === 'centered-empty' ? '' : title"
-    :variant="variant === 'centered-empty' ? 'alert' : 'default'"
+    :title="currentVariant === 'centered-empty' ? '' : title"
+    :variant="currentVariant === 'centered-empty' ? 'alert' : 'default'"
     :teleport="teleport"
+    :ui="{ surface: config.mergedUi.value.base }"
     @update:model-value="$emit('update:modelValue', $event)"
   >
     <!-- Centered Empty Variant -->
-    <div v-if="variant === 'centered-empty'" class="centered-empty-confirm">
-      <div class="confirm-icon-box">
+    <div v-if="currentVariant === 'centered-empty'" class="centered-empty-confirm">
+      <div :class="['confirm-icon-box', config.mergedUi.value.iconBox]">
         <slot name="icon">
           <component :is="icon" v-if="icon && typeof icon !== 'string'" :size="28" />
           <span v-else-if="typeof icon === 'string' && icon.length <= 4" class="confirm-emoji">{{ icon }}</span>
@@ -17,10 +18,10 @@
         </slot>
       </div>
 
-      <h3 v-if="title" class="centered-title">{{ title }}</h3>
-      <p class="centered-message">{{ message }}</p>
+      <h3 v-if="title" :class="['centered-title', config.mergedUi.value.title]">{{ title }}</h3>
+      <p :class="['centered-message', config.mergedUi.value.message]">{{ message }}</p>
 
-      <div class="centered-actions">
+      <div :class="['centered-actions', config.mergedUi.value.actions || config.mergedUi.value.footer]">
         <IdButton variant="secondary" size="md" block @click="handleCancel">
           {{ cancelText }}
         </IdButton>
@@ -32,8 +33,8 @@
 
     <!-- Standard Variant -->
     <div v-else class="confirm-body">
-      <p class="confirm-message">{{ message }}</p>
-      <div class="confirm-actions">
+      <p :class="['confirm-message', config.mergedUi.value.message]">{{ message }}</p>
+      <div :class="['confirm-actions', config.mergedUi.value.actions || config.mergedUi.value.footer]">
         <IdButton variant="secondary" @click="handleCancel">{{ cancelText }}</IdButton>
         <IdButton :variant="danger ? 'danger' : 'primary'" @click="handleConfirm">
           {{ confirmText }}
@@ -44,9 +45,11 @@
 </template>
 
 <script setup>
+import { computed } from 'vue'
 import { AlertTriangle, Info } from '@lucide/vue'
 import IdModal from './IdModal.vue'
 import IdButton from './IdButton.vue'
+import { useIdesignConfig } from '../../composables/useIdesignConfig'
 
 const props = defineProps({
   modelValue: Boolean,
@@ -57,14 +60,17 @@ const props = defineProps({
   icon: [String, Object, Function],
   variant: {
     type: String,
-    default: 'default',
-    validator: v => ['default', 'centered-empty'].includes(v)
+    default: undefined
   },
   danger: Boolean,
-  teleport: { type: Boolean, default: true }
+  teleport: { type: Boolean, default: true },
+  ui: { type: Object, default: () => ({}) }
 })
 
 const emit = defineEmits(['update:modelValue', 'confirm', 'cancel'])
+
+const config = useIdesignConfig('ConfirmDialog', props)
+const currentVariant = computed(() => config.resolvedVariant.value || 'default')
 
 const handleConfirm = () => {
   emit('confirm')
@@ -99,3 +105,4 @@ const handleCancel = () => {
 .centered-message { font-size: 13.5px; color: var(--text-2); line-height: 1.5; margin: 0 0 24px 0; max-width: 320px; }
 .centered-actions { display: flex; flex-direction: column; gap: 10px; width: 100%; }
 </style>
+

@@ -1,12 +1,12 @@
 <template>
-  <div :class="['id-progress', `size-${size}`, `variant-${variant}`, `color-${color}`]" role="progressbar" :aria-valuenow="indeterminate ? null : value" :aria-valuemin="0" :aria-valuemax="100" :aria-label="label">
-    <div v-if="label || (showValue && !indeterminate)" class="progress-header">
-      <span v-if="label" class="progress-label">{{ label }}</span>
-      <span v-if="showValue && !indeterminate" class="progress-value">{{ Math.round(clampedPct) }}%</span>
+  <div :class="['id-progress', `size-${currentSize}`, `variant-${currentVariant}`, `color-${currentColor}`, `radius-${currentRadius}`, config.mergedUi.value.base]" role="progressbar" :aria-valuenow="indeterminate ? null : value" :aria-valuemin="0" :aria-valuemax="100" :aria-label="label">
+    <div v-if="label || (showValue && !indeterminate)" :class="['progress-header', config.mergedUi.value.header]">
+      <span v-if="label" :class="['progress-label', config.mergedUi.value.label]">{{ label }}</span>
+      <span v-if="showValue && !indeterminate" :class="['progress-value', config.mergedUi.value.value]">{{ Math.round(clampedPct) }}%</span>
     </div>
-    <div :class="['progress-track', `size-${size}`]">
+    <div :class="['progress-track', `size-${currentSize}`, config.mergedUi.value.track]">
       <div
-        :class="['progress-fill', { 'is-indeterminate': indeterminate }]"
+        :class="['progress-fill', { 'is-indeterminate': indeterminate }, config.mergedUi.value.fill]"
         :style="!indeterminate ? { width: clampedPct + '%' } : {}"
       />
     </div>
@@ -15,15 +15,32 @@
 
 <script setup>
 import { computed } from 'vue'
+import { useIdesignConfig } from '../../composables/useIdesignConfig'
 
 const props = defineProps({
   value: { type: Number, default: 0 },
   label: String,
   showValue: { type: Boolean, default: true },
-  size: { type: String, default: 'md', validator: v => ['sm', 'md', 'lg'].includes(v) },
+  size: { type: String, default: undefined },
   indeterminate: Boolean,
-  variant: { type: String, default: 'default', validator: v => ['default', 'glass'].includes(v) },
-  color: { type: String, default: 'blue', validator: v => ['blue', 'green', 'purple', 'orange', 'red'].includes(v) }
+  variant: { type: String, default: undefined },
+  color: { type: String, default: undefined },
+  radius: { type: String, default: undefined },
+  ui: { type: Object, default: () => ({}) }
+})
+
+const config = useIdesignConfig('Progress', props)
+const currentSize = computed(() => config.resolvedSize.value || 'md')
+const currentRadius = computed(() => config.resolvedRadius.value || 'full')
+const currentVariant = computed(() => config.resolvedVariant.value || 'default')
+
+const currentColor = computed(() => {
+  const c = config.resolvedColor.value || 'blue'
+  if (c === 'default' || c === 'primary') return 'blue'
+  if (c === 'success') return 'green'
+  if (c === 'warning') return 'orange'
+  if (c === 'danger') return 'red'
+  return c
 })
 
 const clampedPct = computed(() => Math.min(100, Math.max(0, props.value)))
@@ -31,6 +48,13 @@ const clampedPct = computed(() => Math.min(100, Math.max(0, props.value)))
 
 <style scoped>
 .id-progress { width: 100%; font-family: var(--font); }
+
+/* Radius Classes */
+.radius-none .progress-track, .radius-none .progress-fill { border-radius: var(--r-none) !important; }
+.radius-sm .progress-track, .radius-sm .progress-fill { border-radius: var(--r-chip) !important; }
+.radius-md .progress-track, .radius-md .progress-fill { border-radius: var(--r-thumb) !important; }
+.radius-lg .progress-track, .radius-lg .progress-fill { border-radius: var(--r-card) !important; }
+.radius-full .progress-track, .radius-full .progress-fill { border-radius: var(--r-pill) !important; }
 
 .variant-glass {
   padding: 10px 14px; border-radius: var(--r-panel); background: rgba(255, 255, 255, 0.65);
@@ -44,9 +68,11 @@ const clampedPct = computed(() => Math.min(100, Math.max(0, props.value)))
 .progress-value { font-size: 13px; font-weight: 600; color: var(--text); font-variant-numeric: tabular-nums; }
 .progress-track { width: 100%; background: var(--track); border-radius: 999px; overflow: hidden; position: relative; }
 
+.size-xs { height: 2px; }
 .size-sm { height: 4px; }
 .size-md { height: 6px; }
 .size-lg { height: 10px; }
+.size-xl { height: 14px; }
 
 .progress-fill { height: 100%; background: var(--accent); border-radius: 999px; transition: width .4s var(--ease-out-quart); }
 

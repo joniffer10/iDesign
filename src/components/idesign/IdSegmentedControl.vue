@@ -3,11 +3,14 @@
     ref="containerRef"
     :class="[
       'seg-container',
+      `size-${currentSize}`,
+      `variant-${currentVariant}`,
       { 
         'is-block': block,
         'is-responsive': responsive,
         'is-wrap': wrap
-      }
+      },
+      config.mergedUi.value.base
     ]"
     role="tablist"
     aria-label="Segmented control"
@@ -23,8 +26,10 @@
         'seg-item',
         { 
           'active': currentActive === option.val,
-          'active--black': theme === 'black' && currentActive === option.val
-        }
+          'active--black': currentTheme === 'black' && currentActive === option.val
+        },
+        config.mergedUi.value.item,
+        currentActive === option.val ? config.mergedUi.value.active : ''
       ]"
       @click="selectOption(option.val)"
     >
@@ -35,6 +40,7 @@
 
 <script setup>
 import { ref, computed, watch, onMounted, nextTick } from 'vue'
+import { useIdesignConfig } from '../../composables/useIdesignConfig'
 
 const props = defineProps({
   modelValue: {
@@ -51,18 +57,34 @@ const props = defineProps({
   },
   theme: {
     type: String,
-    default: 'white', // 'white' (light toggle) or 'black' (strong filter)
-    validator: val => ['white', 'black'].includes(val)
+    default: undefined
+  },
+  variant: {
+    type: String,
+    default: undefined
   },
   block: Boolean,
   wrap: Boolean,
   responsive: {
     type: Boolean,
     default: true
+  },
+  size: {
+    type: String,
+    default: undefined
+  },
+  ui: {
+    type: Object,
+    default: () => ({})
   }
 })
 
 const emit = defineEmits(['update:modelValue', 'update:active', 'change'])
+
+const config = useIdesignConfig('SegmentedControl', props)
+const currentSize = computed(() => config.resolvedSize.value || 'md')
+const currentVariant = computed(() => config.resolvedVariant.value || 'default')
+const currentTheme = computed(() => props.theme || (currentVariant.value === 'glass' ? 'black' : 'white'))
 
 const containerRef = ref(null)
 const itemRefs = ref([])
@@ -171,6 +193,13 @@ onMounted(() => {
   user-select: none;
 }
 
+/* Size Variants */
+.size-xs .seg-item { padding: 4px 8px; font-size: 11px; }
+.size-sm .seg-item { padding: 6px 12px; font-size: 12px; }
+.size-md .seg-item { padding: 8px 16px; font-size: 13px; }
+.size-lg .seg-item { padding: 10px 20px; font-size: 14.5px; }
+.size-xl .seg-item { padding: 12px 24px; font-size: 16px; }
+
 .seg-container.is-wrap .seg-item {
   width: auto;
   flex: 0 0 auto;
@@ -190,6 +219,17 @@ onMounted(() => {
   color: var(--bg);
   font-weight: 600;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.22);
+}
+
+/* Glass Variant */
+.variant-glass {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+:root.dark .variant-glass {
+  background: rgba(0, 0, 0, 0.3);
 }
 
 @media (max-width: 768px) {

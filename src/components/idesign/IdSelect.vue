@@ -1,13 +1,13 @@
 <template>
-  <div :class="['id-select-group', `size-${currentSize}`, `variant-${variant}`, { 'is-disabled': disabled }]">
-    <label v-if="label" :id="labelId" :for="buttonId" class="select-label">
+  <div :class="['id-select-group', `size-${currentSize}`, `variant-${currentVariant}`, `radius-${currentRadius}`, { 'is-disabled': disabled }, config.mergedUi.value.base]">
+    <label v-if="label" :id="labelId" :for="buttonId" :class="['select-label', config.mergedUi.value.label]">
       {{ label }}
     </label>
 
     <div
       :id="buttonId"
       ref="selectRef"
-      :class="['select-wrapper', `variant-${variant}`, { 'is-open': isOpen, 'is-focused': isOpen }]"
+      :class="['select-wrapper', `variant-${currentVariant}`, { 'is-open': isOpen, 'is-focused': isOpen }, config.mergedUi.value.trigger || config.mergedUi.value.wrapper]"
       role="combobox"
       :aria-expanded="isOpen"
       aria-haspopup="listbox"
@@ -18,7 +18,7 @@
       @click="toggle"
       @keydown="handleKeydown"
     >
-      <span :class="['select-value', { 'is-placeholder': !modelValue }]">
+      <span :class="['select-value', { 'is-placeholder': !modelValue }, config.mergedUi.value.value]">
         {{ displayLabel }}
       </span>
 
@@ -26,7 +26,7 @@
       <button
         v-if="clearable && modelValue && !disabled"
         type="button"
-        class="select-clear-btn"
+        :class="['select-clear-btn', config.mergedUi.value.clearButton]"
         aria-label="Clear selection"
         tabindex="-1"
         @click.stop="clearSelection"
@@ -43,7 +43,7 @@
       <div
         v-if="isOpen"
         :id="listboxId"
-        :class="['select-dropdown', `variant-${variant}`]"
+        :class="['select-dropdown', `variant-${currentVariant}`, config.mergedUi.value.dropdown]"
         role="listbox"
         :aria-labelledby="label ? labelId : undefined"
         tabindex="-1"
@@ -52,7 +52,7 @@
           v-for="(opt, idx) in normalizedOptions"
           :id="`${optionIdPrefix}-${idx}`"
           :key="opt.value"
-          :class="['select-option', { 'is-selected': modelValue === opt.value, 'is-focused': focusedIndex === idx }]"
+          :class="['select-option', { 'is-selected': modelValue === opt.value, 'is-focused': focusedIndex === idx }, config.mergedUi.value.option]"
           role="option"
           :aria-selected="modelValue === opt.value"
           @click.stop="selectOption(opt.value)"
@@ -66,7 +66,7 @@
       </div>
     </Transition>
 
-    <span v-if="hint" class="select-hint">{{ hint }}</span>
+    <span v-if="hint" :class="['select-hint', config.mergedUi.value.hint]">{{ hint }}</span>
   </div>
 </template>
 
@@ -82,18 +82,18 @@ const props = defineProps({
   hint: String,
   disabled: Boolean,
   clearable: Boolean,
-  size: { type: String, default: undefined, validator: v => !v || ['xs', 'sm', 'md', 'lg', 'xl'].includes(v) },
-  variant: {
-    type: String,
-    default: 'default',
-    validator: v => ['default', 'no-divider', 'glass'].includes(v)
-  }
+  size: { type: String, default: undefined },
+  variant: { type: String, default: undefined },
+  radius: { type: String, default: undefined },
+  ui: { type: Object, default: () => ({}) }
 })
 
 const emit = defineEmits(['update:modelValue', 'change'])
 
-const config = useIdesignConfig({ size: props.size })
-const currentSize = computed(() => props.size || config.size || 'md')
+const config = useIdesignConfig('Select', props)
+const currentSize = computed(() => config.resolvedSize.value || 'md')
+const currentRadius = computed(() => config.resolvedRadius.value || 'md')
+const currentVariant = computed(() => config.resolvedVariant.value || 'default')
 
 const selectRef = ref(null)
 const isOpen = ref(false)
@@ -222,6 +222,13 @@ onBeforeUnmount(() => document.removeEventListener('click', handleOutside))
 .size-md .select-wrapper { height: 42px; padding: 0 12px; font-size: 14.5px; border-radius: 10px; }
 .size-lg .select-wrapper { height: 48px; padding: 0 16px; font-size: 16px; border-radius: 12px; }
 .size-xl .select-wrapper { height: 54px; padding: 0 18px; font-size: 17.5px; border-radius: 14px; }
+
+/* Radius Classes */
+.radius-none .select-wrapper { border-radius: var(--r-none) !important; }
+.radius-sm .select-wrapper { border-radius: var(--r-chip) !important; }
+.radius-md .select-wrapper { border-radius: var(--r-thumb) !important; }
+.radius-lg .select-wrapper { border-radius: var(--r-card) !important; }
+.radius-full .select-wrapper { border-radius: var(--r-pill) !important; }
 
 .select-wrapper {
   display: flex; align-items: center; justify-content: space-between;

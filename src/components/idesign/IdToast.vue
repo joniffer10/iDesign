@@ -117,4 +117,30 @@ const { toasts, remove } = useToast()
 /* Transition animations */
 .toast-list-enter-from { opacity: 0; transform: translateY(16px) scale(0.95); }
 .toast-list-leave-to { opacity: 0; transform: translateY(-12px) scale(0.95); }
+
+@media (max-width: 640px) {
+  .id-toast-container {
+    width: 100%;
+    max-width: 100%;
+    left: 0 !important;
+    right: 0 !important;
+    transform: none !important;
+    padding: 16px;
+    box-sizing: border-box;
+  }
+  .pos-bottom-center, .pos-bottom-right {
+    bottom: 0;
+    align-items: center;
+  }
+  .pos-top-center, .pos-top-right {
+    top: 0;
+    align-items: center;
+  }
+  .id-toast-item {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+}
 </style>

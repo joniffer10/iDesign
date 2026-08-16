@@ -13,6 +13,12 @@
     <template v-if="$slots.header" #header>
       <slot name="header" />
     </template>
+    <template v-if="$slots.title" #title>
+      <slot name="title" />
+    </template>
+    <template v-if="$slots.subtitle" #subtitle>
+      <slot name="subtitle" />
+    </template>
 
     <slot />
 

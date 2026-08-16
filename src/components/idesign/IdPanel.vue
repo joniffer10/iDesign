@@ -1,23 +1,37 @@
 <template>
-  <div :class="['id-panel', `size-${size}`, `variant-${variant}`, { 'no-dividers': noDividers || variant === 'no-dividers' }]">
+  <div :class="['id-panel', `size-${currentSize}`, `variant-${currentVariant}`, `radius-${currentRadius}`, { 'no-dividers': noDividers || currentVariant === 'no-dividers' }, config.mergedUi.value.base]">
     <slot />
   </div>
 </template>
 
 <script setup>
-defineProps({
+import { computed } from 'vue'
+import { useIdesignConfig } from '../../composables/useIdesignConfig'
+
+const props = defineProps({
   size: {
     type: String,
-    default: 'md',
-    validator: v => ['sm', 'md', 'lg'].includes(v)
+    default: undefined
   },
   variant: {
     type: String,
-    default: 'default',
-    validator: v => ['default', 'no-dividers', 'glass', 'inset'].includes(v)
+    default: undefined
   },
-  noDividers: Boolean
+  noDividers: Boolean,
+  radius: {
+    type: String,
+    default: undefined
+  },
+  ui: {
+    type: Object,
+    default: () => ({})
+  }
 })
+
+const config = useIdesignConfig('Panel', props)
+const currentSize = computed(() => config.resolvedSize.value || 'md')
+const currentRadius = computed(() => config.resolvedRadius.value || 'xl')
+const currentVariant = computed(() => config.resolvedVariant.value || 'default')
 </script>
 
 <style scoped>
@@ -29,6 +43,13 @@ defineProps({
   overflow: hidden;
   width: 100%;
 }
+
+/* Radius Classes */
+.radius-none { border-radius: var(--r-none) !important; }
+.radius-sm { border-radius: var(--r-chip) !important; }
+.radius-md { border-radius: var(--r-thumb) !important; }
+.radius-lg { border-radius: var(--r-card) !important; }
+.radius-full { border-radius: var(--r-pill) !important; }
 
 .variant-glass {
   background: rgba(255, 255, 255, 0.75);

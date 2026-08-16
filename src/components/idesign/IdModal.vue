@@ -1,27 +1,31 @@
 <template>
   <Teleport to="body" :disabled="!teleport">
     <Transition name="modal-fade">
-      <div v-if="modelValue" class="modal-backdrop" @click.self="closeOnBackdrop && $emit('update:modelValue', false)" @keydown.escape="$emit('update:modelValue', false)">
-        <div :class="['modal-surface', `size-${currentSize}`, `variant-${variant}`]" :style="maxWidth ? { maxWidth } : {}" role="dialog" aria-modal="true" :aria-label="title">
-          <div v-if="title || subtitle || $slots.header" class="modal-header">
+      <div v-if="modelValue" :class="['modal-backdrop', config.mergedUi.value.backdrop]" @click.self="closeOnBackdrop && $emit('update:modelValue', false)" @keydown.escape="$emit('update:modelValue', false)">
+        <div :class="['modal-surface', `size-${currentSize}`, `variant-${currentVariant}`, config.mergedUi.value.surface]" :style="maxWidth ? { maxWidth } : {}" role="dialog" aria-modal="true" :aria-label="title">
+          <div v-if="title || subtitle || $slots.header || $slots.title || $slots.subtitle" :class="['modal-header', config.mergedUi.value.header]">
             <slot name="header">
               <div class="modal-header-titles">
-                <h3 v-if="title" class="modal-title">{{ title }}</h3>
-                <p v-if="subtitle" class="modal-subtitle">{{ subtitle }}</p>
+                <slot name="title">
+                  <h3 v-if="title" :class="['modal-title', config.mergedUi.value.title]">{{ title }}</h3>
+                </slot>
+                <slot name="subtitle">
+                  <p v-if="subtitle" :class="['modal-subtitle', config.mergedUi.value.subtitle]">{{ subtitle }}</p>
+                </slot>
               </div>
             </slot>
-            <button type="button" class="modal-close-btn" aria-label="Close modal" @click="$emit('update:modelValue', false)">
+            <button type="button" :class="['modal-close-btn', config.mergedUi.value.closeButton || config.mergedUi.value.close]" aria-label="Close modal" @click="$emit('update:modelValue', false)">
               <X :size="16" />
             </button>
           </div>
 
-          <div class="modal-body">
+          <div :class="['modal-body', config.mergedUi.value.body]">
             <slot>
               <p v-if="content || body" class="modal-body-text">{{ content || body }}</p>
             </slot>
           </div>
 
-          <div v-if="$slots.footer || $slots.actions" class="modal-footer">
+          <div v-if="$slots.footer || $slots.actions" :class="['modal-footer', config.mergedUi.value.footer]">
             <slot name="actions">
               <slot name="footer" />
             </slot>
@@ -44,16 +48,18 @@ const props = defineProps({
   content: String,
   body: String,
   maxWidth: String,
-  size: { type: String, default: undefined, validator: v => !v || ['sm', 'md', 'lg', 'xl', 'full'].includes(v) },
-  variant: { type: String, default: 'default', validator: v => ['default', 'glass', 'alert'].includes(v) },
+  size: { type: String, default: undefined },
+  variant: { type: String, default: undefined },
   closeOnBackdrop: { type: Boolean, default: true },
-  teleport: { type: Boolean, default: true }
+  teleport: { type: Boolean, default: true },
+  ui: { type: Object, default: () => ({}) }
 })
 
 const emit = defineEmits(['update:modelValue'])
 
-const config = useIdesignConfig({ size: props.size })
-const currentSize = computed(() => props.size || config.size || 'md')
+const config = useIdesignConfig('Modal', props)
+const currentSize = computed(() => config.resolvedSize.value || 'md')
+const currentVariant = computed(() => config.resolvedVariant.value || 'default')
 
 const handleKeydown = (e) => {
   if (e.key === 'Escape' && props.modelValue) {

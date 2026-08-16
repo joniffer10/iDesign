@@ -1,6 +1,6 @@
 <template>
-  <kbd :class="['id-kbd', `size-${size}`, `variant-${variant}`]">
-    <span v-for="(key, idx) in formattedKeys" :key="idx" class="kbd-key">
+  <kbd :class="['id-kbd', `size-${currentSize}`, `variant-${currentVariant}`, config.mergedUi.value.base]">
+    <span v-for="(key, idx) in formattedKeys" :key="idx" :class="['kbd-key', config.mergedUi.value.key || config.mergedUi.value.kbdKey]">
       {{ key }}
     </span>
     <slot />
@@ -9,6 +9,7 @@
 
 <script setup>
 import { computed } from 'vue'
+import { useIdesignConfig } from '../../composables/useIdesignConfig'
 
 const props = defineProps({
   keys: {
@@ -17,15 +18,21 @@ const props = defineProps({
   },
   size: {
     type: String,
-    default: 'md',
-    validator: v => ['xs', 'sm', 'md', 'lg'].includes(v)
+    default: undefined
   },
   variant: {
     type: String,
-    default: 'default',
-    validator: v => ['default', 'glass', 'outline'].includes(v)
+    default: undefined
+  },
+  ui: {
+    type: Object,
+    default: () => ({})
   }
 })
+
+const config = useIdesignConfig('Kbd', props)
+const currentSize = computed(() => config.resolvedSize.value || 'md')
+const currentVariant = computed(() => config.resolvedVariant.value || 'default')
 
 const symbolMap = {
   cmd: '⌘',

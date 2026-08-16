@@ -4,15 +4,17 @@
     :href="href"
     :class="[
       'id-card',
-      `variant-${variant}`,
+      `variant-${currentVariant}`,
       `pad-${currentPadding}`,
       `aspect-${imageAspect}`,
-      { 'is-interactive': href || interactive, 'has-image': variant === 'image-top' || variant === 'image-bg' }
+      `radius-${currentRadius}`,
+      { 'is-interactive': href || interactive, 'has-image': currentVariant === 'image-top' || currentVariant === 'image-bg' },
+      config.mergedUi.value.base
     ]"
     @click="$emit('click', $event)"
   >
     <!-- Background Image Scrim (for image-bg variant) -->
-    <div v-if="variant === 'image-bg'" class="card-bg-image-wrapper">
+    <div v-if="currentVariant === 'image-bg'" :class="['card-bg-image-wrapper', config.mergedUi.value.media]">
       <slot name="image">
         <img :src="image || DEFAULT_DEMO_IMG" :alt="imageAlt || title || 'Card background'" class="card-bg-img" />
       </slot>
@@ -20,7 +22,7 @@
     </div>
 
     <!-- Top Banner Media/Image (only for image-top variant) -->
-    <div v-else-if="variant === 'image-top'" class="card-media">
+    <div v-else-if="currentVariant === 'image-top'" :class="['card-media', config.mergedUi.value.media]">
       <slot name="image">
         <slot name="media">
           <img :src="image || DEFAULT_DEMO_IMG" :alt="imageAlt || title || 'Card banner'" class="card-banner-img" />
@@ -28,19 +30,19 @@
       </slot>
     </div>
     
-    <div v-if="title || subtitle || tag || $slots.header" class="card-header">
+    <div v-if="title || subtitle || tag || $slots.header" :class="['card-header', config.mergedUi.value.header]">
       <slot name="header">
         <div v-if="tag" class="card-tag">{{ tag }}</div>
-        <h3 v-if="title" class="card-title">{{ title }}</h3>
-        <p v-if="subtitle" class="card-subtitle">{{ subtitle }}</p>
+        <h3 v-if="title" :class="['card-title', config.mergedUi.value.title]">{{ title }}</h3>
+        <p v-if="subtitle" :class="['card-subtitle', config.mergedUi.value.subtitle]">{{ subtitle }}</p>
       </slot>
     </div>
 
-    <div v-if="description || $slots.default" class="card-body">
+    <div v-if="description || $slots.default" :class="['card-body', config.mergedUi.value.body || config.mergedUi.value.content]">
       <slot>{{ description }}</slot>
     </div>
 
-    <div v-if="($slots.footer || $slots.actions) && showActions" class="card-footer">
+    <div v-if="($slots.footer || $slots.actions) && showActions" :class="['card-footer', config.mergedUi.value.footer || config.mergedUi.value.actions]">
       <slot name="actions">
         <slot name="footer" />
       </slot>
@@ -69,25 +71,37 @@ const props = defineProps({
   href: String,
   variant: {
     type: String,
-    default: 'default',
-    validator: v => ['default', 'framed', 'glass', 'hero', 'image-top', 'image-bg'].includes(v)
+    default: undefined
   },
   padding: {
     type: String,
-    default: undefined,
-    validator: v => !v || ['sm', 'md', 'lg'].includes(v)
+    default: undefined
+  },
+  size: {
+    type: String,
+    default: undefined
   },
   interactive: Boolean,
   showActions: {
     type: Boolean,
     default: true
+  },
+  radius: {
+    type: String,
+    default: undefined
+  },
+  ui: {
+    type: Object,
+    default: () => ({})
   }
 })
 
 defineEmits(['click'])
 
-const config = useIdesignConfig({ size: props.padding })
-const currentPadding = computed(() => props.padding || config.size || 'md')
+const config = useIdesignConfig('Card', props)
+const currentPadding = computed(() => props.padding || props.size || config.resolvedSize.value || 'md')
+const currentRadius = computed(() => config.resolvedRadius.value || 'lg')
+const currentVariant = computed(() => config.resolvedVariant.value || 'default')
 </script>
 
 <style scoped>
@@ -98,9 +112,19 @@ const currentPadding = computed(() => props.padding || config.size || 'md')
   display: flex; flex-direction: column; overflow: hidden;
   transition: transform 0.25s var(--ease-out-quart), box-shadow 0.25s var(--ease-out-quart), border-color 0.25s;
 }
+
+/* Radius Classes */
+.radius-none { border-radius: var(--r-none) !important; }
+.radius-sm { border-radius: var(--r-chip) !important; }
+.radius-md { border-radius: var(--r-thumb) !important; }
+.radius-lg { border-radius: var(--r-card) !important; }
+.radius-full { border-radius: var(--r-pill) !important; }
+
+.pad-xs { padding: 8px; }
 .pad-sm { padding: 14px; }
 .pad-md { padding: 20px; }
 .pad-lg { padding: 28px; }
+.pad-xl { padding: 36px; }
 
 .variant-framed {
   background: var(--hover); border: 1px solid var(--hairline);
@@ -137,6 +161,8 @@ const currentPadding = computed(() => props.padding || config.size || 'md')
 }
 .pad-sm.variant-image-top .card-media,
 .pad-sm.has-image .card-media { margin: -14px -14px 12px -14px; }
+.pad-md.variant-image-top .card-media,
+.pad-md.has-image .card-media { margin: -20px -20px 16px -20px; }
 .pad-lg.variant-image-top .card-media,
 .pad-lg.has-image .card-media { margin: -28px -28px 20px -28px; }
 

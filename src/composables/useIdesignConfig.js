@@ -301,8 +301,9 @@ export const createUI = createIdesign
 
 
 export function useIdesignConfig(componentNameOrOverrides = {}, maybeOverrides = {}) {
-  const componentName = typeof componentNameOrOverrides === 'string' ? componentNameOrOverrides : ''
-  const componentOverrides = typeof componentNameOrOverrides === 'object' ? componentNameOrOverrides : maybeOverrides
+  const isComponentCall = typeof componentNameOrOverrides === 'string'
+  const componentName = isComponentCall ? componentNameOrOverrides : ''
+  const componentOverrides = isComponentCall ? maybeOverrides : componentNameOrOverrides
 
   let injected = null
   try {
@@ -316,13 +317,43 @@ export function useIdesignConfig(componentNameOrOverrides = {}, maybeOverrides =
     ? globalConfig.ui.components[componentName]
     : {}
 
-  const theme = computed(() => componentOverrides?.theme || compGlobalDefaults?.theme || globalConfig?.theme || defaultConfig.theme)
-  const density = computed(() => componentOverrides?.density || compGlobalDefaults?.density || globalConfig?.density || defaultConfig.density)
-  const radius = computed(() => componentOverrides?.radius || compGlobalDefaults?.radius || globalConfig?.radius || defaultConfig.radius)
-  const size = computed(() => componentOverrides?.size || compGlobalDefaults?.size || globalConfig?.size || defaultConfig.size)
-  const locale = computed(() => componentOverrides?.locale || compGlobalDefaults?.locale || globalConfig?.locale || defaultConfig.locale)
-  const dir = computed(() => componentOverrides?.dir || compGlobalDefaults?.dir || globalConfig?.dir || defaultConfig.dir)
+  const theme = computed(() => componentOverrides?.theme || compGlobalDefaults?.defaultProps?.theme || compGlobalDefaults?.theme || globalConfig?.theme || defaultConfig.theme)
+  const density = computed(() => componentOverrides?.density || compGlobalDefaults?.defaultProps?.density || compGlobalDefaults?.density || globalConfig?.density || defaultConfig.density)
+  const radius = computed(() => {
+    if (componentOverrides?.radius !== undefined) return componentOverrides.radius
+    if (compGlobalDefaults?.defaultProps?.radius !== undefined) return compGlobalDefaults.defaultProps.radius
+    if (compGlobalDefaults?.radius !== undefined) return compGlobalDefaults.radius
+    if (globalConfig?.radius && globalConfig.radius !== 'md') return globalConfig.radius
+    return undefined
+  })
+  const size = computed(() => componentOverrides?.size || compGlobalDefaults?.defaultProps?.size || compGlobalDefaults?.size || globalConfig?.size || defaultConfig.size)
+  const locale = computed(() => componentOverrides?.locale || compGlobalDefaults?.defaultProps?.locale || compGlobalDefaults?.locale || globalConfig?.locale || defaultConfig.locale)
+  const dir = computed(() => componentOverrides?.dir || compGlobalDefaults?.defaultProps?.dir || compGlobalDefaults?.dir || globalConfig?.dir || defaultConfig.dir)
 
+  const variant = computed(() => componentOverrides?.variant || compGlobalDefaults?.defaultProps?.variant || compGlobalDefaults?.variant || undefined)
+  const color = computed(() => componentOverrides?.color || compGlobalDefaults?.defaultProps?.color || compGlobalDefaults?.color || undefined)
+  const direction = computed(() => componentOverrides?.direction || compGlobalDefaults?.defaultProps?.direction || compGlobalDefaults?.direction || undefined)
+
+  const mergedUi = computed(() => {
+    if (!componentName) return {}
+    const merged = {}
+    const compConfig = globalConfig?.ui?.components?.[componentName] || {}
+    const globalUi = compConfig.ui || {}
+    const propUi = componentOverrides?.ui || {}
+
+    const keys = new Set([...Object.keys(globalUi), ...Object.keys(propUi), ...Object.keys(compConfig)])
+    for (const k of keys) {
+      if (k === 'defaultProps' || k === 'variants' || k === 'sizes' || k === 'ui') continue
+      if (propUi[k] !== undefined) {
+        merged[k] = propUi[k]
+      } else if (globalUi[k] !== undefined) {
+        merged[k] = globalUi[k]
+      } else if (compConfig[k] !== undefined) {
+        merged[k] = compConfig[k]
+      }
+    }
+    return merged
+  })
 
   const setTheme = (newTheme) => {
     globalConfig.theme = newTheme
@@ -411,6 +442,13 @@ export function useIdesignConfig(componentNameOrOverrides = {}, maybeOverrides =
     radiusRef: radius,
     localeRef: locale,
     dirRef: dir,
+    resolvedVariant: variant,
+    resolvedColor: color,
+    resolvedSize: size,
+    resolvedRadius: radius,
+    resolvedDensity: density,
+    resolvedDirection: direction,
+    mergedUi,
     ui: globalConfig.ui,
     setTheme,
     setDensity,

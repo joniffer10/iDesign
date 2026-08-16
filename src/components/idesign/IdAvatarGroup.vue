@@ -2,26 +2,27 @@
   <div
     :class="[
       'id-avatar-group',
-      `variant-${variant}`,
-      `dir-${direction}`,
-      `size-${size}`,
-      { 'is-interactive': interactive }
+      `variant-${currentVariant}`,
+      `dir-${currentDirection}`,
+      `size-${currentSize}`,
+      { 'is-interactive': interactive },
+      config.mergedUi.value.base
     ]"
     role="group"
     aria-label="Avatar group"
   >
-    <div class="avatars-container">
+    <div :class="['avatars-container', config.mergedUi.value.container]">
       <div
         v-for="(user, idx) in visibleUsers"
         :key="user.id || idx"
-        class="avatar-item"
-        :style="variant === 'stacked' ? { zIndex: visibleUsers.length - idx } : {}"
+        :class="['avatar-item', config.mergedUi.value.item]"
+        :style="currentVariant === 'stacked' ? { zIndex: visibleUsers.length - idx } : {}"
         @click="interactive && $emit('click-avatar', user, idx)"
       >
         <IdAvatar
           :src="user.src"
           :name="user.name"
-          :size="size"
+          :size="currentSize"
           :shape="shape"
           :framed="framed"
           :status="user.status"
@@ -31,7 +32,7 @@
       <!-- Overflow Count Badge -->
       <div
         v-if="overflowCount > 0"
-        :class="['avatar-overflow', `size-${size}`, `shape-${shape}`, { 'is-framed': framed }]"
+        :class="['avatar-overflow', `size-${currentSize}`, `shape-${shape}`, { 'is-framed': framed }, config.mergedUi.value.overflow]"
         @click="interactive && $emit('click-overflow', overflowCount)"
       >
         <slot name="overflow" :count="overflowCount">
@@ -41,7 +42,7 @@
     </div>
 
     <!-- Optional Inline Label / Meta info (for hero/expanded variants) -->
-    <div v-if="label || $slots.label" class="group-label">
+    <div v-if="label || $slots.label" :class="['group-label', config.mergedUi.value.label]">
       <slot name="label">
         <span>{{ label }}</span>
       </slot>
@@ -52,28 +53,27 @@
 <script setup>
 import { computed } from 'vue'
 import IdAvatar from './IdAvatar.vue'
+import { useIdesignConfig } from '../../composables/useIdesignConfig'
 
 const props = defineProps({
   users: { type: Array, required: true },
   max: { type: Number, default: 4 },
-  size: { type: String, default: 'md', validator: v => ['xs', 'sm', 'md', 'lg', 'xl'].includes(v) },
-  shape: { type: String, default: 'circle', validator: v => ['circle', 'squircle'].includes(v) },
-  variant: {
-    type: String,
-    default: 'stacked',
-    validator: v => ['stacked', 'grid', 'hero', 'expanded'].includes(v)
-  },
-  direction: {
-    type: String,
-    default: 'row',
-    validator: v => ['row', 'column'].includes(v)
-  },
+  size: { type: String, default: undefined },
+  shape: { type: String, default: 'circle' },
+  variant: { type: String, default: undefined },
+  direction: { type: String, default: undefined },
   framed: { type: Boolean, default: false },
   interactive: { type: Boolean, default: true },
-  label: String
+  label: String,
+  ui: { type: Object, default: () => ({}) }
 })
 
 defineEmits(['click-avatar', 'click-overflow'])
+
+const config = useIdesignConfig('AvatarGroup', props)
+const currentSize = computed(() => config.resolvedSize.value || 'md')
+const currentVariant = computed(() => config.resolvedVariant.value || 'stacked')
+const currentDirection = computed(() => config.resolvedDirection.value || 'row')
 
 const visibleUsers = computed(() => props.users.slice(0, props.max))
 const overflowCount = computed(() => Math.max(0, props.users.length - props.max))

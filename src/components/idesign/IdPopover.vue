@@ -1,35 +1,41 @@
 <template>
-  <div ref="wrapperRef" class="id-popover-wrapper">
-    <div class="trigger-wrap" @click="toggle">
+  <div ref="wrapperRef" :class="['id-popover-wrapper', config.mergedUi.value.base]">
+    <div :class="['trigger-wrap', config.mergedUi.value.trigger]" @click="toggle">
       <slot name="trigger" />
     </div>
 
     <Transition name="popover-fade">
-      <div v-if="isOpen" :class="['popover-card', `position-${position}`, `size-${size}`, `variant-${variant}`]" role="dialog">
-        <div v-if="title || subtitle || content || body" class="popover-content">
-          <div v-if="title" class="popover-title">{{ title }}</div>
-          <div v-if="subtitle" class="popover-subtitle">{{ subtitle }}</div>
-          <div v-if="content || body" class="popover-body">{{ content || body }}</div>
+      <div v-if="isOpen" :class="['popover-card', `position-${currentPosition}`, `size-${currentSize}`, `variant-${currentVariant}`, config.mergedUi.value.card]" role="dialog">
+        <div v-if="title || subtitle || content || body || $slots.default" :class="['popover-content', config.mergedUi.value.content]">
+          <div v-if="title" :class="['popover-title', config.mergedUi.value.title]">{{ title }}</div>
+          <div v-if="subtitle" :class="['popover-subtitle', config.mergedUi.value.subtitle]">{{ subtitle }}</div>
+          <div v-if="content || body" :class="['popover-body', config.mergedUi.value.body]">{{ content || body }}</div>
           <slot />
         </div>
-        <slot v-else />
       </div>
     </Transition>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
+import { useIdesignConfig } from '../../composables/useIdesignConfig'
 
 const props = defineProps({
-  position: { type: String, default: 'bottom', validator: v => ['top', 'bottom', 'left', 'right'].includes(v) },
+  position: { type: String, default: 'bottom' },
   title: String,
   subtitle: String,
   content: String,
   body: String,
-  size: { type: String, default: 'md', validator: v => ['sm', 'md', 'lg'].includes(v) },
-  variant: { type: String, default: 'default', validator: v => ['default', 'glass'].includes(v) }
+  size: { type: String, default: undefined },
+  variant: { type: String, default: undefined },
+  ui: { type: Object, default: () => ({}) }
 })
+
+const config = useIdesignConfig('Popover', props)
+const currentSize = computed(() => config.resolvedSize.value || 'md')
+const currentVariant = computed(() => config.resolvedVariant.value || 'default')
+const currentPosition = computed(() => props.position || 'bottom')
 
 const isOpen = ref(false)
 const wrapperRef = ref(null)

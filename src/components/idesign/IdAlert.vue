@@ -1,24 +1,24 @@
 <template>
-  <div :class="['id-alert', `alert-${variant}`, `size-${size}`]" role="alert">
-    <div class="alert-icon">
+  <div :class="['id-alert', `alert-${computedVariant}`, `size-${currentSize}`, `radius-${currentRadius}`, config.mergedUi.value.base]" role="alert">
+    <div :class="['alert-icon', config.mergedUi.value.icon]">
       <slot name="icon">
         <component :is="icon" v-if="icon && typeof icon !== 'string'" :size="iconSize" />
         <span v-else-if="typeof icon === 'string' && icon.length <= 4" class="icon-emoji">{{ icon }}</span>
         <template v-else>
-          <Info v-if="variant === 'info' || variant === 'glass'" :size="iconSize" />
-          <CheckCircle2 v-else-if="variant === 'success'" :size="iconSize" />
-          <AlertTriangle v-else-if="variant === 'warning'" :size="iconSize" />
+          <Info v-if="resolvedColor === 'info' || computedVariant === 'glass'" :size="iconSize" />
+          <CheckCircle2 v-else-if="resolvedColor === 'success'" :size="iconSize" />
+          <AlertTriangle v-else-if="resolvedColor === 'warning'" :size="iconSize" />
           <XCircle v-else :size="iconSize" />
         </template>
       </slot>
     </div>
-    <div class="alert-body">
-      <div v-if="title" class="alert-title">{{ title }}</div>
-      <div v-if="description || $slots.default" class="alert-message">
+    <div :class="['alert-body', config.mergedUi.value.body]">
+      <div v-if="title" :class="['alert-title', config.mergedUi.value.title]">{{ title }}</div>
+      <div v-if="description || $slots.default" :class="['alert-message', config.mergedUi.value.message || config.mergedUi.value.description]">
         <slot>{{ description }}</slot>
       </div>
     </div>
-    <button v-if="dismissible" type="button" class="alert-close" aria-label="Dismiss" @click="$emit('dismiss')">
+    <button v-if="dismissible" type="button" :class="['alert-close', config.mergedUi.value.closeButton || config.mergedUi.value.close]" aria-label="Dismiss" @click="$emit('dismiss')">
       <X :size="closeSize" />
     </button>
   </div>
@@ -27,28 +27,58 @@
 <script setup>
 import { computed } from 'vue'
 import { Info, CheckCircle2, AlertTriangle, XCircle, X } from '@lucide/vue'
+import { useIdesignConfig } from '../../composables/useIdesignConfig'
 
 const props = defineProps({
   variant: {
     type: String,
-    default: 'info',
-    validator: v => ['info', 'success', 'warning', 'error', 'glass'].includes(v)
+    default: undefined
+  },
+  color: {
+    type: String,
+    default: undefined
   },
   size: {
     type: String,
-    default: 'md',
-    validator: v => ['sm', 'md', 'lg'].includes(v)
+    default: undefined
+  },
+  radius: {
+    type: String,
+    default: undefined
   },
   title: String,
   description: String,
   icon: [String, Object, Function],
-  dismissible: Boolean
+  dismissible: Boolean,
+  ui: {
+    type: Object,
+    default: () => ({})
+  }
 })
 
 defineEmits(['dismiss'])
 
-const iconSize = computed(() => props.size === 'sm' ? 16 : props.size === 'lg' ? 24 : 20)
-const closeSize = computed(() => props.size === 'sm' ? 14 : props.size === 'lg' ? 18 : 16)
+const config = useIdesignConfig('Alert', props)
+const currentSize = computed(() => config.resolvedSize.value || 'md')
+const currentRadius = computed(() => config.resolvedRadius.value || 'md')
+const resolvedVariant = computed(() => config.resolvedVariant.value || 'default')
+
+const resolvedColor = computed(() => {
+  const rawVar = props.variant
+  const isSemanticVariant = ['info', 'success', 'warning', 'error'].includes(rawVar)
+  const c = props.color || config.resolvedColor.value || (isSemanticVariant ? rawVar : undefined) || 'info'
+  if (c === 'default' || c === 'primary') return 'info'
+  if (c === 'danger') return 'error'
+  return c
+})
+
+const computedVariant = computed(() => {
+  if (props.variant === 'glass' || resolvedVariant.value === 'glass') return 'glass'
+  return resolvedColor.value
+})
+
+const iconSize = computed(() => currentSize.value === 'sm' ? 16 : currentSize.value === 'lg' ? 24 : 20)
+const closeSize = computed(() => currentSize.value === 'sm' ? 14 : currentSize.value === 'lg' ? 18 : 16)
 </script>
 
 <style scoped>
@@ -56,6 +86,13 @@ const closeSize = computed(() => props.size === 'sm' ? 14 : props.size === 'lg' 
   display: flex; align-items: flex-start; gap: 12px; border-radius: 14px;
   border: 1px solid var(--hairline); transition: all 0.2s ease; width: 100%; font-family: var(--font);
 }
+
+/* Radius Classes */
+.radius-none { border-radius: var(--r-none) !important; }
+.radius-sm { border-radius: var(--r-chip) !important; }
+.radius-md { border-radius: var(--r-thumb) !important; }
+.radius-lg { border-radius: var(--r-card) !important; }
+.radius-full { border-radius: var(--r-pill) !important; }
 
 .size-sm { padding: 10px 14px; gap: 8px; }
 .size-md { padding: 14px 18px; gap: 12px; }
