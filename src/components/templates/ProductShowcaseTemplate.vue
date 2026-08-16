@@ -4,7 +4,7 @@
     <header class="store-header">
       <div class="header-container">
         <div class="store-title-group">
-          <h1>Apple Vision Store</h1>
+          <h1>Vision Pro Store</h1>
           <p>Explore spatial devices, accessories, and developer hardware.</p>
         </div>
 
@@ -97,13 +97,13 @@ const products = [
   {
     id: '1',
     category: 'Hardware',
-    name: 'Apple Vision Pro',
+    name: 'Vision Studio Pro',
     subtitle: 'Spatial Computer',
     tag: 'FLAGSHIP',
     price: '$3,499',
     image: 'https://images.unsplash.com/photo-1593508512255-86ab42a8e620?auto=format&fit=crop&w=800&q=80',
     desc: 'Transforms how you work, watch, connect, and re-experience memories in spatial 3D.',
-    fullDesc: 'Apple Vision Pro seamlessly blends digital content with your physical space. You navigate simply by using your eyes, hands, and voice.'
+    fullDesc: 'Vision Studio Pro seamlessly blends digital content with your physical space. You navigate simply by using your eyes, hands, and voice.'
   },
   {
     id: '2',
@@ -114,7 +114,7 @@ const products = [
     price: '$549',
     image: 'https://images.unsplash.com/photo-1546435770-a3e426bf472b?auto=format&fit=crop&w=800&q=80',
     desc: 'High-fidelity audio, Active Noise Cancellation, and personalized Spatial Audio.',
-    fullDesc: 'Computational audio combines custom acoustic design with the Apple H1 chip and software for breakthrough listening experiences.'
+    fullDesc: 'Computational audio combines custom acoustic design with advanced DSP chips and software for breakthrough listening experiences.'
   },
   {
     id: '3',

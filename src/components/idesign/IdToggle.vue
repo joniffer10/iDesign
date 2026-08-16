@@ -74,8 +74,13 @@ defineEmits(['update:modelValue'])
   background: var(--track);
   border: none;
   cursor: pointer;
-  transition: background 0.25s var(--ease-out-quart);
+  transition: background 0.25s var(--ease-out-quart), box-shadow 0.2s ease;
   flex-shrink: 0;
+  outline: none;
+}
+
+.id-toggle:focus-visible {
+  box-shadow: var(--focus-ring);
 }
 
 .id-toggle.is-active.variant-success { background: #34c759; }
@@ -91,6 +96,11 @@ defineEmits(['update:modelValue'])
   box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2), 0 0 1px rgba(0, 0, 0, 0.3);
   transition: transform 0.25s var(--ease-out-quart);
 }
+
+/* RTL Support */
+[dir="rtl"] .size-sm .id-toggle.is-active .toggle-thumb { transform: translateX(-16px); }
+[dir="rtl"] .size-md .id-toggle.is-active .toggle-thumb { transform: translateX(-20px); }
+[dir="rtl"] .size-lg .id-toggle.is-active .toggle-thumb { transform: translateX(-24px); }
 
 .is-disabled {
   opacity: 0.5;

@@ -42,7 +42,7 @@
           value="18.4%"
           change="-3.1%"
           change-type="positive"
-          description="Apple Silicon M2 cluster utilization"
+          description="High-performance cluster utilization"
           :sparkline-data="[40, 35, 28, 30, 22, 19, 18, 18]"
         />
         <IdStat

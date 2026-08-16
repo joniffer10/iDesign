@@ -1,19 +1,31 @@
 <template>
-  <div :class="['id-accordion', `size-${size}`, `variant-${variant}`]">
+  <div :class="['id-accordion', `size-${size}`, `variant-${variant}`]" role="presentation">
     <div v-for="(item, idx) in items" :key="idx" class="accordion-item">
-      <button
-        type="button"
-        class="accordion-trigger"
-        :aria-expanded="openItems.includes(idx)"
-        @click="toggleItem(idx)"
-      >
-        <span class="accordion-title">{{ item.title }}</span>
-        <svg :class="['accordion-chevron', { rotated: openItems.includes(idx) }]" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M6 9l6 6 6-6"/>
-        </svg>
-      </button>
+      <h3>
+        <button
+          :id="`accordion-header-${uid}-${idx}`"
+          :ref="el => { if (el) triggerRefs[idx] = el }"
+          type="button"
+          class="accordion-trigger"
+          :aria-expanded="openItems.includes(idx)"
+          :aria-controls="`accordion-panel-${uid}-${idx}`"
+          @click="toggleItem(idx)"
+          @keydown="handleKeydown($event, idx)"
+        >
+          <span class="accordion-title">{{ item.title }}</span>
+          <svg :class="['accordion-chevron', { rotated: openItems.includes(idx) }]" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path d="M6 9l6 6 6-6"/>
+          </svg>
+        </button>
+      </h3>
       <Transition name="accordion-expand">
-        <div v-if="openItems.includes(idx)" class="accordion-content">
+        <div
+          v-if="openItems.includes(idx)"
+          :id="`accordion-panel-${uid}-${idx}`"
+          class="accordion-content"
+          role="region"
+          :aria-labelledby="`accordion-header-${uid}-${idx}`"
+        >
           <div class="accordion-body">
             <slot :name="`item-${idx}`">{{ item.content }}</slot>
           </div>
@@ -37,11 +49,46 @@ const props = defineProps({
   }
 })
 
+const uid = Math.random().toString(36).substring(2, 8)
 const openItems = ref([0])
+const triggerRefs = ref([])
 
 const toggleItem = (idx) => {
-  if (openItems.value.includes(idx)) { openItems.value = openItems.value.filter(i => i !== idx) }
-  else { openItems.value = props.multiple ? [...openItems.value, idx] : [idx] }
+  if (openItems.value.includes(idx)) {
+    openItems.value = openItems.value.filter(i => i !== idx)
+  } else {
+    openItems.value = props.multiple ? [...openItems.value, idx] : [idx]
+  }
+}
+
+const handleKeydown = (e, idx) => {
+  const count = props.items.length
+  let nextIdx = idx
+
+  switch (e.key) {
+    case 'ArrowDown':
+      e.preventDefault()
+      nextIdx = (idx + 1) % count
+      break
+    case 'ArrowUp':
+      e.preventDefault()
+      nextIdx = (idx - 1 + count) % count
+      break
+    case 'Home':
+      e.preventDefault()
+      nextIdx = 0
+      break
+    case 'End':
+      e.preventDefault()
+      nextIdx = count - 1
+      break
+    default:
+      return
+  }
+
+  if (triggerRefs.value[nextIdx]) {
+    triggerRefs.value[nextIdx].focus()
+  }
 }
 </script>
 
@@ -64,6 +111,13 @@ const toggleItem = (idx) => {
 }
 .id-accordion:not(.variant-separated) .accordion-item + .accordion-item { border-top: 1px solid var(--hairline); }
 
+.accordion-item > h3 {
+  margin: 0;
+  padding: 0;
+  font-size: inherit;
+  font-weight: inherit;
+}
+
 .size-sm .accordion-trigger { padding: 10px 14px; font-size: 13.5px; }
 .size-sm .accordion-body { padding: 0 14px 12px; font-size: 12.5px; }
 
@@ -76,8 +130,10 @@ const toggleItem = (idx) => {
 .accordion-trigger {
   width: 100%; display: flex; align-items: center; justify-content: space-between;
   background: transparent; border: none; cursor: pointer; font-family: var(--font);
-  font-weight: 600; color: var(--text); text-align: left; transition: background .15s;
+  font-weight: 600; color: var(--text); text-align: left; transition: background .15s, box-shadow .2s;
+  outline: none;
 }
+.accordion-trigger:focus-visible { box-shadow: var(--focus-ring); position: relative; z-index: 1; }
 .accordion-trigger:hover { background: var(--hover); }
 .accordion-chevron { color: var(--faint); transition: transform .25s var(--ease-out-quart); flex-shrink: 0; }
 .accordion-chevron.rotated { transform: rotate(180deg); }

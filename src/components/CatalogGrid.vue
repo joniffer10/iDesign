@@ -3,9 +3,10 @@
     <!-- Category Controls Header -->
     <div class="catalog-controls">
       <IdSegmentedControl
-        v-model="activeCategory"
+        v-model="selectedCategory"
         :options="categories"
         theme="black"
+        block
       />
     </div>
 
@@ -77,8 +78,8 @@
             </div>
           </template>
 
-          <!-- Apple Button Mini -->
-          <template v-else-if="item.id === 'apple-button'">
+          <!-- Liquid Button Mini -->
+          <template v-else-if="item.id === 'liquid-button'">
             <div class="mini-btns">
               <button class="m-btn-primary">Primary →</button>
               <button class="m-btn-glass">Glass</button>
@@ -96,7 +97,7 @@
           <!-- Card Container Mini -->
           <template v-else-if="item.id === 'card'">
             <div class="mini-card-box">
-              <div class="m-card-title">Apple Vision Pro</div>
+              <div class="m-card-title">Vision Studio Pro</div>
               <div class="m-card-sub">Spatial Computing</div>
               <div class="m-card-chip">Explore</div>
             </div>
@@ -114,7 +115,7 @@
           <template v-else-if="item.id === 'accordion'">
             <div class="mini-accordion">
               <div class="m-acc-header"><span>What is Idesign?</span><span>˅</span></div>
-              <div class="m-acc-body">An Apple-grade Vue 3 component library.</div>
+              <div class="m-acc-body">A production-grade Vue 3 component library.</div>
             </div>
           </template>
 
@@ -480,7 +481,7 @@
           <!-- Product Store Page Mini -->
           <template v-else-if="item.id === 'product-page'">
             <div class="mini-product-page">
-              <div class="m-store-head"><span>Apple Store</span><span class="m-bag">🛍️ (2)</span></div>
+              <div class="m-store-head"><span>Design Store</span><span class="m-bag">🛍️ (2)</span></div>
               <div class="m-store-card">
                 <div class="m-store-img"></div>
                 <div class="m-store-info"><span>Vision Pro</span><b>$3,499</b></div>
@@ -578,13 +579,13 @@
       <div class="empty-icon">🔍</div>
       <h3>No components match "{{ searchQuery }}"</h3>
       <p>Try searching for navigation, panel, toggle, modal, or hero.</p>
-      <button class="reset-btn" @click="$emit('update:searchQuery', ''); activeCategory = 'all'">Reset Search Filter</button>
+      <button class="reset-btn" @click="$emit('update:searchQuery', ''); $emit('update:activeCategory', 'all')">Reset Search Filter</button>
     </div>
   </section>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { computed } from 'vue'
 import { Copy } from '@lucide/vue'
 import IdSegmentedControl from './idesign/IdSegmentedControl.vue'
 
@@ -600,17 +601,24 @@ const props = defineProps({
   searchQuery: {
     type: String,
     default: ''
+  },
+  activeCategory: {
+    type: String,
+    default: 'all'
   }
 })
 
-defineEmits(['select-component', 'quick-copy', 'update:searchQuery'])
+const emit = defineEmits(['select-component', 'quick-copy', 'update:searchQuery', 'update:activeCategory'])
 
-const activeCategory = ref('all')
+const selectedCategory = computed({
+  get: () => props.activeCategory,
+  set: (val) => emit('update:activeCategory', val)
+})
 
 const filteredComponents = computed(() => {
   return props.components.filter(c => {
     // Category match using category ID
-    const cat = activeCategory.value
+    const cat = props.activeCategory || 'all'
     const categoryMatch = cat === 'all' || c.category === cat
 
     // Search query match
@@ -673,6 +681,10 @@ const filteredComponents = computed(() => {
   padding: 20px;
   position: relative;
   overflow: hidden;
+}
+.preview-box > * {
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 /* ─── Mini Previews CSS ─── */
@@ -958,4 +970,72 @@ const filteredComponents = computed(() => {
 .empty-state { text-align: center; padding: 60px 20px; background: var(--surface); border-radius: var(--r-card); border: 1px dashed var(--hairline); }
 .empty-icon { font-size: 32px; margin-bottom: 12px; }
 .reset-btn { margin-top: 16px; background: var(--accent); color: #fff; border: none; padding: 8px 18px; border-radius: var(--r-pill); font-weight: 600; cursor: pointer; }
+
+/* ── Responsive Media Queries ── */
+@media (max-width: 840px) {
+  .catalog-section {
+    padding: 32px 20px;
+  }
+  .cards-grid {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+  }
+  .catalog-controls {
+    margin-bottom: 24px;
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .catalog-controls::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@media (max-width: 600px) {
+  .catalog-section {
+    padding: 24px 16px;
+  }
+  .cards-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  .catalog-controls {
+    margin-bottom: 18px;
+    padding-bottom: 4px;
+  }
+  .card-info {
+    padding: 16px;
+  }
+  .preview-box {
+    height: 140px;
+    padding: 14px;
+  }
+  .card-title {
+    font-size: 15.5px;
+  }
+  .card-description {
+    font-size: 13px;
+    margin-bottom: 14px;
+  }
+  .empty-state {
+    padding: 40px 16px;
+  }
+}
+
+@media (max-width: 380px) {
+  .catalog-section {
+    padding: 16px 12px;
+  }
+  .card-info {
+    padding: 14px 12px;
+  }
+  .quick-copy-btn {
+    font-size: 11px;
+    padding: 4px 8px;
+  }
+  .explore-link {
+    font-size: 12px;
+  }
+}
 </style>

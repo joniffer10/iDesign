@@ -5,7 +5,7 @@
     :class="[
       'id-card',
       `variant-${variant}`,
-      `pad-${padding}`,
+      `pad-${currentPadding}`,
       `aspect-${imageAspect}`,
       { 'is-interactive': href || interactive, 'has-image': variant === 'image-top' || variant === 'image-bg' }
     ]"
@@ -49,8 +49,12 @@
 </template>
 
 <script setup>
+import { computed } from 'vue'
+import { useIdesignConfig } from '../../composables/useIdesignConfig'
+
 const DEFAULT_DEMO_IMG = 'https://images.unsplash.com/photo-1593508512255-86ab42a8e620?auto=format&fit=crop&w=800&q=80'
-defineProps({
+
+const props = defineProps({
   title: String,
   subtitle: String,
   description: String,
@@ -70,8 +74,8 @@ defineProps({
   },
   padding: {
     type: String,
-    default: 'md',
-    validator: v => ['sm', 'md', 'lg'].includes(v)
+    default: undefined,
+    validator: v => !v || ['sm', 'md', 'lg'].includes(v)
   },
   interactive: Boolean,
   showActions: {
@@ -81,6 +85,9 @@ defineProps({
 })
 
 defineEmits(['click'])
+
+const config = useIdesignConfig({ size: props.padding })
+const currentPadding = computed(() => props.padding || config.size || 'md')
 </script>
 
 <style scoped>

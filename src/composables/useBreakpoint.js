@@ -1,11 +1,12 @@
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 
-const breakpoints = {
+export const breakpoints = {
   xs: 0,
   sm: 480,
   md: 768,
   lg: 1024,
-  xl: 1280
+  xl: 1280,
+  '2xl': 1536
 }
 
 export function useBreakpoint() {
@@ -13,8 +14,10 @@ export function useBreakpoint() {
   const current = ref('lg')
 
   const update = () => {
+    if (typeof window === 'undefined') return
     width.value = window.innerWidth
-    if (width.value >= breakpoints.xl) current.value = 'xl'
+    if (width.value >= breakpoints['2xl']) current.value = '2xl'
+    else if (width.value >= breakpoints.xl) current.value = 'xl'
     else if (width.value >= breakpoints.lg) current.value = 'lg'
     else if (width.value >= breakpoints.md) current.value = 'md'
     else if (width.value >= breakpoints.sm) current.value = 'sm'
@@ -24,6 +27,7 @@ export function useBreakpoint() {
   const isAbove = (bp) => width.value >= (breakpoints[bp] || 0)
   const isBelow = (bp) => width.value < (breakpoints[bp] || 0)
   const isMobile = () => width.value < breakpoints.md
+  const isTablet = () => width.value >= breakpoints.md && width.value < breakpoints.lg
   const isDesktop = () => width.value >= breakpoints.lg
 
   onMounted(() => {
@@ -35,5 +39,14 @@ export function useBreakpoint() {
     window.removeEventListener('resize', update)
   })
 
-  return { width, current, isAbove, isBelow, isMobile, isDesktop, breakpoints }
+  return {
+    width,
+    current,
+    isAbove,
+    isBelow,
+    isMobile,
+    isTablet,
+    isDesktop,
+    breakpoints
+  }
 }

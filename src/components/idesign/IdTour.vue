@@ -5,7 +5,7 @@
         <!-- Ambient Backdrop -->
         <div class="tour-backdrop"></div>
 
-        <!-- Apple Liquid Glass Tour Card -->
+        <!-- Liquid Glass Tour Card -->
         <div class="tour-card" role="dialog" aria-modal="true" :aria-label="currentStepData.title">
           <!-- Top Background Glow Orbs -->
           <div class="tour-glow-orb orb-top"></div>
@@ -120,7 +120,7 @@ const props = defineProps({
   steps: {
     type: Array,
     default: () => [
-      { title: 'Welcome to Idesign', description: 'Explore our Apple-grade Liquid Glass Vue 3 component system with real-time reactive sandbox.', icon: '⚡', badge: 'STEP 1 OF 3', nextLabel: 'Explore System →' },
+      { title: 'Welcome to Idesign', description: 'Explore our Production-grade Liquid Glass Vue 3 component system with real-time reactive sandbox.', icon: '⚡', badge: 'STEP 1 OF 3', nextLabel: 'Explore System →' },
       { title: 'Interactive Playground', description: 'Customize component properties, toggle dark mode, and inspect SFC code snippets.', icon: '🎛️', badge: 'STEP 2 OF 3', nextLabel: 'View Export Options →' },
       { title: 'Production Ready', description: 'Export clean ESM/UMD modules or auto-import with Nuxt 3 in your Vue projects.', icon: '🚀', badge: 'STEP 3 OF 3', finishLabel: 'Get Started ✨' }
     ]
@@ -243,7 +243,7 @@ const handleBackdropClick = () => {
   gap: 18px;
   color: #1d1d1f;
   overflow: hidden;
-  animation: apple-tour-bounce 0.4s var(--ease-spring);
+  animation: id-tour-bounce 0.4s var(--ease-spring);
 }
 
 :root.dark .tour-card {
@@ -253,7 +253,7 @@ const handleBackdropClick = () => {
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5), 0 4px 16px rgba(0, 0, 0, 0.3);
 }
 
-@keyframes apple-tour-bounce {
+@keyframes id-tour-bounce {
   0% {
     opacity: 0;
     transform: scale(0.92) translateY(16px);

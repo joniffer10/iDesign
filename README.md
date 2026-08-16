@@ -1,10 +1,10 @@
-# Idesign — Apple Liquid Glass Component Library
+# Idesign — Liquid Glass Component Library
 
-> **A state-of-the-art Vue 3 & Nuxt 3 design system and component library engineered with Apple's Liquid Glass aesthetic, fluid spring physics, dynamic dark mode, and 100% mobile responsiveness.**
+> **A state-of-the-art Vue 3 & Nuxt 3 design system and component library engineered with Liquid Glass aesthetics, fluid spring physics, dynamic dark mode, and 100% mobile responsiveness.**
 
 ![Vue 3](https://img.shields.io/badge/Vue-3.x-4fc08d?style=flat-square&logo=vue.js)
 ![Nuxt 3](https://img.shields.io/badge/Nuxt-3.x-00dc82?style=flat-square&logo=nuxt.js)
-![Apple Design](https://img.shields.io/badge/Design-Apple%20Liquid%20Glass-0071e3?style=flat-square&logo=apple)
+![Design System](https://img.shields.io/badge/Design-Liquid%20Glass-0071e3?style=flat-square)
 ![Responsive](https://img.shields.io/badge/Mobile-100%25%20Responsive-34c759?style=flat-square)
 ![License](https://img.shields.io/badge/License-MIT-blue?style=flat-square)
 
@@ -12,227 +12,238 @@
 
 ## ⚡ Key Features
 
-- ** Apple Liquid Glass Aesthetic**: Frosted saturation & backdrop-blur overlays, squircle border radii, ambient glow orbs, and spring-physics micro-interactions.
+- **Liquid Glass Aesthetic**: Frosted saturation (`backdrop-filter: saturate(180%) blur(20px)`), unified white surfaces, hairline dividers (`rgba(0,0,0,0.07)`), and spring-physics micro-interactions.
 - **🚀 Dual Vue 3 & Nuxt 3 Engine**: Native support for Vue 3 Single File Components (SFC) and Nuxt 3 auto-imported module usage.
-- **📱 100% Mobile Responsive**: Adheres strictly to Apple Human Interface Guidelines (HIG) with touch targets $\ge 44 \times 44\text{px}$, fluid grid containers, touch-pan scroll physics, and edge-anchored mobile bottom sheets.
-- **🎨 Rich Color & Size Token System**: Every component supports configurable sizes (`sm`, `md`, `lg`, `xl`), visual variants (`default`, `glass`, `hero`, `pill`, `framed`, `no-divider`), and Apple color themes (`blue`, `green`, `purple`, `orange`, `red`, `black`, `gray`).
-- **🎛️ Interactive Component Sandbox**: Integrated live playground with real-time prop controls, light/dark mode toggling, and 1-click code copying for **Vue 3 SFC**, **Nuxt 3**, and **Pure HTML + CSS**.
+- **📱 100% Mobile Responsive**: Touch targets $\ge 44 \times 44\text{px}$, responsive breakpoint scale (`xs`–`2xl`), fluid grid containers, touch-pan scroll physics, and edge-anchored mobile bottom sheets.
+- **🎨 Centralized Token & Theming System**: Every component supports configurable sizes (`xs`, `sm`, `md`, `lg`, `xl`), visual variants (`default`, `glass`, `hero`, `pill`, `framed`, `no-divider`), and color themes.
+- **♿ Full WAI-ARIA Accessibility**: Complete keyboard navigation (Arrow keys, Home, End, Escape), focus rings (`:focus-visible`), live regions, and semantic roles across all overlays, selects, tabs, and forms.
+- **🌐 Global UI Configuration**: Declarative design system customization with `createUI` / `createIdesign` supporting tokens, component defaults, RTL direction, and localized date/number/currency formatting.
 
 ---
 
-## 📦 Installation
+## 📦 Installation & CLI Scaffolding
 
-Install `@idesign/vue` via npm, pnpm, or yarn:
+### 1. NPM Package Installation
 
 ```bash
 npm install @idesign/vue
 ```
 
-### Vue 3 Plugin Setup
+### 2. Interactive CLI Scaffolding (`npx idesign`)
+
+Scaffold components, compound bundles, design tokens, and full page templates directly into your Vue 3 or Nuxt 3 project:
+
+```bash
+# 🚀 Initialize design tokens (tokens.css) & useIdesignConfig composable
+npx idesign init
+
+# 📦 Add individual components or compound bundles
+npx idesign add button input toggle pin-input
+npx idesign add form card dialog frames
+
+# 📑 Scaffold full Liquid Glass page templates
+npx idesign template settings
+npx idesign template analytics
+npx idesign template checkout
+
+# 🔍 List all available components or inspect installed status
+npx idesign list
+npx idesign status
+```
+
+
+### Vue 3 Setup & Global Configuration
 
 In your main entry file (`src/main.js` or `src/main.ts`):
 
 ```javascript
 import { createApp } from 'vue'
 import App from './App.vue'
+import Idesign, { createUI } from '@idesign/vue'
 
-// Import Idesign global styles
+// Import global styles
 import '@idesign/vue/dist/idesign.css'
 
 const app = createApp(App)
+
+// 🌐 Optional: Configure global theme, density, tokens, and component defaults
+app.use(createUI({
+  theme: 'auto',          // 'light' | 'dark' | 'auto'
+  density: 'comfortable',  // 'compact' | 'comfortable' | 'spacious'
+  locale: 'en',
+  dir: 'ltr',
+
+  ui: {
+    colors: {
+      primary: '#0071e3',  // System Blue accent
+      surface: '#ffffff',
+      border: 'rgba(0, 0, 0, 0.07)'
+    },
+    radius: {
+      md: '12px',
+      lg: '18px',
+      full: '999px'
+    },
+    components: {
+      Button: { size: 'md', variant: 'primary' },
+      Input: { size: 'md', clearable: true }
+    }
+  }
+}))
+
+app.use(Idesign)
 app.mount('#app')
 ```
 
-### Vue 3 Single File Component (SFC) Usage
+---
 
-Import components directly into your components:
+## 🧩 Usage Examples
+
+### 1. Compound Form System
 
 ```vue
 <script setup>
-import { IdButton, IdCard, useToast } from '@idesign/vue'
+import { reactive } from 'vue'
+import {
+  IdForm,
+  IdFormField,
+  IdFormGroup,
+  IdFormSection,
+  IdFormActions,
+  IdInput,
+  IdButton
+} from '@idesign/vue'
 
-const toast = useToast()
+const form = reactive({
+  firstName: '',
+  lastName: '',
+  email: ''
+})
 
-const handleAction = () => {
-  toast.success('Action Completed!', {
-    description: 'All changes synchronized to your Apple iCloud account.'
-  })
+const handleSubmit = () => {
+  console.log('Form submitted:', form)
 }
 </script>
 
 <template>
-  <IdCard
-    title="Apple Vision Pro"
-    subtitle="Spatial Computing UI"
-    variant="glass"
-    interactive
-  >
-    <p>Welcome to the era of spatial computing.</p>
+  <IdForm @submit="handleSubmit">
+    <IdFormSection title="User Profile" description="Update your personal details.">
+      <IdFormGroup inline>
+        <IdFormField label="First Name" required>
+          <IdInput v-model="form.firstName" placeholder="Alex" />
+        </IdFormField>
 
-    <template #actions>
-      <IdButton variant="secondary" size="sm">Details</IdButton>
-      <IdButton variant="primary" size="sm" @click="handleAction">
-        Get Started →
-      </IdButton>
+        <IdFormField label="Last Name" required>
+          <IdInput v-model="form.lastName" placeholder="Rivera" />
+        </IdFormField>
+      </IdFormGroup>
+
+      <IdFormField label="Email" required>
+        <IdInput v-model="form.email" type="email" placeholder="alex@domain.com">
+          <template #prefix>✉️</template>
+        </IdInput>
+      </IdFormField>
+    </IdFormSection>
+
+    <IdFormActions align="right">
+      <IdButton variant="ghost" type="reset">Reset</IdButton>
+      <IdButton variant="primary" type="submit">Save Changes</IdButton>
+    </IdFormActions>
+  </IdForm>
+</template>
+```
+
+### 2. Compound Card System
+
+```vue
+<template>
+  <IdCard variant="glass" padding="lg">
+    <template #header>
+      <IdCardTitle tag="h2">Spatial Computing UI</IdCardTitle>
+      <IdCardDescription>High fidelity visual panel</IdCardDescription>
+    </template>
+
+    <p>Unified white surface with hairline dividers and smooth elevation shadows.</p>
+
+    <template #footer>
+      <IdButton size="sm" variant="primary">Explore →</IdButton>
     </template>
   </IdCard>
 </template>
 ```
 
-### Nuxt 3 Integration
-
-In your `nuxt.config.ts`:
-
-```typescript
-export default defineNuxtConfig({
-  css: ['@idesign/vue/dist/idesign.css'],
-  build: {
-    transpile: ['@idesign/vue']
-  }
-})
-```
-
-Use components directly in `pages/index.vue` without manual imports:
+### 3. Compound Dialog System
 
 ```vue
+<script setup>
+import { ref } from 'vue'
+import { IdDialog, IdButton } from '@idesign/vue'
+
+const isOpen = ref(false)
+</script>
+
 <template>
-  <IdGlassNav title="Idesign" icon="⚡" variant="glass" />
-  
-  <main class="container">
-    <IdHeroCta
-      title="Build Apple-Grade Web Applications"
-      description="Clean, unified surfaces with frosted glass used only where layers overlap."
-      eyebrow="DESIGN SYSTEM V2.0"
-      action-label="Explore System"
-    />
-  </main>
+  <IdButton variant="primary" @click="isOpen = true">Open Dialog</IdButton>
+
+  <IdDialog v-model="isOpen" title="Workspace Settings" max-width="540px">
+    <p>Dialog body content with automatic Escape key handling and focus trapping.</p>
+
+    <template #footer>
+      <IdButton variant="ghost" @click="isOpen = false">Cancel</IdButton>
+      <IdButton variant="primary" @click="isOpen = false">Confirm</IdButton>
+    </template>
+  </IdDialog>
 </template>
 ```
 
 ---
 
-## 🧩 Component Catalog (60 Components & Templates)
+## 🛠️ Runtime Theming & Formatting Helpers
 
-### 📄 Page Templates
-| Component | Description |
-|---|---|
-| `HeroTemplate` | Apple-grade landing page with sticky glass nav, gradient glow orbs, and feature grid. |
-| `ProductShowcaseTemplate` | Apple Store e-commerce page with category filters, price cards, and shopping bag counter. |
-| `AiChatTemplate` | Vision Pro AI assistant page supporting `full`, `standalone`, and `widget` modes. |
-| `DashboardTemplate` | Analytics dashboard with KPI stat cards, interactive data table, and team collaborators. |
-| `AuthTemplate` | Authentication page supporting `default`, `split-hero`, `centered-card`, and `minimal-glass` passkey layouts. |
+Use `useIdesignConfig` in any component to dynamically adapt themes, RTL, and localization:
 
-### 🧭 Navigation
-| Component | Key Props | Description |
-|---|---|---|
-| `IdGlassNav` | `title`, `variant`, `icon`, `links` | Sticky frosted header with blur saturation and navigation links. |
-| `IdStepper` | `activeStep`, `size`, `variant`, `color`, `clickable` | Step progress wizard with checkmarks and vertical mobile collapse. |
-| `IdSegmentedControl` | `active`, `size`, `theme`, `options` | Segmented pill control with touch pan scrolling. |
-| `IdTabs` | `v-model`, `size`, `variant`, `color`, `tabs` | ARIA tab list with animated sliding indicator bar. |
-| `IdBreadcrumbs` | `variant`, `size`, `color`, `items` | Breadcrumb navigation with icon and glass variants. |
-| `IdPagination` | `v-model`, `totalPages`, `size`, `variant`, `color` | Page navigation with tabular-nums and ellipsis. |
-| `IdDropdownMenu` | `size`, `variant`, `items` | Action menu with keyboard shortcuts and dividers. |
-| `IdDock` | `position`, `items` | macOS liquid glass floating dock with magnification physics. |
+```vue
+<script setup>
+import { useIdesignConfig } from '@idesign/vue'
 
-### 🔘 Buttons
-| Component | Key Props | Description |
-|---|---|---|
-| `IdButton` | `label`, `variant`, `color`, `size`, `iconLeft`, `iconRight`, `disabled`, `loading`, `block` | Apple pill buttons with 7 variants (`primary`, `secondary`, `outline`, `glass`, `dark`, `ghost`, `danger`) and 6 colors. |
+const {
+  setTheme,
+  setDensity,
+  setDir,
+  setUi,
+  formatNumber,
+  formatCurrency,
+  formatDate
+} = useIdesignConfig()
 
-### 🎛️ Form Inputs
-| Component | Key Props | Description |
-|---|---|---|
-| `IdInput` | `v-model`, `label`, `placeholder`, `variant`, `size`, `clearable`, `trailingText` | Quiet text input with search, error, success, and clear button. |
-| `IdTextarea` | `v-model`, `label`, `size`, `variant`, `maxlength` | Multiline text input with character counter and glass style. |
-| `IdSelect` | `v-model`, `label`, `size`, `variant`, `options` | Dropdown select with `no-divider` rounded item mode. |
-| `IdCheckbox` | `v-model`, `label`, `size`, `color` | Checkbox with Apple color selection. |
-| `IdRadioGroup` | `v-model`, `label`, `direction`, `options` | Radio button group with vertical/horizontal layouts. |
-| `IdSlider` | `v-model`, `label`, `min`, `max` | Range slider with accent fill track. |
-| `IdToggle` | `v-model`, `label`, `size`, `variant` | iOS switch toggle with green, blue, purple, orange, red colors. |
-| `IdDatePicker` | `v-model`, `label` | Apple Calendar-style date picker popover. |
-| `IdFileUpload` | `@change`, `hint` | Drag & drop file upload zone with preview list. |
+// Dynamic updates
+const switchDark = () => setTheme('dark')
+const switchRtl = () => setDir('rtl')
+const updateAccent = (color) => setUi({ colors: { primary: color } })
 
-### 🖼️ Panels & Cards
-| Component | Key Props | Description |
-|---|---|---|
-| `IdCard` | `title`, `subtitle`, `description`, `variant`, `image`, `padding`, `interactive` | Container supporting `default`, `framed`, `glass`, `hero`, `image-top`, `image-bg`. |
-| `IdPanel` & `IdPanelRow` | `size`, `variant`, `noDividers`, `icon`, `iconBg`, `detail` | Anti-fragmentation unified settings panel surface. |
-| `IdHeroCta` | `title`, `description`, `eyebrow`, `actionLabel`, `variant` | Liquid glass hero CTA with ambient blur orbs. |
-| `IdAccordion` | `size`, `variant`, `items` | Collapsible panels supporting `default`, `separated`, and `glass`. |
-| `IdProjectSection` | `title`, `icon` | Apple portfolio project section container. |
-| `IdImageFrame` | `src`, `shape`, `aspectRatio`, `bezelSize`, `caption`, `interactive` | Photo frame with squircle/circle bezel and hover zoom. |
-| `IdCarousel` | `showDots`, `showControls` | Horizontal snap card carousel with dot pagination. |
-
-### 🪟 Overlays & Dialogs
-| Component | Key Props | Description |
-|---|---|---|
-| `IdModal` | `v-model`, `title`, `subtitle`, `content`, `variant`, `size` | Frosted glass modal card with scale+opacity animation. |
-| `IdTour` | `v-model`, `steps`, `nextLabel`, `finishLabel`, `backLabel`, `skipLabel` | Product tour guide with per-step badges, images, and labels. |
-| `IdCommandPalette` | `v-model`, `groups` | Spotlight command palette modal with global ⌘K shortcut. |
-| `IdPopover` | `position`, `title`, `body`, `size`, `variant` | Floating anchored popover card with outside click dismiss. |
-| `IdBottomSheet` | `v-model`, `title`, `description` | Mobile bottom sheet anchored to screen edge. |
-| `IdDrawer` | `v-model`, `title`, `description`, `position`, `variant` | Side sliding drawer supporting default & floating sheet. |
-| `IdToast` | `position` + `useToast()` composable | Floating toast notification queue system. |
-| `IdTooltip` | `text`, `position` | Rounded hover tooltip with dark mode support. |
-| `IdConfirmDialog` | `v-model`, `title`, `message`, `variant`, `danger` | Action confirmation dialog. |
-
-### 📊 Data Display & Indicators
-| Component | Key Props | Description |
-|---|---|---|
-| `IdTable` | `title`, `count`, `variant`, `columns`, `data`, `selectable`, `searchable` | Data table with striped, glass, borderless, compact, sorting, and row actions. |
-| `IdAvatar` | `name`, `src`, `icon`, `size`, `shape`, `framed`, `status` | Profile avatar with initials fallback, status dot, and Vision Pro glass frame. |
-| `IdAvatarGroup` | `variant`, `shape`, `size`, `max`, `label`, `framed`, `users` | Stacked, grid, hero, and expanded user avatar group. |
-| `IdStat` | `label`, `value`, `change`, `description`, `size`, `variant`, `sparklineData` | Key metric card with positive/negative badge & SVG sparkline. |
-| `IdLiveDot` | `slot` | Animated pulsing green status indicator. |
-| `IdTag` | `label`, `variant`, `size`, `iconLeft`, `removable` | Status chips and tag pills with 7 color themes. |
-| `IdAlert` | `variant`, `size`, `title`, `description`, `dismissible` | Info, success, warning, error, and glass alert banners. |
-| `IdEmpty` | `title`, `description`, `icon`, `actionLabel` | Empty or error state container. |
-| `IdBadge` | `count`, `showZero` | Count notification badge overlay. |
-| `IdProgress` | `value`, `size`, `variant`, `color`, `indeterminate` | Progress bar with shimmer loading. |
-| `IdSkeleton` | `variant`, `size` | Loading placeholder for rect, text, circle, card. |
-| `IdSpinner` | `size`, `color`, `label` | SVG arc spinner with optional label. |
-| `IdBarChart` | `height`, `data` | Animated SVG dashboard bar chart with tooltips. |
-| `IdPieChart` | `centerLabel`, `data` | SVG donut/pie chart with legend and center summary label. |
-| `IdTimeline` | `items` | Vertical activity timeline for feeds and changelogs. |
-
-### 📐 Layout & Devices
-| Component | Key Props | Description |
-|---|---|---|
-| `IdGrid` | `cols`, `gap`, `autoFit`, `minColWidth` | Responsive CSS Grid layout helper. |
-| `IdStack` | `direction`, `gap` | Flex container helper for vertical/horizontal alignment. |
-| `IdDivider` | `variant` | Hairline section divider. |
-| `IdMacOsBanner` | `appName`, `title`, `message`, `time`, `icon`, `actionLabel` | macOS system notification card. |
-| `IdFileTree` | `items`, `selectedId`, `expandedIds` | macOS Finder style directory tree view. |
-| `IdIphoneFrame` | `slot` | Mobile simulator frame with Dynamic Island and status bar. |
+const formattedPrice = formatCurrency(1499.99, 'USD') // "$1,499.99"
+const formattedDate = formatDate(new Date())           // "Aug 16, 2026"
+</script>
+```
 
 ---
 
-## 📱 Mobile Responsiveness Architecture
+## 🧪 Testing
 
-Idesign components are engineered to work flawlessly on smartphones, tablets, laptops, and spatial displays:
-
-1. **HIG Touch Targets**: Every control maintains minimum touch target boundaries ($\ge 44 \times 44\text{px}$) to comply with Apple Human Interface Guidelines.
-2. **Fluid Column Collapse**: `IdGrid` and `IdStepper` automatically adapt from multi-column desktop arrangements to single-column mobile views below `768px` and `640px`.
-3. **Touch Physics & Pan Scrolling**: Data tables ([IdTable](file:///c:/Users/Jmakes/OneDrive/Documents/codethingz/Idesign/src/components/idesign/IdTable.vue)), tab bars ([IdTabs](file:///c:/Users/Jmakes/OneDrive/Documents/codethingz/Idesign/src/components/idesign/IdTabs.vue)), segmented controls ([IdSegmentedControl](file:///c:/Users/Jmakes/OneDrive/Documents/codethingz/Idesign/src/components/idesign/IdSegmentedControl.vue)), and floating docks ([IdDock](file:///c:/Users/Jmakes/OneDrive/Documents/codethingz/Idesign/src/components/idesign/IdDock.vue)) include `-webkit-overflow-scrolling: touch` protection.
-4. **Edge-Anchored Overlays**: Modals, bottom sheets, and drawers dynamically adjust to `calc(100vw - 32px)` with mobile viewport height safeguards.
-
----
-
-## 🛠️ Development & Building
+Run the test suite with Vitest:
 
 ```bash
-# Start local Vite development playground server
-npm run dev
+npm test
+```
 
-# Compile production ESM & UMD library bundles to dist/
+Build production library bundles (ESM, UMD, and CSS):
+
+```bash
 npm run build:lib
-
-# Build production website application bundle
-npm run build
 ```
 
 ---
 
 ## 📄 License
 
-MIT © [Idesign Team](https://github.com/idesign-ui)
+MIT © [Idesign](https://github.com/joniffer10/iDesign)

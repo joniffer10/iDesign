@@ -2,7 +2,7 @@
   <Teleport to="body" :disabled="!teleport">
     <Transition name="modal-fade">
       <div v-if="modelValue" class="modal-backdrop" @click.self="closeOnBackdrop && $emit('update:modelValue', false)" @keydown.escape="$emit('update:modelValue', false)">
-        <div :class="['modal-surface', `size-${size}`, `variant-${variant}`]" :style="maxWidth ? { maxWidth } : {}" role="dialog" aria-modal="true" :aria-label="title">
+        <div :class="['modal-surface', `size-${currentSize}`, `variant-${variant}`]" :style="maxWidth ? { maxWidth } : {}" role="dialog" aria-modal="true" :aria-label="title">
           <div v-if="title || subtitle || $slots.header" class="modal-header">
             <slot name="header">
               <div class="modal-header-titles">
@@ -33,8 +33,9 @@
 </template>
 
 <script setup>
-import { watch } from 'vue'
+import { watch, onMounted, onUnmounted, computed } from 'vue'
 import { X } from '@lucide/vue'
+import { useIdesignConfig } from '../../composables/useIdesignConfig'
 
 const props = defineProps({
   modelValue: { type: Boolean, default: false },
@@ -43,17 +44,42 @@ const props = defineProps({
   content: String,
   body: String,
   maxWidth: String,
-  size: { type: String, default: 'md', validator: v => ['sm', 'md', 'lg', 'xl', 'full'].includes(v) },
+  size: { type: String, default: undefined, validator: v => !v || ['sm', 'md', 'lg', 'xl', 'full'].includes(v) },
   variant: { type: String, default: 'default', validator: v => ['default', 'glass', 'alert'].includes(v) },
   closeOnBackdrop: { type: Boolean, default: true },
   teleport: { type: Boolean, default: true }
 })
 
-defineEmits(['update:modelValue'])
+const emit = defineEmits(['update:modelValue'])
+
+const config = useIdesignConfig({ size: props.size })
+const currentSize = computed(() => props.size || config.size || 'md')
+
+const handleKeydown = (e) => {
+  if (e.key === 'Escape' && props.modelValue) {
+    emit('update:modelValue', false)
+  }
+}
 
 watch(() => props.modelValue, (val) => {
-  if (val) document.body.style.overflow = 'hidden'
-  else document.body.style.overflow = ''
+  if (typeof document !== 'undefined') {
+    document.body.style.overflow = val ? 'hidden' : ''
+  }
+})
+
+onMounted(() => {
+  if (typeof window !== 'undefined') {
+    window.addEventListener('keydown', handleKeydown)
+  }
+})
+
+onUnmounted(() => {
+  if (typeof window !== 'undefined') {
+    window.removeEventListener('keydown', handleKeydown)
+  }
+  if (typeof document !== 'undefined') {
+    document.body.style.overflow = ''
+  }
 })
 </script>
 

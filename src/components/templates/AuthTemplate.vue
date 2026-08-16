@@ -52,7 +52,7 @@
           <IdInput
             v-model="email"
             label="Email Address"
-            placeholder="jane.smith@apple.com"
+            placeholder="jane.smith@example.com"
             type="email"
             required
           />
@@ -88,11 +88,9 @@
 
           <!-- Social Login Buttons -->
           <div class="social-grid">
-            <button type="button" class="social-btn" @click="handleSocial('Apple')">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.31c.67-.82 1.13-1.96.99-3.11-.98.04-2.17.66-2.86 1.47-.62.72-1.16 1.89-.99 3.01 1.09.08 2.21-.55 2.86-1.37z"/>
-              </svg>
-              Apple ID
+            <button type="button" class="social-btn" @click="handleSocial('Passkey')">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-2-2l2 2m7 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"/></svg>
+              Passkey
             </button>
             <button type="button" class="social-btn" @click="handleSocial('GitHub')">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
@@ -111,7 +109,7 @@
 
         <div class="banner-content">
           <IdTag variant="accent" icon-left="⚡">DESIGN SYSTEM V2.0</IdTag>
-          <h3 class="banner-title">Build Apple-Grade Web Applications</h3>
+          <h3 class="banner-title">Build Production-Grade Web Applications</h3>
           <p class="banner-desc">
             Clean unified surfaces, frosted glass overlays, and spring animations engineered for next-gen spatial computing interfaces.
           </p>
@@ -122,7 +120,7 @@
               <IdAvatar name="Jane Smith" shape="squircle" size="sm" status="online" />
               <div>
                 <div class="card-user">Jane Smith</div>
-                <div class="card-role">Design Director · Apple Inc.</div>
+                <div class="card-role">Design Director · Studio Corp</div>
               </div>
             </div>
             <p class="card-quote">"Idesign is the cleanest Vue component library we've ever deployed."</p>
@@ -174,7 +172,7 @@
         <IdInput
           v-model="email"
           label="Email Address"
-          placeholder="jane.smith@apple.com"
+          placeholder="jane.smith@example.com"
           type="email"
           required
         />
@@ -209,11 +207,12 @@
         </div>
 
         <div class="social-grid">
-          <button type="button" class="social-btn" @click="handleSocial('Apple')">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.31c.67-.82 1.13-1.96.99-3.11-.98.04-2.17.66-2.86 1.47-.62.72-1.16 1.89-.99 3.01 1.09.08 2.21-.55 2.86-1.37z"/>
+          <button type="button" class="social-btn" @click="handleSocial('Passkey')">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
             </svg>
-            Apple ID
+            Passkey
           </button>
           <button type="button" class="social-btn" @click="handleSocial('GitHub')">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
@@ -225,18 +224,17 @@
       </template>
     </div>
 
-    <!-- Variant: Minimal Glass Passkey -->
     <div v-else-if="variant === 'minimal-glass'" class="auth-card minimal-card">
       <div class="minimal-header">
-        <IdAvatar name="Apple Passkey" size="lg" shape="squircle" framed icon="⚡" />
-        <h2 class="auth-title">{{ customTitle || 'Sign in with Apple ID' }}</h2>
-        <p class="auth-subtitle">{{ customSubtitle || 'Touch ID or Face ID enabled' }}</p>
+        <IdAvatar name="Passkey Authentication" size="lg" shape="squircle" framed icon="⚡" />
+        <h2 class="auth-title">{{ customTitle || 'Sign in with Passkey' }}</h2>
+        <p class="auth-subtitle">{{ customSubtitle || 'Biometric security enabled' }}</p>
       </div>
 
       <form class="auth-form" @submit.prevent="handleSubmit">
         <IdInput
           v-model="email"
-          placeholder="Apple ID or Email"
+          placeholder="Email address"
           type="email"
           size="lg"
           required
@@ -287,7 +285,7 @@ const toast = useToast()
 
 const isSignUp = ref(false)
 const name = ref('')
-const email = ref('jane.smith@apple.com')
+const email = ref('jane.smith@example.com')
 const password = ref('password123')
 const remember = ref(true)
 const loading = ref(false)

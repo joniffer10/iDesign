@@ -4,7 +4,7 @@
       <!-- Live Indicator Header -->
       <div class="live-status">
         <span class="pulse-dot"></span>
-        <span class="live-text">IDESIGN SYSTEM · VUE 3 & NUXT 3 READY</span>
+        <span class="live-text">VUE 3 & NUXT 3 READY</span>
       </div>
 
       <!-- Main Headline -->
@@ -14,7 +14,7 @@
       </h1>
 
       <p class="hero-subtitle">
-        Built strictly on Apple Liquid Glass design tokens — calm light grey ground, unified white surfaces, hairline dividers, negative tracking typography, and frosted glass.
+        Built strictly on Liquid Glass design tokens — calm light grey ground, unified white surfaces, hairline dividers, negative tracking typography, and frosted glass.
       </p>
 
       <!-- Quick Command Bar -->

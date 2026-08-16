@@ -65,7 +65,7 @@
 
           <template v-else-if="component.id === 'timeline'">
             <div style="width: 100%; max-width: 440px;">
-              <IdTimeline :items="[{ title: 'v2.4 System Update Released', description: 'Added 5 new Apple Liquid Glass components.', time: '10 min ago', variant: 'primary', icon: Zap }, { title: 'Security Audit Passed', description: 'Enclave verification completed cleanly.', time: '2 hours ago', variant: 'success', icon: Check }]" />
+              <IdTimeline :items="[{ title: 'v2.4 System Update Released', description: 'Added 5 new Liquid Glass components.', time: '10 min ago', variant: 'primary', icon: Zap }, { title: 'Security Audit Passed', description: 'Enclave verification completed cleanly.', time: '2 hours ago', variant: 'success', icon: Check }]" />
             </div>
           </template>
 
@@ -74,7 +74,7 @@
               <IdGrid :cols="propState.cols ? Number(propState.cols) : 3" :gap="propState.gap || 'md'" :auto-fit="!!propState.autoFit">
                 <IdCard title="Column 1" subtitle="Responsive" />
                 <IdCard title="Column 2" subtitle="Layout Grid" />
-                <IdCard title="Column 3" subtitle="Apple System" />
+                <IdCard title="Column 3" subtitle="Liquid System" />
               </IdGrid>
             </div>
           </template>
@@ -171,7 +171,7 @@
           <template v-else-if="component.id === 'hero-cta'">
             <div style="width: 100%; max-width: 580px;">
               <IdHeroCta
-                :title="propState.title || 'Build Apple-Grade Apps'"
+                :title="propState.title || 'Build Production-Grade Apps'"
                 :description="propState.description || 'Clean, unified surfaces with frosted glass used only where layers overlap.'"
                 :eyebrow="propState.eyebrow || 'DESIGN SYSTEM V2.0'"
                 :action-label="propState.actionLabel || 'Get Started'"
@@ -182,7 +182,7 @@
 
           <template v-else-if="component.id === 'accordion'">
             <div style="width: 100%; max-width: 440px;">
-              <IdAccordion :size="propState.size || 'md'" :variant="propState.variant || 'default'" :items="[{ title: 'What is Idesign?', content: 'An Apple-grade Vue 3 component library.' }, { title: 'Is it free?', content: 'Yes, MIT licensed.' }, { title: 'Dark mode?', content: 'Yes, supports OS preference and .dark class.' }]" />
+              <IdAccordion :size="propState.size || 'md'" :variant="propState.variant || 'default'" :items="[{ title: 'What is Idesign?', content: 'A production-grade Vue 3 component library.' }, { title: 'Is it free?', content: 'Yes, MIT licensed.' }, { title: 'Dark mode?', content: 'Yes, supports OS preference and .dark class.' }]" />
             </div>
           </template>
 
@@ -218,13 +218,13 @@
                 :shape="propState.shape || 'squircle'"
                 :aspect-ratio="propState.aspectRatio || '1-1'"
                 :bezel-size="propState.bezelSize || 'md'"
-                :caption="propState.caption || 'Apple Studio Portrait'"
+                :caption="propState.caption || 'Studio Portrait'"
                 :interactive="propState.interactive !== false"
               />
             </div>
           </template>
 
-          <template v-else-if="component.id === 'apple-button'">
+          <template v-else-if="component.id === 'liquid-button'">
             <div style="width: 100%; max-width: 320px; display: flex; flex-direction: column; gap: 10px; align-items: center;">
               <IdButton
                 :variant="propState.variant || 'primary'"
@@ -600,9 +600,9 @@
           <template v-else-if="component.id === 'carousel'">
             <div style="width: 100%; max-width: 500px;">
               <IdCarousel :show-dots="propState.showDots" :show-controls="propState.showControls">
-                <IdCard title="Apple Vision Pro" subtitle="Spatial Computing" variant="framed" />
-                <IdCard title="MacBook Pro M4" subtitle="Mind-blowing speed" variant="glass" />
-                <IdCard title="iPad Pro OLED" subtitle="Ultra Retina XDR" variant="hero" />
+                <IdCard title="Vision Studio Pro" subtitle="Spatial Computing" variant="framed" />
+                <IdCard title="Studio Book Pro" subtitle="Mind-blowing speed" variant="glass" />
+                <IdCard title="Studio Tab Pro" subtitle="Ultra Retina XDR" variant="hero" />
               </IdCarousel>
             </div>
           </template>
@@ -722,12 +722,196 @@
             </div>
           </template>
 
+          <template v-else-if="component.id === 'settings-page'">
+            <div style="width: 100%; max-height: 540px; overflow-y: auto; border-radius: 16px; border: 1px solid var(--hairline);">
+              <SettingsTemplate />
+            </div>
+          </template>
+
+          <template v-else-if="component.id === 'analytics-page'">
+            <div style="width: 100%; max-height: 540px; overflow-y: auto; border-radius: 16px; border: 1px solid var(--hairline);">
+              <AnalyticsTemplate />
+            </div>
+          </template>
+
+          <template v-else-if="component.id === 'checkout-page'">
+            <div style="width: 100%; max-height: 540px; overflow-y: auto; border-radius: 16px; border: 1px solid var(--hairline);">
+              <CheckoutTemplate />
+            </div>
+          </template>
+
+
           <template v-else-if="component.id === 'tour'">
             <div style="display: flex; flex-direction: column; align-items: center; gap: 12px;">
               <IdButton variant="primary" @click="demoTourOpen = true">Start Product Tour ✨</IdButton>
               <IdTour v-model="demoTourOpen" :next-label="propState.nextLabel || 'Continue →'" :finish-label="propState.finishLabel || 'Get Started ✨'" :teleport="false" />
             </div>
           </template>
+
+          <template v-else-if="component.id === 'macbook-frame'">
+            <div style="width: 100%; max-width: 640px;">
+              <IdMacbookFrame
+                :app-name="propState.appName || 'Idesign Studio'"
+                :color="propState.color || 'space-gray'"
+                :show-menu-bar="propState.showMenuBar !== false"
+              >
+                <div style="padding: 24px; text-align: center;">
+                  <h3 style="font-size: 18px; font-weight: 700; margin: 0 0 6px;">Liquid Glass Studio</h3>
+                  <p style="font-size: 13px; color: var(--text-2); margin: 0;">MacBook Hardware Chassis Display</p>
+                </div>
+              </IdMacbookFrame>
+            </div>
+          </template>
+
+          <template v-else-if="component.id === 'ipad-frame'">
+            <div style="width: 100%; max-width: 580px;">
+              <IdIpadFrame
+                :orientation="propState.orientation || 'landscape'"
+                :color="propState.color || 'space-gray'"
+                :show-status-bar="propState.showStatusBar !== false"
+                :show-home-bar="propState.showHomeBar !== false"
+              >
+                <div style="padding: 24px; text-align: center;">
+                  <h3 style="font-size: 18px; font-weight: 700; margin: 0 0 6px;">iPad Pro Canvas</h3>
+                  <p style="font-size: 13px; color: var(--text-2); margin: 0;">Multi-Touch Tablet Frame</p>
+                </div>
+              </IdIpadFrame>
+            </div>
+          </template>
+
+          <template v-else-if="component.id === 'sidebar'">
+            <div style="height: 380px; width: 100%; max-width: 280px; border: 1px solid var(--hairline); border-radius: 16px; overflow: hidden;">
+              <IdSidebar
+                :title="propState.title || 'Idesign Studio'"
+                :variant="propState.variant || 'default'"
+                :collapsible="propState.collapsible !== false"
+                :groups="[
+                  { title: 'Workspace', items: [{ id: 'dashboard', label: 'Overview', icon: '📊' }, { id: 'projects', label: 'Projects', icon: '📁', badge: '12' }, { id: 'analytics', label: 'Analytics', icon: '⚡' }] },
+                  { title: 'System', items: [{ id: 'settings', label: 'Settings', icon: '⚙️' }] }
+                ]"
+                :user="{ name: 'Alex Rivera', role: 'Staff Architect' }"
+              />
+            </div>
+          </template>
+
+          <template v-else-if="component.id === 'header'">
+            <div style="width: 100%; border: 1px solid var(--hairline); border-radius: 16px; overflow: hidden;">
+              <IdHeader
+                :title="propState.title || 'Workspace Overview'"
+                :eyebrow="propState.eyebrow || 'ANALYTICS'"
+                :subtitle="propState.subtitle || 'Real-time telemetry and cluster operations.'"
+                :variant="propState.variant || 'glass'"
+                :sticky="propState.sticky || false"
+              >
+                <template #actions>
+                  <IdButton variant="secondary" size="sm">Export</IdButton>
+                  <IdButton variant="primary" size="sm">Create +</IdButton>
+                </template>
+              </IdHeader>
+            </div>
+          </template>
+
+          <template v-else-if="component.id === 'footer'">
+            <div style="width: 100%; border: 1px solid var(--hairline); border-radius: 16px; overflow: hidden;">
+              <IdFooter
+                :columns="[
+                  { title: 'Product', links: [{ label: 'Features' }, { label: 'Components' }, { label: 'Templates' }] },
+                  { title: 'Resources', links: [{ label: 'Documentation' }, { label: 'Design Tokens' }, { label: 'GitHub' }] }
+                ]"
+                :variant="propState.variant || 'default'"
+                :country-text="propState.countryText || 'United States'"
+              />
+            </div>
+          </template>
+
+          <template v-else-if="component.id === 'banner'">
+            <div style="width: 100%; max-width: 600px;">
+              <IdBanner
+                :message="propState.message || 'Idesign v2.0 is now live with 60+ Liquid Glass components!'"
+                :action-label="propState.actionLabel || 'Learn More →'"
+                :icon="propState.icon || '✨'"
+                :variant="propState.variant || 'accent'"
+                :dismissible="propState.dismissible !== false"
+              />
+            </div>
+          </template>
+
+          <template v-else-if="component.id === 'separator'">
+            <div style="width: 100%; max-width: 400px; padding: 20px 0;">
+              <IdSeparator
+                :orientation="propState.orientation || 'horizontal'"
+                :label="propState.label || 'OR'"
+                :variant="propState.variant || 'hairline'"
+                :spacing="propState.spacing || 'md'"
+              />
+            </div>
+          </template>
+
+          <template v-else-if="component.id === 'kbd'">
+            <div style="display: flex; gap: 8px; align-items: center;">
+              <IdKbd :keys="propState.keys || 'cmd+k'" :size="propState.size || 'md'" :variant="propState.variant || 'default'" />
+              <IdKbd keys="opt+shift+p" :size="propState.size || 'md'" :variant="propState.variant || 'default'" />
+              <IdKbd keys="esc" :size="propState.size || 'md'" :variant="propState.variant || 'default'" />
+            </div>
+          </template>
+
+          <template v-else-if="component.id === 'pin-input'">
+            <IdPinInput
+              :length="Number(propState.length) || 6"
+              :size="propState.size || 'md'"
+              :masked="propState.masked || false"
+              :label="propState.label || 'Verification Code'"
+            />
+          </template>
+
+          <template v-else-if="component.id === 'time-picker'">
+            <IdTimePicker
+              :label="propState.label || 'Meeting Start Time'"
+              :is-24-hour="propState.is24Hour || false"
+              :show-seconds="propState.showSeconds || false"
+              :size="propState.size || 'md'"
+            />
+          </template>
+
+          <template v-else-if="component.id === 'tag-input'">
+            <div style="width: 100%; max-width: 440px;">
+              <IdTagInput
+                :label="propState.label || 'Project Tags'"
+                :placeholder="propState.placeholder || 'Add tag...'"
+                :tag-variant="propState.tagVariant || 'accent'"
+                :size="propState.size || 'md'"
+              />
+            </div>
+          </template>
+
+          <template v-else-if="component.id === 'rating'">
+            <IdRating
+              :label="propState.label || 'Customer Satisfaction'"
+              :count="Number(propState.count) || 5"
+              :allow-half="propState.allowHalf || false"
+              :show-score="propState.showScore !== false"
+              :size="propState.size || 'md'"
+            />
+          </template>
+
+          <template v-else-if="component.id === 'number-input'">
+            <IdNumberInput
+              :label="propState.label || 'Border Radius'"
+              :unit="propState.unit || 'px'"
+              :step-val="Number(propState.stepVal) || 2"
+              :min="Number(propState.min) || 0"
+              :max="Number(propState.max) || 100"
+              :size="propState.size || 'md'"
+            />
+          </template>
+
+          <template v-else-if="component.id === 'color-picker'">
+            <IdColorPicker
+              :label="propState.label || 'Brand Accent Color'"
+              :size="propState.size || 'md'"
+            />
+          </template>
+
 
           <template v-else>
             <div style="text-align: center; color: var(--text-3); font-size: 14px;">
@@ -844,6 +1028,56 @@
           </table>
         </div>
       </div>
+
+      <!-- How to Modify & Customize Component Section -->
+      <div class="customization-docs-section">
+        <div class="customization-header-row">
+          <h4 class="customization-docs-title">Component Customization & Theming Guide</h4>
+          <div class="customization-tabs">
+            <button
+              :class="['cust-tab-btn', { active: activeCustomTab === 'props' }]"
+              @click="activeCustomTab = 'props'"
+            >
+              Composition API (Props)
+            </button>
+            <button
+              :class="['cust-tab-btn', { active: activeCustomTab === 'slots' }]"
+              @click="activeCustomTab = 'slots'"
+            >
+              Slots
+            </button>
+            <button
+              :class="['cust-tab-btn', { active: activeCustomTab === 'theme' }]"
+              @click="activeCustomTab = 'theme'"
+            >
+              Theme (Global UI Config)
+            </button>
+          </div>
+        </div>
+
+        <div class="customization-panel">
+          <!-- Active Tab Content -->
+          <div class="customization-tab-content">
+            <div class="code-box-header">
+              <span class="code-box-badge">
+                {{ activeCustomTab === 'props' ? 'Vue 3 Composition API & Props Usage' : (activeCustomTab === 'slots' ? 'Template Slots & Composition' : 'Complete Global UI Config & Runtime Theming') }}
+              </span>
+              <button type="button" class="copy-cust-btn" @click="copyCustomizationCode">
+                <svg v-if="custCopied" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#30d158" stroke-width="2.5">
+                  <path d="M20 6L9 17l-5-5"/>
+                </svg>
+                <svg v-else width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                </svg>
+                {{ custCopied ? 'Copied!' : 'Copy Code' }}
+              </button>
+            </div>
+            <pre class="recipe-pre"><code>{{ currentCustomizationSnippet }}</code></pre>
+          </div>
+        </div>
+      </div>
+
     </div>
   </IdModal>
 </template>
@@ -913,6 +1147,25 @@ import ProductShowcaseTemplate from './templates/ProductShowcaseTemplate.vue'
 import AiChatTemplate from './templates/AiChatTemplate.vue'
 import DashboardTemplate from './templates/DashboardTemplate.vue'
 import AuthTemplate from './templates/AuthTemplate.vue'
+import SettingsTemplate from './templates/SettingsTemplate.vue'
+import AnalyticsTemplate from './templates/AnalyticsTemplate.vue'
+import CheckoutTemplate from './templates/CheckoutTemplate.vue'
+import IdMacbookFrame from './idesign/IdMacbookFrame.vue'
+import IdIpadFrame from './idesign/IdIpadFrame.vue'
+import IdSidebar from './idesign/IdSidebar.vue'
+import IdHeader from './idesign/IdHeader.vue'
+import IdFooter from './idesign/IdFooter.vue'
+import IdBanner from './idesign/IdBanner.vue'
+import IdSeparator from './idesign/IdSeparator.vue'
+import IdKbd from './idesign/IdKbd.vue'
+import IdPinInput from './idesign/IdPinInput.vue'
+import IdTimePicker from './idesign/IdTimePicker.vue'
+import IdTagInput from './idesign/IdTagInput.vue'
+import IdRating from './idesign/IdRating.vue'
+import IdNumberInput from './idesign/IdNumberInput.vue'
+import IdColorPicker from './idesign/IdColorPicker.vue'
+
+
 import { Search, FolderOpen, Inbox, AlertCircle, Sparkles, Lock, Zap, Box, Folder, Check, Wifi, Bluetooth, Bell } from '@lucide/vue'
 import { useToast } from '../composables/useToast'
 
@@ -986,7 +1239,7 @@ const demoPage = ref(1)
 const toastInstance = useToast()
 const triggerToast = (type) => {
   const msg = type === 'success' ? 'Settings saved successfully' : type === 'warning' ? 'Storage reaching capacity' : type === 'error' ? 'Failed to synchronize data' : 'New update ready'
-  toastInstance[type](msg, { description: 'All changes synchronized to your Apple iCloud account.' })
+  toastInstance[type](msg, { description: 'All changes synchronized to your cloud account.' })
 }
 const demoText = ref('Sample text')
 const demoTextarea = ref('')
@@ -1045,6 +1298,364 @@ const copyCode = () => {
     codeCopied.value = false
   }, 2000)
 }
+
+const activeCustomTab = ref('props')
+const custCopied = ref(false)
+
+const copyCustomizationCode = () => {
+  if (!currentCustomizationSnippet.value) return
+  navigator.clipboard.writeText(currentCustomizationSnippet.value)
+  custCopied.value = true
+  emit('toast', `Copied ${activeCustomTab.value} customization code!`)
+  setTimeout(() => {
+    custCopied.value = false
+  }, 2000)
+}
+
+const componentTagMap = {
+  'button': 'IdButton',
+  'input': 'IdInput',
+  'textarea': 'IdTextarea',
+  'select': 'IdSelect',
+  'checkbox': 'IdCheckbox',
+  'radio': 'IdRadioGroup',
+  'slider': 'IdSlider',
+  'toggle': 'IdToggle',
+  'modal': 'IdModal',
+  'dialog': 'IdDialog',
+  'bottom-sheet': 'IdBottomSheet',
+  'drawer': 'IdDrawer',
+  'dropdown-menu': 'IdDropdownMenu',
+  'popover': 'IdPopover',
+  'tooltip': 'IdTooltip',
+  'tabs': 'IdTabs',
+  'accordion': 'IdAccordion',
+  'segmented-control': 'IdSegmentedControl',
+  'table': 'IdTable',
+  'tag': 'IdTag',
+  'badge': 'IdBadge',
+  'avatar': 'IdAvatar',
+  'progress': 'IdProgress',
+  'alert': 'IdAlert',
+  'toast': 'IdToast',
+  'card': 'IdCard',
+  'panel': 'IdPanel',
+  'panel-row': 'IdPanelRow',
+  'hero-cta': 'IdHeroCta',
+  'glass-nav': 'IdGlassNav',
+  'live-indicator': 'IdLiveDot',
+  'confirm-dialog': 'IdConfirmDialog',
+  'command-palette': 'IdCommandPalette',
+  'date-picker': 'IdDatePicker',
+  'file-upload': 'IdFileUpload',
+  'carousel': 'IdCarousel',
+  'dock': 'IdDock',
+  'stat': 'IdStat',
+  'sparkline': 'IdSparkline',
+  'spinner': 'IdSpinner',
+  'skeleton': 'IdSkeleton'
+}
+
+const currentCustomizationSnippet = computed(() => {
+  if (!props.component) return ''
+  const id = props.component.id
+  const tag = componentTagMap[id] || 'Id' + (props.component.name ? props.component.name.replace(/[^a-zA-Z]/g, '') : 'Component')
+  const baseName = tag.replace(/^Id/, '')
+
+  if (activeCustomTab.value === 'props') {
+    // 1. Composition API (Props)
+    if (id === 'input') {
+      return `<script setup>
+import { ref } from 'vue'
+import { IdInput, IdFormField } from '@idesign/vue'
+
+const email = ref('')
+const isInvalid = ref(false)
+const inputRef = ref(null)
+
+const handleFocus = () => {
+  inputRef.value?.focus()
+}
+<\/script>
+
+<template>
+  <IdFormField label="Email Address" required :error="isInvalid ? 'Please enter a valid email' : ''">
+    <IdInput
+      ref="inputRef"
+      v-model="email"
+      size="md"
+      variant="default"
+      placeholder="alex@company.com"
+      clearable
+      @change="isInvalid = !email.includes('@')"
+    />
+  </IdFormField>
+</template>`
+    } else if (id === 'button') {
+      return `<script setup>
+import { ref } from 'vue'
+import { IdButton } from '@idesign/vue'
+
+const isLoading = ref(false)
+
+const handleClick = async () => {
+  isLoading.value = true
+  try {
+    await performAction()
+  } finally {
+    isLoading.value = false
+  }
+}
+<\/script>
+
+<template>
+  <IdButton
+    variant="primary"
+    size="md"
+    color="blue"
+    :loading="isLoading"
+    @click="handleClick"
+  >
+    Confirm & Save
+  </IdButton>
+</template>`
+    } else if (id === 'modal' || id === 'dialog') {
+      return `<script setup>
+import { ref } from 'vue'
+import { IdDialog, IdButton } from '@idesign/vue'
+
+const isOpen = ref(false)
+<\/script>
+
+<template>
+  <IdButton variant="primary" @click="isOpen = true">Open Dialog</IdButton>
+
+  <IdDialog
+    v-model="isOpen"
+    title="Edit Workspace"
+    subtitle="Configure workspace visibility and members."
+    max-width="540px"
+    size="md"
+    variant="default"
+  >
+    <p>Dialog body content with automatic Escape key handling and focus trapping.</p>
+  </IdDialog>
+</template>`
+    } else if (id === 'tabs' || id === 'segmented-control') {
+      return `<script setup>
+import { ref } from 'vue'
+import { ${tag} } from '@idesign/vue'
+
+const activeTab = ref('overview')
+const tabsList = [
+  { value: 'overview', label: 'Overview' },
+  { value: 'analytics', label: 'Analytics' },
+  { value: 'settings', label: 'Settings' }
+]
+<\/script>
+
+<template>
+  <${tag}
+    v-model="activeTab"
+    :tabs="tabsList"
+    size="md"
+    variant="pill"
+    @change="val => console.log('Tab changed:', val)"
+  />
+</template>`
+    } else if (id === 'table') {
+      return `<script setup>
+import { ref } from 'vue'
+import { IdTable } from '@idesign/vue'
+
+const columns = [
+  { key: 'name', label: 'User Name', sortable: true },
+  { key: 'role', label: 'Role' },
+  { key: 'status', label: 'Status' }
+]
+
+const users = ref([
+  { name: 'Sarah Chen', role: 'Staff Engineer', status: 'Active' },
+  { name: 'Alex Rivera', role: 'Design Lead', status: 'Active' }
+])
+<\/script>
+
+<template>
+  <IdTable
+    :columns="columns"
+    :data="users"
+    variant="default"
+    searchable
+    selectable
+    hoverable
+  />
+</template>`
+    } else {
+      return `<script setup>
+import { ref } from 'vue'
+import { ${tag} } from '@idesign/vue'
+
+const modelValue = ref(null)
+<\/script>
+
+<template>
+  <${tag}
+    v-model="modelValue"
+    size="md"
+    variant="default"
+    @change="val => console.log('Value changed:', val)"
+  />
+</template>`
+    }
+  } else if (activeCustomTab.value === 'slots') {
+    // 2. Slots
+    if (id === 'input') {
+      return `<template>
+  <IdInput v-model="searchQuery" placeholder="Search components...">
+    <!-- Leading Icon / Prefix Slot -->
+    <template #prefix>
+      <span class="icon">🔍</span>
+    </template>
+
+    <!-- Trailing Action / Suffix Slot -->
+    <template #suffix>
+      <kbd class="shortcut-key">⌘K</kbd>
+    </template>
+  </IdInput>
+</template>`
+    } else if (id === 'button') {
+      return `<template>
+  <IdButton variant="primary" size="md">
+    <!-- Leading Icon Slot -->
+    <template #iconLeft>
+      <span class="btn-icon">⚡</span>
+    </template>
+
+    <!-- Default Content Slot -->
+    <span>Generate Production Bundle</span>
+
+    <!-- Trailing Icon Slot -->
+    <template #iconRight>
+      <span class="btn-chevron">→</span>
+    </template>
+  </IdButton>
+</template>`
+    } else if (id === 'card') {
+      return `<template>
+  <IdCard variant="glass" padding="lg">
+    <!-- Header Slot -->
+    <template #header>
+      <div class="tag">ENTERPRISE</div>
+      <IdCardTitle>Dedicated Cluster</IdCardTitle>
+      <IdCardDescription>High-throughput edge processing.</IdCardDescription>
+    </template>
+
+    <!-- Default Content Slot -->
+    <div class="card-body">
+      <p>Content rendered seamlessly on the unified panel surface.</p>
+    </div>
+
+    <!-- Footer / Actions Slot -->
+    <template #footer>
+      <IdButton size="sm" variant="primary">Deploy Node →</IdButton>
+    </template>
+  </IdCard>
+</template>`
+    } else if (id === 'modal' || id === 'dialog') {
+      return `<template>
+  <IdDialog v-model="isOpen" title="Confirm Action">
+    <!-- Header Slot Override -->
+    <template #header>
+      <div class="dialog-icon-badge">🔒</div>
+      <h3>Two-Factor Authentication</h3>
+    </template>
+
+    <!-- Default Body Slot -->
+    <p>Enter the 6-digit verification code from your authenticator app.</p>
+
+    <!-- Footer Actions Slot -->
+    <template #footer>
+      <IdButton variant="ghost" @click="isOpen = false">Cancel</IdButton>
+      <IdButton variant="primary" @click="verify">Verify Token</IdButton>
+    </template>
+  </IdDialog>
+</template>`
+    } else if (id === 'table') {
+      return `<template>
+  <IdTable :columns="columns" :data="data">
+    <!-- Custom Column Cell Slot (#col-{key}) -->
+    <template #col-status="{ value }">
+      <IdTag :variant="value === 'Active' ? 'success' : 'warning'" size="sm">
+        {{ value }}
+      </IdTag>
+    </template>
+
+    <!-- Row Actions Slot -->
+    <template #actions="{ row }">
+      <IdButton size="xs" variant="ghost">Edit</IdButton>
+    </template>
+  </IdTable>
+</template>`
+    } else {
+      return `<template>
+  <${tag}>
+    <!-- Default Slot -->
+    <span>Custom slotted content inside ${tag}</span>
+  </${tag}>
+</template>`
+    }
+  } else {
+    // 3. Theme (Global UI Config)
+    return `// 1. In your application entry point (main.ts / app.ts)
+import { createApp } from 'vue'
+import App from './App.vue'
+import Idesign, { createIdesign } from '@idesign/vue'
+
+const app = createApp(App)
+
+// 🌐 Register Global UI Configuration
+app.use(createIdesign({
+  theme: 'auto',          // 'light' | 'dark' | 'auto'
+  density: 'comfortable',  // 'compact' | 'comfortable' | 'spacious'
+
+  ui: {
+    // 🎨 Design Tokens (Overrides CSS variables globally)
+    colors: {
+      primary: '#0071e3',  // System Blue accent
+      surface: '#ffffff',
+      border: 'rgba(0, 0, 0, 0.07)'
+    },
+    radius: {
+      md: '12px',
+      lg: '18px',
+      full: '999px'
+    },
+
+    // ⚙️ Component-Level Defaults
+    components: {
+      ${baseName}: {
+        size: 'md',
+        variant: 'primary'
+      }
+    }
+  }
+}))
+
+app.mount('#app')
+
+// 2. Runtime Customization in any Vue Component
+// <script setup>
+// import { useIdesignConfig } from '@idesign/vue'
+// const { setUi, setTheme, setDensity } = useIdesignConfig()
+//
+// // Update tokens or component defaults dynamically
+// setUi({
+//   colors: { primary: '#5e5ce6' },
+//   components: { ${baseName}: { size: 'lg' } }
+// })
+// <\/script>`
+  }
+})
 </script>
 
 <style scoped>
@@ -1241,6 +1852,13 @@ const copyCode = () => {
 }
 
 @media (max-width: 600px) {
+  .stage-bar {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .props-grid {
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  }
   .code-header {
     flex-direction: column;
     align-items: stretch;
@@ -1328,4 +1946,132 @@ const copyCode = () => {
   color: var(--text-3);
   padding: 16px !important;
 }
+
+/* Customization Docs Section */
+.customization-docs-section {
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.customization-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.customization-docs-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+
+.customization-tabs {
+  display: inline-flex;
+  background: var(--track);
+  padding: 3px;
+  border-radius: var(--r-pill);
+  gap: 2px;
+}
+
+.cust-tab-btn {
+  border: none;
+  background: transparent;
+  color: var(--text-2);
+  font-family: var(--font);
+  font-size: 12px;
+  font-weight: 550;
+  padding: 4px 12px;
+  border-radius: var(--r-pill);
+  cursor: pointer;
+  transition: all 0.18s ease;
+  white-space: nowrap;
+}
+
+.cust-tab-btn:hover {
+  color: var(--text);
+}
+
+.cust-tab-btn.active {
+  background: var(--surface);
+  color: var(--text);
+  font-weight: 650;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+}
+
+:root.dark .cust-tab-btn.active {
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+}
+
+.customization-panel {
+  background: var(--surface);
+  border: 1px solid var(--hairline);
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: var(--sh-card);
+}
+
+.customization-tab-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.code-box-header {
+  padding: 9px 14px;
+  background: #141416;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.code-box-badge {
+  font-size: 11.5px;
+  font-weight: 650;
+  color: #a1a1aa;
+  letter-spacing: 0.02em;
+  font-family: var(--mono);
+}
+
+.copy-cust-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  font-family: var(--font);
+  font-size: 11.5px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: var(--r-pill);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.copy-cust-btn:hover {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.recipe-pre {
+  margin: 0;
+  padding: 16px;
+  font-family: var(--mono);
+  font-size: 12.5px;
+  line-height: 1.6;
+  background: #18181b;
+  color: #e4e4e7;
+  overflow-x: auto;
+  max-height: 320px;
+}
 </style>
+

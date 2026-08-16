@@ -9,7 +9,7 @@
               <slot name="icon">
                 <component :is="icon" v-if="icon && typeof icon !== 'string'" :size="18" />
                 <span v-else-if="typeof icon === 'string' && icon.length <= 4" class="icon-str">{{ icon }}</span>
-                <Layers v-else :size="18" />
+                <img v-else src="/icon.png" alt="Logo" class="nav-brand-img" />
               </slot>
             </div>
             <span class="brand-title">{{ title }}</span>
@@ -49,34 +49,76 @@
       </button>
     </div>
 
-    <!-- Mobile Navigation Drawer -->
-    <Transition name="nav-drawer">
-      <div v-if="mobileOpen" class="mobile-nav-drawer">
-        <nav v-if="links && links.length || $slots.nav" class="mobile-links-list">
-          <slot name="nav">
-            <a
-              v-for="(link, idx) in links"
-              :key="idx"
-              :href="link.href || '#'"
-              :class="['mobile-link-item', { active: link.active }]"
+    <!-- Mobile Navigation Side Drawer -->
+    <Teleport to="body">
+      <Transition name="drawer-fade">
+        <div
+          v-if="mobileOpen"
+          class="glass-drawer-backdrop"
+          @click="mobileOpen = false"
+        />
+      </Transition>
+
+      <Transition name="drawer-slide">
+        <aside
+          v-if="mobileOpen"
+          class="glass-drawer-panel"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Navigation Drawer"
+        >
+          <!-- Drawer Header -->
+          <div class="glass-drawer-header">
+            <div class="brand-link">
+              <div class="brand-icon">
+                <slot name="icon">
+                  <component :is="icon" v-if="icon && typeof icon !== 'string'" :size="18" />
+                  <span v-else-if="typeof icon === 'string' && icon.length <= 4" class="icon-str">{{ icon }}</span>
+                  <img v-else src="/icon.png" alt="Logo" class="nav-brand-img" />
+                </slot>
+              </div>
+              <span class="brand-title">{{ title }}</span>
+            </div>
+            <button
+              type="button"
+              class="glass-drawer-close-btn"
+              aria-label="Close menu"
               @click="mobileOpen = false"
             >
-              {{ link.label || link }}
-            </a>
-          </slot>
-        </nav>
+              <X :size="18" />
+            </button>
+          </div>
 
-        <div v-if="$slots.actions" class="mobile-actions-container" @click="mobileOpen = false">
-          <slot name="actions" />
-        </div>
-      </div>
-    </Transition>
+          <!-- Drawer Navigation Links -->
+          <div class="glass-drawer-body">
+            <nav v-if="links && links.length || $slots.nav" class="mobile-links-list">
+              <slot name="nav">
+                <a
+                  v-for="(link, idx) in links"
+                  :key="idx"
+                  :href="link.href || '#'"
+                  :class="['mobile-link-item', { active: link.active }]"
+                  @click="mobileOpen = false"
+                >
+                  <span>{{ link.label || link }}</span>
+                  <ChevronRight :size="14" class="link-arrow" />
+                </a>
+              </slot>
+            </nav>
+
+            <div v-if="$slots.actions" class="mobile-actions-container" @click="mobileOpen = false">
+              <slot name="actions" />
+            </div>
+          </div>
+        </aside>
+      </Transition>
+    </Teleport>
   </header>
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import { Layers, Menu, X } from '@lucide/vue'
+import { ref, watch, onUnmounted } from 'vue'
+import { Layers, Menu, X, ChevronRight } from '@lucide/vue'
 
 defineProps({
   title: {
@@ -93,6 +135,18 @@ defineProps({
 })
 
 const mobileOpen = ref(false)
+
+watch(mobileOpen, (isOpen) => {
+  if (typeof document !== 'undefined') {
+    document.body.style.overflow = isOpen ? 'hidden' : ''
+  }
+})
+
+onUnmounted(() => {
+  if (typeof document !== 'undefined') {
+    document.body.style.overflow = ''
+  }
+})
 </script>
 
 <style scoped>
@@ -176,7 +230,9 @@ const mobileOpen = ref(false)
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  overflow: hidden;
 }
+.nav-brand-img { width: 18px; height: 18px; object-fit: contain; }
 .icon-str { font-size: 15px; line-height: 1; }
 .brand-title {
   font-size: 16px;
@@ -226,49 +282,103 @@ const mobileOpen = ref(false)
   background: var(--hover);
 }
 
-/* Mobile Drawer */
-.mobile-nav-drawer {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  padding: 14px 20px 18px 20px;
-  background: rgba(255, 255, 255, 0.92);
-  backdrop-filter: saturate(180%) blur(24px);
-  -webkit-backdrop-filter: saturate(180%) blur(24px);
-  border-bottom: 1px solid var(--hairline);
-  box-shadow: var(--sh-overlay);
+/* Glass Drawer Backdrop & Panel */
+.glass-drawer-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 998;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 
-:root.dark .mobile-nav-drawer {
-  background: rgba(28, 28, 30, 0.94);
+.glass-drawer-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 999;
+  width: 100%;
+  max-width: 320px;
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: saturate(180%) blur(28px);
+  -webkit-backdrop-filter: saturate(180%) blur(28px);
+  border-left: 1px solid var(--hairline);
+  box-shadow: var(--sh-overlay);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  font-family: var(--font);
+}
+
+:root.dark .glass-drawer-panel {
+  background: rgba(28, 28, 30, 0.92);
+}
+
+.glass-drawer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--hairline);
+}
+
+.glass-drawer-close-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid var(--hairline);
+  background: var(--surface);
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.glass-drawer-body {
+  flex: 1;
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
 .mobile-links-list {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
 }
 
 .mobile-link-item {
-  padding: 8px 12px;
-  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  border-radius: 12px;
   font-size: 14px;
   font-weight: 600;
-  color: var(--text-2);
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--hairline);
   text-decoration: none;
-  transition: background 0.15s ease, color 0.15s ease;
+  transition: all 0.15s ease;
 }
 
 .mobile-link-item:hover, .mobile-link-item.active {
   background: var(--hover);
-  color: var(--text);
+  border-color: var(--accent);
+}
+
+.link-arrow {
+  color: var(--text-3);
 }
 
 .mobile-actions-container {
   display: flex;
-  align-items: center;
+  flex-direction: column;
   gap: 8px;
-  padding-top: 8px;
+  padding-top: 12px;
   border-top: 1px solid var(--hairline);
 }
 
@@ -281,14 +391,22 @@ const mobileOpen = ref(false)
   }
 }
 
-.nav-drawer-enter-active,
-.nav-drawer-leave-active {
-  transition: opacity 0.2s ease, transform 0.2s var(--ease-out-quart);
+.drawer-fade-enter-active,
+.drawer-fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+.drawer-fade-enter-from,
+.drawer-fade-leave-to {
+  opacity: 0;
 }
 
-.nav-drawer-enter-from,
-.nav-drawer-leave-to {
-  opacity: 0;
-  transform: translateY(-8px);
+.drawer-slide-enter-active,
+.drawer-slide-leave-active {
+  transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease;
+}
+.drawer-slide-enter-from,
+.drawer-slide-leave-to {
+  transform: translateX(100%);
+  opacity: 0.9;
 }
 </style>

@@ -1,13 +1,19 @@
 <template>
-  <div :class="['id-select-group', `size-${size}`, `variant-${variant}`, { 'is-disabled': disabled }]">
-    <label v-if="label" :id="labelId" class="select-label">{{ label }}</label>
+  <div :class="['id-select-group', `size-${currentSize}`, `variant-${variant}`, { 'is-disabled': disabled }]">
+    <label v-if="label" :id="labelId" :for="buttonId" class="select-label">
+      {{ label }}
+    </label>
+
     <div
+      :id="buttonId"
       ref="selectRef"
       :class="['select-wrapper', `variant-${variant}`, { 'is-open': isOpen, 'is-focused': isOpen }]"
       role="combobox"
       :aria-expanded="isOpen"
-      :aria-haspopup="true"
+      aria-haspopup="listbox"
+      :aria-controls="listboxId"
       :aria-labelledby="label ? labelId : undefined"
+      :aria-activedescendant="isOpen && focusedIndex >= 0 ? `${optionIdPrefix}-${focusedIndex}` : undefined"
       tabindex="0"
       @click="toggle"
       @keydown="handleKeydown"
@@ -15,15 +21,36 @@
       <span :class="['select-value', { 'is-placeholder': !modelValue }]">
         {{ displayLabel }}
       </span>
-      <svg class="select-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+
+      <!-- Clear button when clearable -->
+      <button
+        v-if="clearable && modelValue && !disabled"
+        type="button"
+        class="select-clear-btn"
+        aria-label="Clear selection"
+        tabindex="-1"
+        @click.stop="clearSelection"
+      >
+        ✕
+      </button>
+
+      <svg class="select-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
         <path d="M6 9l6 6 6-6"/>
       </svg>
     </div>
 
     <Transition name="dropdown">
-      <div v-if="isOpen" :class="['select-dropdown', `variant-${variant}`]" role="listbox" :aria-labelledby="label ? labelId : undefined">
+      <div
+        v-if="isOpen"
+        :id="listboxId"
+        :class="['select-dropdown', `variant-${variant}`]"
+        role="listbox"
+        :aria-labelledby="label ? labelId : undefined"
+        tabindex="-1"
+      >
         <div
           v-for="(opt, idx) in normalizedOptions"
+          :id="`${optionIdPrefix}-${idx}`"
           :key="opt.value"
           :class="['select-option', { 'is-selected': modelValue === opt.value, 'is-focused': focusedIndex === idx }]"
           role="option"
@@ -32,7 +59,7 @@
           @mouseenter="focusedIndex = idx"
         >
           <span>{{ opt.label }}</span>
-          <svg v-if="modelValue === opt.value" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <svg v-if="modelValue === opt.value" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
             <path d="M20 6L9 17l-5-5"/>
           </svg>
         </div>
@@ -45,6 +72,7 @@
 
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
+import { useIdesignConfig } from '../../composables/useIdesignConfig'
 
 const props = defineProps({
   modelValue: { type: [String, Number, null], default: null },
@@ -53,7 +81,8 @@ const props = defineProps({
   placeholder: { type: String, default: 'Select an option...' },
   hint: String,
   disabled: Boolean,
-  size: { type: String, default: 'md', validator: v => ['sm', 'md', 'lg'].includes(v) },
+  clearable: Boolean,
+  size: { type: String, default: undefined, validator: v => !v || ['xs', 'sm', 'md', 'lg', 'xl'].includes(v) },
   variant: {
     type: String,
     default: 'default',
@@ -61,7 +90,10 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['update:modelValue'])
+const emit = defineEmits(['update:modelValue', 'change'])
+
+const config = useIdesignConfig({ size: props.size })
+const currentSize = computed(() => props.size || config.size || 'md')
 
 const selectRef = ref(null)
 const isOpen = ref(false)
@@ -69,10 +101,13 @@ const focusedIndex = ref(-1)
 
 const uid = Math.random().toString(36).substring(2, 8)
 const labelId = `id-select-label-${uid}`
+const buttonId = `id-select-btn-${uid}`
+const listboxId = `id-select-listbox-${uid}`
+const optionIdPrefix = `id-select-opt-${uid}`
 
 const normalizedOptions = computed(() => {
   return props.options.map(opt =>
-    typeof opt === 'object' ? { value: opt.value, label: opt.label || opt.value } : { value: opt, label: String(opt) }
+    typeof opt === 'object' && opt !== null ? { value: opt.value, label: opt.label || opt.value } : { value: opt, label: String(opt) }
   )
 })
 
@@ -81,49 +116,118 @@ const displayLabel = computed(() => {
   return found ? found.label : props.placeholder
 })
 
-const toggle = () => { if (!props.disabled) isOpen.value = !isOpen.value }
-const selectOption = (val) => { emit('update:modelValue', val); isOpen.value = false }
+const toggle = () => {
+  if (props.disabled) return
+  isOpen.value = !isOpen.value
+  if (isOpen.value) {
+    const curIdx = normalizedOptions.value.findIndex(o => o.value === props.modelValue)
+    focusedIndex.value = curIdx >= 0 ? curIdx : 0
+  }
+}
+
+const selectOption = (val) => {
+  emit('update:modelValue', val)
+  emit('change', val)
+  isOpen.value = false
+  if (selectRef.value) selectRef.value.focus()
+}
+
+const clearSelection = () => {
+  emit('update:modelValue', null)
+  emit('change', null)
+  isOpen.value = false
+  if (selectRef.value) selectRef.value.focus()
+}
 
 const handleKeydown = (e) => {
   if (props.disabled) return
+  const count = normalizedOptions.value.length
+
   switch (e.key) {
-    case 'Enter': case ' ':
+    case 'Enter':
+    case ' ':
       e.preventDefault()
-      if (isOpen.value && focusedIndex.value >= 0) selectOption(normalizedOptions.value[focusedIndex.value].value)
-      else toggle()
+      if (isOpen.value && focusedIndex.value >= 0) {
+        selectOption(normalizedOptions.value[focusedIndex.value].value)
+      } else {
+        toggle()
+      }
       break
     case 'ArrowDown':
       e.preventDefault()
-      if (!isOpen.value) { isOpen.value = true; focusedIndex.value = 0 }
-      else focusedIndex.value = Math.min(focusedIndex.value + 1, normalizedOptions.value.length - 1)
+      if (!isOpen.value) {
+        isOpen.value = true
+        focusedIndex.value = 0
+      } else {
+        focusedIndex.value = Math.min(focusedIndex.value + 1, count - 1)
+      }
       break
     case 'ArrowUp':
       e.preventDefault()
-      focusedIndex.value = Math.max(focusedIndex.value - 1, 0)
+      if (!isOpen.value) {
+        isOpen.value = true
+        focusedIndex.value = count - 1
+      } else {
+        focusedIndex.value = Math.max(focusedIndex.value - 1, 0)
+      }
+      break
+    case 'Home':
+      if (isOpen.value) {
+        e.preventDefault()
+        focusedIndex.value = 0
+      }
+      break
+    case 'End':
+      if (isOpen.value) {
+        e.preventDefault()
+        focusedIndex.value = count - 1
+      }
       break
     case 'Escape':
+    case 'Tab':
       isOpen.value = false
+      break
+    default:
+      // Type-ahead character jump
+      if (e.key.length === 1 && isOpen.value) {
+        const char = e.key.toLowerCase()
+        const matchIdx = normalizedOptions.value.findIndex((o, i) => i > focusedIndex.value && o.label.toLowerCase().startsWith(char))
+        if (matchIdx >= 0) {
+          focusedIndex.value = matchIdx
+        } else {
+          const wrapIdx = normalizedOptions.value.findIndex(o => o.label.toLowerCase().startsWith(char))
+          if (wrapIdx >= 0) focusedIndex.value = wrapIdx
+        }
+      }
       break
   }
 }
 
-const handleOutside = (e) => { if (selectRef.value && !selectRef.value.contains(e.target)) isOpen.value = false }
+const handleOutside = (e) => {
+  if (selectRef.value && !selectRef.value.contains(e.target)) {
+    isOpen.value = false
+  }
+}
+
 onMounted(() => document.addEventListener('click', handleOutside))
 onBeforeUnmount(() => document.removeEventListener('click', handleOutside))
 </script>
 
 <style scoped>
 .id-select-group { display: flex; flex-direction: column; gap: 6px; width: 100%; position: relative; font-family: var(--font); }
-.select-label { font-size: 13px; font-weight: 600; color: var(--text-2); }
+.select-label { font-size: 13px; font-weight: 600; color: var(--text-2); user-select: none; }
 
+.size-xs .select-wrapper { height: 28px; padding: 0 8px; font-size: 12px; border-radius: 6px; }
 .size-sm .select-wrapper { height: 34px; padding: 0 10px; font-size: 13px; border-radius: 8px; }
 .size-md .select-wrapper { height: 42px; padding: 0 12px; font-size: 14.5px; border-radius: 10px; }
 .size-lg .select-wrapper { height: 48px; padding: 0 16px; font-size: 16px; border-radius: 12px; }
+.size-xl .select-wrapper { height: 54px; padding: 0 18px; font-size: 17.5px; border-radius: 14px; }
 
 .select-wrapper {
   display: flex; align-items: center; justify-content: space-between;
   background: var(--surface); border: 1px solid var(--hairline);
   cursor: pointer; transition: border-color .2s, box-shadow .2s; user-select: none;
+  outline: none;
 }
 
 .variant-glass .select-wrapper {
@@ -132,9 +236,16 @@ onBeforeUnmount(() => document.removeEventListener('click', handleOutside))
 }
 :root.dark .variant-glass .select-wrapper { background: rgba(28, 28, 30, 0.65); }
 
-.select-wrapper.is-focused { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(0,113,227,0.15); }
-.select-value { color: var(--text); flex: 1; }
+.select-wrapper:focus-visible,
+.select-wrapper.is-focused { border-color: var(--accent); box-shadow: var(--focus-ring); }
+.select-value { color: var(--text); flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .select-value.is-placeholder { color: var(--text-4); }
+
+.select-clear-btn {
+  border: none; background: transparent; color: var(--text-3); font-size: 12px; cursor: pointer; padding: 2px 6px; margin-right: 4px;
+}
+.select-clear-btn:hover { color: var(--text); }
+
 .select-chevron { color: var(--text-3); transition: transform .2s var(--ease-out-quart); flex-shrink: 0; }
 .is-open .select-chevron { transform: rotate(180deg); }
 
@@ -142,6 +253,7 @@ onBeforeUnmount(() => document.removeEventListener('click', handleOutside))
   position: absolute; top: calc(100% + 4px); left: 0; right: 0; z-index: 60;
   background: var(--surface); border: 1px solid var(--hairline); border-radius: 12px;
   box-shadow: var(--sh-overlay); overflow: hidden; max-height: 240px; overflow-y: auto;
+  outline: none;
 }
 
 .select-option {
@@ -151,7 +263,6 @@ onBeforeUnmount(() => document.removeEventListener('click', handleOutside))
 
 .select-dropdown:not(.variant-no-divider) .select-option + .select-option { border-top: 1px solid var(--hairline); }
 
-/* No-divider variant styled identically to Dropdown Menu */
 .select-dropdown.variant-no-divider {
   padding: 4px;
   border-radius: 14px;

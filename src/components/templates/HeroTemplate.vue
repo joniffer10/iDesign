@@ -34,7 +34,7 @@
         </h1>
 
         <p class="hero-subtitle">
-          Experience spatial AI workflows crafted with Apple liquid glass physics, 120fps fluid motion, and zero-latency local intelligence.
+          Experience spatial AI workflows crafted with liquid glass physics, 120fps fluid motion, and zero-latency local intelligence.
         </p>
 
         <div class="hero-cta-buttons">
@@ -70,7 +70,7 @@
     <section class="features-section">
       <div class="section-head">
         <IdTag variant="mono">ARCHITECTURE</IdTag>
-        <h2>Engineered for Apple Silicon</h2>
+        <h2>Engineered for High-Performance Silicon</h2>
         <p>Built ground-up with Vue 3, Vite, and hardware-accelerated CSS tokens.</p>
       </div>
 
@@ -78,7 +78,7 @@
         <IdCard
           variant="glass"
           title="Neural Engine Sync"
-          subtitle="Metal 3 Acceleration"
+          subtitle="Hardware Acceleration"
           tag="REALTIME"
           interactive
         >
@@ -108,7 +108,7 @@
           tag="SECURITY"
           interactive
         >
-          Zero data leaves your Apple device without explicit biometric confirmation.
+          Zero data leaves your local device without explicit biometric confirmation.
           <template #actions>
             <IdButton variant="ghost" size="sm">Read Whitepaper →</IdButton>
           </template>

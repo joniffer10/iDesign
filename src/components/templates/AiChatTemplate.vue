@@ -188,7 +188,7 @@ const isTyping = ref(false)
 const scrollViewport = ref(null)
 
 const todayChats = ref([
-  { id: '1', title: 'Refactoring Vue 3 Apple Navigation' },
+  { id: '1', title: 'Refactoring Vue 3 Navigation' },
   { id: '2', title: 'Design System Token Automation' }
 ])
 
@@ -205,7 +205,7 @@ const currentMessages = ref([
   },
   {
     role: 'user',
-    text: 'Can you show me how to write an Apple-style liquid glass button in Vue 3?',
+    text: 'Can you show me how to write a liquid glass button in Vue 3?',
     time: '10:43 AM'
   },
   {

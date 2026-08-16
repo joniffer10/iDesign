@@ -5,12 +5,15 @@
     :type="tag === 'button' ? type : undefined"
     :class="[
       'id-btn',
-      `btn-${variant}`,
+      `btn-${currentVariant}`,
       `color-${color}`,
-      `size-${size}`,
+      `size-${currentSize}`,
+      `density-${currentDensity}`,
       { 'is-disabled': disabled || loading, 'is-block': block, 'is-loading': loading }
     ]"
     :disabled="disabled || loading"
+    :aria-disabled="disabled || loading"
+    :aria-busy="loading"
     @click="$emit('click', $event)"
   >
     <Loader2 v-if="loading" class="btn-spinner" :size="iconSize" />
@@ -42,20 +45,22 @@
 <script setup>
 import { computed } from 'vue'
 import { Loader2 } from '@lucide/vue'
+import { useIdesignConfig } from '../../composables/useIdesignConfig'
 
 const props = defineProps({
   label: String,
   variant: {
     type: String,
     default: 'primary',
-    validator: v => ['primary', 'secondary', 'outline', 'glass', 'dark', 'ghost', 'danger'].includes(v)
+    validator: v => ['primary', 'secondary', 'outline', 'glass', 'dark', 'ghost', 'danger', 'subtle'].includes(v)
   },
   color: {
     type: String,
     default: 'blue',
     validator: v => ['blue', 'green', 'purple', 'orange', 'red', 'black', 'gray'].includes(v)
   },
-  size: { type: String, default: 'md', validator: v => ['sm', 'md', 'lg'].includes(v) },
+  size: { type: String, default: undefined, validator: v => !v || ['xs', 'sm', 'md', 'lg', 'xl'].includes(v) },
+  density: { type: String, default: undefined, validator: v => !v || ['compact', 'comfortable', 'spacious'].includes(v) },
   iconLeft: [Object, Function, String],
   iconRight: [Object, Function, String],
   href: String,
@@ -67,8 +72,17 @@ const props = defineProps({
 
 defineEmits(['click'])
 
+const config = useIdesignConfig({ size: props.size, density: props.density })
+const currentSize = computed(() => props.size || config.size || 'md')
+const currentDensity = computed(() => props.density || config.density || 'comfortable')
+const currentVariant = computed(() => props.variant || 'primary')
+
 const tag = computed(() => props.href ? 'a' : 'button')
-const iconSize = computed(() => props.size === 'sm' ? 14 : props.size === 'lg' ? 18 : 16)
+const iconSize = computed(() => {
+  const sz = currentSize.value
+  return sz === 'xs' ? 12 : sz === 'sm' ? 14 : sz === 'lg' ? 18 : sz === 'xl' ? 20 : 16
+})
+
 const isComponent = (val) => typeof val === 'object' || typeof val === 'function'
 </script>
 
@@ -78,13 +92,25 @@ const isComponent = (val) => typeof val === 'object' || typeof val === 'function
   border-radius: var(--r-pill); font-family: var(--font); text-decoration: none; border: none;
   cursor: pointer; white-space: nowrap; transition: transform 0.15s ease, opacity 0.15s ease, box-shadow 0.15s ease, background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
   user-select: none;
+  outline: none;
+}
+.id-btn:focus-visible {
+  box-shadow: var(--focus-ring);
 }
 .id-btn.is-block { width: 100%; display: flex; }
 .id-btn:active:not(.is-disabled) { transform: scale(0.97); }
 
+/* Size Variants */
+.size-xs { height: 28px; padding: 0 10px; font-size: 12px; font-weight: 550; }
 .size-sm { height: 36px; padding: 0 14px; font-size: 13px; font-weight: 550; }
 .size-md { height: 44px; padding: 0 20px; font-size: 14.5px; font-weight: 600; }
 .size-lg { height: 50px; padding: 0 26px; font-size: 16px; font-weight: 650; }
+.size-xl { height: 56px; padding: 0 30px; font-size: 17.5px; font-weight: 700; }
+
+/* Density Modifiers */
+.density-compact.size-sm { height: 32px; padding: 0 10px; }
+.density-compact.size-md { height: 38px; padding: 0 14px; }
+.density-spacious.size-md { height: 48px; padding: 0 24px; }
 
 /* Base Variants */
 .btn-primary { background: var(--accent); color: #ffffff; }
@@ -95,6 +121,13 @@ const isComponent = (val) => typeof val === 'object' || typeof val === 'function
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05); color: var(--text);
 }
 .btn-secondary:hover:not(.is-disabled) { background: var(--hover); box-shadow: var(--sh-card); }
+
+.btn-subtle {
+  background: rgba(0, 113, 227, 0.08); color: var(--accent); border: none;
+}
+.btn-subtle:hover:not(.is-disabled) { background: rgba(0, 113, 227, 0.15); }
+:root.dark .btn-subtle { background: rgba(10, 132, 255, 0.15); color: #0a84ff; }
+:root.dark .btn-subtle:hover:not(.is-disabled) { background: rgba(10, 132, 255, 0.25); }
 
 .btn-outline {
   background: transparent; border: 1.5px solid var(--accent); color: var(--accent);
@@ -133,22 +166,6 @@ const isComponent = (val) => typeof val === 'object' || typeof val === 'function
 
 .color-black.btn-primary { background: var(--text); color: var(--bg); }
 .color-black.btn-primary:hover:not(.is-disabled) { opacity: 0.9; }
-
-/* Custom Color Overrides for Outline */
-.color-green.btn-outline { border-color: #34c759; color: #34c759; }
-.color-green.btn-outline:hover:not(.is-disabled) { background: rgba(52, 199, 89, 0.1); }
-
-.color-purple.btn-outline { border-color: #af52de; color: #af52de; }
-.color-purple.btn-outline:hover:not(.is-disabled) { background: rgba(175, 82, 222, 0.1); }
-
-.color-orange.btn-outline { border-color: #ff9500; color: #ff9500; }
-.color-orange.btn-outline:hover:not(.is-disabled) { background: rgba(255, 149, 0, 0.1); }
-
-.color-red.btn-outline { border-color: #ff3b30; color: #ff3b30; }
-.color-red.btn-outline:hover:not(.is-disabled) { background: rgba(255, 59, 48, 0.1); }
-
-.color-black.btn-outline { border-color: var(--text); color: var(--text); }
-.color-black.btn-outline:hover:not(.is-disabled) { background: var(--hover); }
 
 .is-disabled {
   opacity: 0.45 !important;

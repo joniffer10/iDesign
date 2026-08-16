@@ -33,7 +33,7 @@
 defineProps({
   title: {
     type: String,
-    default: 'Build Apple-Grade Apps'
+    default: 'Build Production-Grade Apps'
   },
   description: String,
   subtitle: {
@@ -66,7 +66,7 @@ defineEmits(['action'])
   transition: all 0.25s var(--ease-out-quart);
 }
 
-/* Glass Variant (Light & Crisp Apple Frosted Card) */
+/* Glass Variant (Light & Crisp Frosted Card) */
 .variant-glass {
   background: rgba(255, 255, 255, 0.78);
   backdrop-filter: saturate(180%) blur(20px);

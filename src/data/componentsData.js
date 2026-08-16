@@ -9,7 +9,7 @@ export const componentCategories = [
   { id: 'indicators', label: 'Indicators' },
   { id: 'data', label: 'Data Display' },
   { id: 'layout', label: 'Layout' },
-  { id: 'mobile', label: 'iOS Shell' }
+  { id: 'mobile', label: 'Mobile Shell' }
 ]
 
 export const componentsData = [
@@ -18,7 +18,7 @@ export const componentsData = [
     id: 'hero-page',
     name: 'Hero, Headlines & CTA Page',
     category: 'templates',
-    description: 'Apple-grade landing page with sticky glass nav, ambient gradient glow orbs, headlines, key metrics row, and feature cards.',
+    description: 'Production-grade landing page with sticky glass nav, ambient gradient glow orbs, headlines, key metrics row, and feature cards.',
     tags: ['template', 'hero', 'landing', 'headline', 'cta', 'page'],
     props: {},
     vueCode: (p) => `<script setup>
@@ -44,7 +44,7 @@ import { HeroTemplate } from '@idesign/vue'
   <main class="hero-content">
     <span class="eyebrow-tag">DESIGN SYSTEM V2.0</span>
     <h1 class="hero-title">Spatial Computing Interfaces</h1>
-    <p class="hero-desc">Apple-grade liquid glass component library for Vue 3 & Nuxt 3.</p>
+    <p class="hero-desc">Production-grade liquid glass component library for Vue 3 & Nuxt 3.</p>
   </main>
 </section>`
   },
@@ -53,7 +53,7 @@ import { HeroTemplate } from '@idesign/vue'
     id: 'product-page',
     name: 'Product Showcase & Store Page',
     category: 'templates',
-    description: 'Apple Store e-commerce page with category pill filters, image banner cards, price tags, quick view modal, and shopping bag counter.',
+    description: 'Store e-commerce page with category pill filters, image banner cards, price tags, quick view modal, and shopping bag counter.',
     tags: ['template', 'product', 'store', 'ecommerce', 'shop', 'page'],
     props: {},
     vueCode: (p) => `<script setup>
@@ -69,13 +69,13 @@ import { ProductShowcaseTemplate } from '@idesign/vue'
 </template>`,
     htmlCode: (p) => `<div class="template-product-page">
   <header class="store-header">
-    <h2>Apple Store Online</h2>
+    <h2>Online Store</h2>
     <div class="bag-counter">Bag (2)</div>
   </header>
   <div class="product-grid">
     <article class="product-card">
-      <img src="https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=500" alt="Vision Pro" />
-      <h3>Apple Vision Pro</h3>
+      <img src="https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=500" alt="Vision Studio Pro" />
+      <h3>Vision Studio Pro</h3>
       <span class="price">$3,499</span>
       <button class="btn btn-primary">Buy Now</button>
     </article>
@@ -85,9 +85,9 @@ import { ProductShowcaseTemplate } from '@idesign/vue'
 
   {
     id: 'ai-chat-page',
-    name: 'AI Chat Interface (iMessage)',
+    name: 'AI Chat Interface',
     category: 'templates',
-    description: 'Vision Pro AI assistant page with variants for full page with sidebar vs standalone chat window without sidebar.',
+    description: 'AI assistant page with variants for full page with sidebar vs standalone chat window without sidebar.',
     tags: ['template', 'ai', 'chat', 'imessage', 'assistant', 'prompt', 'page'],
     props: {
       variant: { type: 'select', options: ['full', 'standalone', 'widget'], default: 'full', description: 'Layout structure variant for AI conversation shell.' }
@@ -124,7 +124,7 @@ import { AiChatTemplate } from '@idesign/vue'
     id: 'dashboard-page',
     name: 'Analytics & Systems Dashboard',
     category: 'templates',
-    description: 'Apple System & Health dashboard with 4 KPI stat cards, interactive data table with search/selection, control panels, and team collaborators.',
+    description: 'System & Health dashboard with 4 KPI stat cards, interactive data table with search/selection, control panels, and team collaborators.',
     tags: ['template', 'dashboard', 'analytics', 'admin', 'table', 'kpi', 'page'],
     props: {},
     vueCode: (p) => `<script setup>
@@ -162,7 +162,7 @@ import { DashboardTemplate } from '@idesign/vue'
     id: 'auth-page',
     name: 'Login & Sign Up Page',
     category: 'templates',
-    description: 'Apple Liquid Glass authentication page supporting split-hero, centered-card, and minimal-glass passkey layouts.',
+    description: 'Liquid Glass authentication page supporting split-hero, centered-card, and minimal-glass passkey layouts.',
     tags: ['template', 'login', 'signup', 'auth', 'signin', 'register', 'page', 'passkey'],
     props: {
       variant: { type: 'select', options: ['default', 'split-hero', 'centered-card', 'minimal-glass'], default: 'default', description: 'Visual style layout variant for authentication card.' }
@@ -187,7 +187,7 @@ import { AuthTemplate } from '@idesign/vue'
     <form class="auth-form">
       <div class="input-group">
         <label>Email Address</label>
-        <input type="email" placeholder="jane@apple.com" required />
+        <input type="email" placeholder="jane@example.com" required />
       </div>
       <div class="input-group">
         <label>Password</label>
@@ -198,6 +198,83 @@ import { AuthTemplate } from '@idesign/vue'
   </div>
 </div>`
   },
+
+  {
+    id: 'settings-page',
+    name: 'System Preferences & Settings Page',
+
+    category: 'templates',
+    description: 'Liquid Glass system settings panel with profile management, appearance/density controls, 2FA security keys, and billing usage meters.',
+    tags: ['template', 'settings', 'preferences', 'profile', 'security', 'billing', 'page'],
+    props: {},
+    vueCode: (p) => `<script setup>
+import { SettingsTemplate } from '@idesign/vue'
+<\/script>
+
+<template>
+  <SettingsTemplate />
+</template>`,
+    nuxtCode: (p) => `<!-- Nuxt 3 Auto-Import -->
+<template>
+  <SettingsTemplate />
+</template>`,
+    htmlCode: (p) => `<div class="template-settings-page">
+  <div class="settings-panel">
+    <h2>System Settings</h2>
+  </div>
+</div>`
+  },
+
+  {
+    id: 'analytics-page',
+    name: 'Real-Time Telemetry & Metrics Page',
+    category: 'templates',
+    description: 'Real-time telemetry dashboard with interactive metric tiles, sparklines, cohort bar charts, traffic distribution, and live activity streams.',
+    tags: ['template', 'analytics', 'telemetry', 'metrics', 'charts', 'sparkline', 'page'],
+    props: {},
+    vueCode: (p) => `<script setup>
+import { AnalyticsTemplate } from '@idesign/vue'
+<\/script>
+
+<template>
+  <AnalyticsTemplate />
+</template>`,
+    nuxtCode: (p) => `<!-- Nuxt 3 Auto-Import -->
+<template>
+  <AnalyticsTemplate />
+</template>`,
+    htmlCode: (p) => `<div class="template-analytics-page">
+  <div class="metrics-grid">
+    <div class="metric-card">Live Telemetry</div>
+  </div>
+</div>`
+  },
+
+  {
+    id: 'checkout-page',
+    name: 'Compound Form & Checkout Page',
+    category: 'templates',
+    description: 'Production onboarding & checkout flow demonstrating the new Compound Form System with step indicators, organization setup, payment authorization, and receipt summary.',
+    tags: ['template', 'checkout', 'form', 'compound', 'onboarding', 'payment', 'stepper', 'page'],
+    props: {},
+    vueCode: (p) => `<script setup>
+import { CheckoutTemplate } from '@idesign/vue'
+<\/script>
+
+<template>
+  <CheckoutTemplate />
+</template>`,
+    nuxtCode: (p) => `<!-- Nuxt 3 Auto-Import -->
+<template>
+  <CheckoutTemplate />
+</template>`,
+    htmlCode: (p) => `<div class="template-checkout-page">
+  <div class="checkout-form">
+    <h2>Enterprise Subscription</h2>
+  </div>
+</div>`
+  },
+
 
   // ─── NAVIGATION ───
   {
@@ -598,8 +675,8 @@ const items = [
 
   // ─── BUTTONS ───
   {
-    id: 'apple-button',
-    name: 'Apple Pill Buttons',
+    id: 'liquid-button',
+    name: 'Liquid Pill Buttons',
     category: 'buttons',
     description: 'Pill-shaped buttons with ≥44px touch targets, left/right Lucide icon support, color selection, disabled state, loading spinner, and 7 variants including outline.',
     tags: ['button', 'pill', 'primary', 'secondary', 'outline', 'color', 'icon', 'disabled'],
@@ -700,7 +777,7 @@ import { IdPanel, IdPanelRow } from '@idesign/vue'
     description: 'Gradient & glass CTA with ambient blur orbs behind frosted glass buttons.',
     tags: ['hero', 'cta', 'gradient', 'glass'],
     props: {
-      title: { type: 'text', default: 'Build Apple-Grade Apps', description: 'Hero section primary title.' },
+      title: { type: 'text', default: 'Build Production-Grade Apps', description: 'Hero section primary title.' },
       description: { type: 'text', default: 'Clean, unified surfaces with frosted glass used only where layers overlap.', description: 'Body description text.' },
       eyebrow: { type: 'text', default: 'DESIGN SYSTEM V2.0', description: 'Small uppercase tagline pill text.' },
       actionLabel: { type: 'text', default: 'Get Started', description: 'Primary action button label.' },
@@ -762,7 +839,7 @@ import { IdHeroCta, IdButton } from '@idesign/vue'
 import { IdAccordion } from '@idesign/vue'
 
 const items = [
-  { title: 'What is Idesign?', content: 'An Apple-grade Vue 3 & Nuxt 3 component library.' },
+  { title: 'What is Idesign?', content: 'A production-grade Vue 3 & Nuxt 3 component library.' },
   { title: 'Is it production ready?', content: 'Yes, fully tested with ESM and UMD bundles.' }
 ]
 </script>
@@ -777,7 +854,7 @@ const items = [
     htmlCode: (p) => `<div class="id-accordion size-${p.size} variant-${p.variant}">
   <div class="accordion-item is-expanded">
     <button class="accordion-header"><span>What is Idesign?</span><span class="chevron">▲</span></button>
-    <div class="accordion-body"><p>An Apple-grade Vue 3 component library.</p></div>
+    <div class="accordion-body"><p>A production-grade Vue 3 component library.</p></div>
   </div>
   <div class="accordion-item">
     <button class="accordion-header"><span>Is it free?</span><span class="chevron">▼</span></button>
@@ -792,7 +869,7 @@ const items = [
     description: 'Unified surface container supporting default text, action buttons, glass, hero, top image banner, and full background image variants.',
     tags: ['card', 'image', 'banner', 'media', 'container'],
     props: {
-      title: { type: 'text', default: 'Apple Vision Pro', description: 'Card primary title.' },
+      title: { type: 'text', default: 'Vision Studio Pro', description: 'Card primary title.' },
       subtitle: { type: 'text', default: 'Spatial Computing UI', description: 'Subtitle metadata label.' },
       description: { type: 'text', default: 'Welcome to the era of spatial computing.', description: 'Body text content.' },
       tag: { type: 'text', default: 'FEATURED', description: 'Header tag pill text.' },
@@ -1004,7 +1081,7 @@ import { IdTour, IdButton } from '@idesign/vue'
 
 const tourOpen = ref(false)
 const steps = [
-  { title: 'Welcome to Idesign', description: 'Explore our Apple Liquid Glass design system.', badge: 'STEP 1 OF 3', icon: '⚡' },
+  { title: 'Welcome to Idesign', description: 'Explore our Liquid Glass design system.', badge: 'STEP 1 OF 3', icon: '⚡' },
   { title: 'Interactive Sandbox', description: 'Customize properties dynamically.', badge: 'STEP 2 OF 3', icon: '🎛️' },
   { title: 'Production Ready', description: 'Export clean ESM/UMD code snippets.', badge: 'STEP 3 OF 3', icon: '🚀' }
 ]
@@ -1028,7 +1105,7 @@ const steps = [
     </div>
     <div class="tour-body">
       <h3>Welcome to Idesign</h3>
-      <p>Explore our Apple-grade Liquid Glass design system.</p>
+      <p>Explore our Liquid Glass design system.</p>
     </div>
     <div class="tour-footer">
       <button class="btn btn-primary">${p.nextLabel}</button>
@@ -1041,7 +1118,7 @@ const steps = [
     id: 'checkbox',
     name: 'Checkbox',
     category: 'inputs',
-    description: 'Checkbox with size, label, and Apple color palette selection.',
+    description: 'Checkbox with size, label, and system color palette selection.',
     tags: ['checkbox', 'form', 'boolean', 'color'],
     props: {
       label: { type: 'text', default: 'Accept terms', description: 'Label text next to checkbox.' },
@@ -1151,10 +1228,10 @@ const val = ref(65)
 
   {
     id: 'ios-switch',
-    name: 'iOS Toggle Switch',
+    name: 'Fluid Toggle Switch',
     category: 'inputs',
-    description: 'iOS switch toggle with green, blue, purple, orange, red active color variants, sizes, and spring thumb.',
-    tags: ['toggle', 'switch', 'ios', 'color', 'size'],
+    description: 'Switch toggle with green, blue, purple, orange, red active color variants, sizes, and spring thumb.',
+    tags: ['toggle', 'switch', 'color', 'size'],
     props: {
       label: { type: 'text', default: 'Notifications', description: 'Label text next to toggle switch.' },
       size: { type: 'select', options: ['sm', 'md', 'lg'], default: 'md', description: 'Switch scale size.' },
@@ -1193,7 +1270,7 @@ const enabled = ref(true)
     id: 'date-picker',
     name: 'Date Picker',
     category: 'inputs',
-    description: 'Apple Calendar-style date picker popover.',
+    description: 'Calendar-style date picker popover.',
     tags: ['date', 'calendar', 'picker', 'form'],
     props: {
       label: { type: 'text', default: 'Select Date', description: 'Input label text.' }
@@ -1641,7 +1718,7 @@ const data = [
     id: 'avatar',
     name: 'Avatar',
     category: 'data',
-    description: 'User avatar supporting photo src images, Lucide icons, emojis, initials fallback, framed Apple ring, status dot, and squircle shape.',
+    description: 'User avatar supporting photo src images, Lucide icons, emojis, initials fallback, framed ring, status dot, and squircle shape.',
     tags: ['avatar', 'user', 'profile', 'squircle', 'icon', 'image'],
     props: {
       name: { type: 'text', default: 'Jane Smith', description: 'User full name (used for initials fallback & tooltip).' },
@@ -1649,7 +1726,7 @@ const data = [
       icon: { type: 'select', options: ['', '⚡', '🤖', '👑', 'User', 'Sparkles'], default: '', description: 'Icon symbol instead of image.' },
       size: { type: 'select', options: ['xs', 'sm', 'md', 'lg', 'xl'], default: 'md', description: 'Avatar dimension scale.' },
       shape: { type: 'select', options: ['circle', 'squircle'], default: 'circle', description: 'Border radius shape.' },
-      framed: { type: 'boolean', default: false, description: 'Adds Apple Vision Pro glass border frame ring.' },
+      framed: { type: 'boolean', default: false, description: 'Adds glass border frame ring.' },
       status: { type: 'select', options: ['online', 'offline', 'busy'], default: 'online', description: 'Presence status indicator dot.' }
     },
     vueCode: (p) => `<script setup>
@@ -2101,7 +2178,7 @@ const open = ref(false)
     id: 'carousel',
     name: 'Card Carousel',
     category: 'panels',
-    description: 'Apple Store-style horizontal snap card carousel with pagination dots and smooth physics.',
+    description: 'Horizontal snap card carousel with pagination dots and smooth physics.',
     tags: ['carousel', 'cards', 'banner', 'slider'],
     props: {
       showDots: { type: 'boolean', default: true, description: 'Shows bottom dot page indicators.' },
@@ -2410,7 +2487,7 @@ const items = [
     id: 'project-section',
     name: 'Featured Projects Section',
     category: 'panels',
-    description: 'Apple portfolio section card container with inner project cards, status pills, tech stack icon badges, and chevron hover state.',
+    description: 'Portfolio section card container with inner project cards, status pills, tech stack icon badges, and chevron hover state.',
     tags: ['projects', 'portfolio', 'section', 'cards', 'list'],
     props: {
       title: { type: 'text', default: 'Featured Projects', description: 'Section title.' },
@@ -2441,19 +2518,19 @@ import { IdProjectSection, IdProjectCard } from '@idesign/vue'
     id: 'image-frame',
     name: 'Image Bezel Frame',
     category: 'data',
-    description: 'Standalone Apple photo frame component with thick squircle or circular bezel, inset photo shadow, aspect ratios, and hover zoom physics.',
+    description: 'Standalone photo frame component with thick squircle or circular bezel, inset photo shadow, aspect ratios, and hover zoom physics.',
     tags: ['frame', 'photo', 'bezel', 'image', 'portfolio'],
     props: {
       src: { type: 'text', default: 'https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=800', description: 'Image source URL.' },
       shape: { type: 'select', options: ['squircle', 'circle'], default: 'squircle', description: 'Frame bezel border radius shape.' },
       aspectRatio: { type: 'select', options: ['1-1', '16-9', '4-3', '3-4'], default: '1-1', description: 'Aspect ratio container proportion.' },
       bezelSize: { type: 'select', options: ['sm', 'md', 'lg'], default: 'md', description: 'Bezel border thickness.' },
-      caption: { type: 'text', default: 'Apple Studio Portrait', description: 'Optional image caption.' },
+      caption: { type: 'text', default: 'Studio Portrait', description: 'Optional image caption.' },
       interactive: { type: 'boolean', default: true, description: 'Enables hover zoom animation.' }
     },
     vueCode: (p) => `<script setup>
 import { IdImageFrame } from '@idesign/vue'
-</script>
+<\/script>
 
 <template>
   <IdImageFrame
@@ -2477,5 +2554,513 @@ import { IdImageFrame } from '@idesign/vue'
   <img src="${p.src}" alt="${p.caption}" />
   <span class="caption">${p.caption}</span>
 </div>`
+  },
+
+  // ─── HARDWARE SHELLS & LAYOUT ───
+  {
+    id: 'macbook-frame',
+    name: 'MacBook Hardware Shell',
+    category: 'frames',
+    description: 'Hardware MacBook shell container with camera notch, simulated macOS glass menu bar, and responsive screen canvas.',
+    tags: ['macbook', 'frame', 'hardware', 'mockup', 'device', 'laptop', 'shell'],
+    props: {
+      appName: { type: 'text', default: 'Idesign Studio', description: 'Application name displayed in menu bar.' },
+      color: { type: 'select', options: ['silver', 'space-gray', 'midnight', 'starlight'], default: 'space-gray', description: 'Anodized aluminum chassis color.' },
+      showMenuBar: { type: 'boolean', default: true, description: 'Toggles macOS top menu bar simulation.' }
+    },
+    vueCode: (p) => `<script setup>
+import { IdMacbookFrame } from '@idesign/vue'
+<\/script>
+
+<template>
+  <IdMacbookFrame app-name="${p.appName}" color="${p.color}" :show-menu-bar="${p.showMenuBar}">
+    <div style="padding: 24px; text-align: center;">
+      <h3>Inside MacBook Screen</h3>
+    </div>
+  </IdMacbookFrame>
+</template>`,
+    nuxtCode: (p) => `<!-- Nuxt 3 Auto-Import -->
+<template>
+  <IdMacbookFrame app-name="${p.appName}" color="${p.color}">
+    <div>MacBook Canvas</div>
+  </IdMacbookFrame>
+</template>`,
+    htmlCode: (p) => `<div class="id-macbook-frame color-${p.color}">
+  <div class="macbook-screen">Content</div>
+</div>`
+  },
+
+  {
+    id: 'ipad-frame',
+    name: 'iPad Tablet Shell',
+    category: 'frames',
+    description: 'Tablet hardware frame with slim bezels, front camera, home bar indicator, and portrait/landscape orientation support.',
+    tags: ['ipad', 'tablet', 'frame', 'hardware', 'mockup', 'device', 'shell'],
+    props: {
+      orientation: { type: 'select', options: ['landscape', 'portrait'], default: 'landscape', description: 'Tablet orientation.' },
+      color: { type: 'select', options: ['space-gray', 'silver', 'starlight'], default: 'space-gray', description: 'Chassis finish.' },
+      showStatusBar: { type: 'boolean', default: true, description: 'Shows iPadOS status bar.' },
+      showHomeBar: { type: 'boolean', default: true, description: 'Shows home indicator bar.' }
+    },
+    vueCode: (p) => `<script setup>
+import { IdIpadFrame } from '@idesign/vue'
+<\/script>
+
+<template>
+  <IdIpadFrame orientation="${p.orientation}" color="${p.color}">
+    <div style="padding: 20px;">Tablet Viewport</div>
+  </IdIpadFrame>
+</template>`,
+    nuxtCode: (p) => `<!-- Nuxt 3 Auto-Import -->
+<template>
+  <IdIpadFrame orientation="${p.orientation}" color="${p.color}" />
+</template>`,
+    htmlCode: (p) => `<div class="id-ipad-frame orientation-${p.orientation}">
+  <div class="ipad-screen">Tablet View</div>
+</div>`
+  },
+
+  {
+    id: 'sidebar',
+    name: 'Sidebar Navigation Menu',
+    category: 'navigation',
+    description: 'Collapsible sidebar menu with grouped navigation items, active pill indicators, counter badges, and bottom user drawer.',
+    tags: ['sidebar', 'menu', 'navigation', 'drawer', 'nav'],
+    props: {
+      title: { type: 'text', default: 'Idesign Studio', description: 'Brand title in header.' },
+      variant: { type: 'select', options: ['default', 'glass'], default: 'default', description: 'Surface treatment.' },
+      collapsible: { type: 'boolean', default: true, description: 'Allows collapsing sidebar to icon-only mode.' }
+    },
+    vueCode: (p) => `<script setup>
+import { ref } from 'vue'
+import { IdSidebar } from '@idesign/vue'
+
+const activeItem = ref('dashboard')
+const groups = [
+  {
+    title: 'Workspace',
+    items: [
+      { id: 'dashboard', label: 'Overview', icon: '📊' },
+      { id: 'projects', label: 'Projects', icon: '📁', badge: '12' },
+      { id: 'analytics', label: 'Analytics', icon: '⚡' }
+    ]
   }
 ]
+<\/script>
+
+<template>
+  <IdSidebar
+    v-model="activeItem"
+    title="${p.title}"
+    variant="${p.variant}"
+    :groups="groups"
+    :user="{ name: 'Alex Rivera', role: 'Lead Architect' }"
+  />
+</template>`,
+    nuxtCode: (p) => `<!-- Nuxt 3 Auto-Import -->
+<template>
+  <IdSidebar v-model="activeItem" :groups="groups" />
+</template>`,
+    htmlCode: (p) => `<aside class="id-sidebar variant-${p.variant}">
+  <nav class="sidebar-nav"></nav>
+</aside>`
+  },
+
+  {
+    id: 'header',
+    name: 'Semantic Page Header',
+    category: 'layout',
+    description: 'Structured page header with sticky glass option, title/eyebrow, breadcrumbs, search slot, and action buttons.',
+    tags: ['header', 'topbar', 'title', 'layout', 'navbar'],
+    props: {
+      title: { type: 'text', default: 'Workspace Overview', description: 'Primary page header title.' },
+      eyebrow: { type: 'text', default: 'ANALYTICS', description: 'Uppercase eyebrow badge label.' },
+      subtitle: { type: 'text', default: 'Real-time telemetry and cluster operations.', description: 'Header description caption.' },
+      variant: { type: 'select', options: ['default', 'glass', 'transparent'], default: 'glass', description: 'Surface visual style.' },
+      sticky: { type: 'boolean', default: false, description: 'Enables sticky positioning at top.' }
+    },
+    vueCode: (p) => `<script setup>
+import { IdHeader, IdButton } from '@idesign/vue'
+<\/script>
+
+<template>
+  <IdHeader
+    title="${p.title}"
+    eyebrow="${p.eyebrow}"
+    subtitle="${p.subtitle}"
+    variant="${p.variant}"
+    ${p.sticky ? 'sticky' : ''}
+  >
+    <template #actions>
+      <IdButton variant="secondary" size="sm">Export</IdButton>
+      <IdButton variant="primary" size="sm">Create +</IdButton>
+    </template>
+  </IdHeader>
+</template>`,
+    nuxtCode: (p) => `<!-- Nuxt 3 Auto-Import -->
+<template>
+  <IdHeader title="${p.title}" subtitle="${p.subtitle}" />
+</template>`,
+    htmlCode: (p) => `<header class="id-header variant-${p.variant}">
+  <h1>${p.title}</h1>
+</header>`
+  },
+
+  {
+    id: 'footer',
+    name: 'Semantic Page Footer',
+    category: 'layout',
+    description: 'Page footer with columns, copyright, language selector, and social link buttons.',
+    tags: ['footer', 'layout', 'links', 'copyright', 'bottom'],
+    props: {
+      variant: { type: 'select', options: ['default', 'glass', 'muted'], default: 'default', description: 'Surface variant.' },
+      countryText: { type: 'text', default: 'United States', description: 'Localized region label.' }
+    },
+    vueCode: (p) => `<script setup>
+import { IdFooter } from '@idesign/vue'
+
+const columns = [
+  { title: 'Product', links: [{ label: 'Features' }, { label: 'Components' }, { label: 'Templates' }] },
+  { title: 'Resources', links: [{ label: 'Documentation' }, { label: 'Design Tokens' }, { label: 'GitHub' }] }
+]
+<\/script>
+
+<template>
+  <IdFooter :columns="columns" variant="${p.variant}" country-text="${p.countryText}" />
+</template>`,
+    nuxtCode: (p) => `<!-- Nuxt 3 Auto-Import -->
+<template>
+  <IdFooter :columns="columns" />
+</template>`,
+    htmlCode: (p) => `<footer class="id-footer variant-${p.variant}">
+  <div class="footer-inner"></div>
+</footer>`
+  },
+
+  {
+    id: 'banner',
+    name: 'Announcement Banner',
+    category: 'feedback',
+    description: 'Prominent announcement banner with variants, action button, and dismissible close button.',
+    tags: ['banner', 'alert', 'announcement', 'notification', 'cta'],
+    props: {
+      message: { type: 'text', default: 'Idesign v2.0 is now live with 60+ Liquid Glass components!', description: 'Banner announcement message.' },
+      actionLabel: { type: 'text', default: 'Learn More →', description: 'Call to action button text.' },
+      icon: { type: 'text', default: '✨', description: 'Leading emoji or symbol.' },
+      variant: { type: 'select', options: ['accent', 'glass', 'warning', 'success', 'rainbow-glow'], default: 'accent', description: 'Banner color variant.' },
+      dismissible: { type: 'boolean', default: true, description: 'Shows close dismiss button.' }
+    },
+    vueCode: (p) => `<script setup>
+import { ref } from 'vue'
+import { IdBanner } from '@idesign/vue'
+
+const showBanner = ref(true)
+<\/script>
+
+<template>
+  <IdBanner
+    v-model="showBanner"
+    message="${p.message}"
+    action-label="${p.actionLabel}"
+    icon="${p.icon}"
+    variant="${p.variant}"
+    :dismissible="${p.dismissible}"
+  />
+</template>`,
+    nuxtCode: (p) => `<!-- Nuxt 3 Auto-Import -->
+<template>
+  <IdBanner message="${p.message}" variant="${p.variant}" />
+</template>`,
+    htmlCode: (p) => `<div class="id-banner variant-${p.variant}">
+  <span>${p.message}</span>
+</div>`
+  },
+
+  {
+    id: 'separator',
+    name: 'Hairline Separator & Divider',
+    category: 'layout',
+    description: 'Hairline decorative and semantic divider with horizontal/vertical orientations and optional center label.',
+    tags: ['separator', 'divider', 'line', 'hairline', 'split'],
+    props: {
+      orientation: { type: 'select', options: ['horizontal', 'vertical'], default: 'horizontal', description: 'Separator orientation.' },
+      label: { type: 'text', default: 'OR', description: 'Optional center label text.' },
+      variant: { type: 'select', options: ['hairline', 'faint', 'gradient', 'dashed'], default: 'hairline', description: 'Divider styling.' },
+      spacing: { type: 'select', options: ['none', 'sm', 'md', 'lg', 'xl'], default: 'md', description: 'Margin spacing.' }
+    },
+    vueCode: (p) => `<script setup>
+import { IdSeparator } from '@idesign/vue'
+<\/script>
+
+<template>
+  <IdSeparator
+    orientation="${p.orientation}"
+    label="${p.label}"
+    variant="${p.variant}"
+    spacing="${p.spacing}"
+  />
+</template>`,
+    nuxtCode: (p) => `<!-- Nuxt 3 Auto-Import -->
+<template>
+  <IdSeparator label="${p.label}" />
+</template>`,
+    htmlCode: (p) => `<div class="id-separator orientation-${p.orientation} variant-${p.variant}">
+  <span>${p.label}</span>
+</div>`
+  },
+
+  {
+    id: 'kbd',
+    name: 'Keyboard Shortcut Chip (Kbd)',
+    category: 'data',
+    description: 'Keyboard shortcut badge supporting macOS symbol formatting (cmd, shift, opt, ctrl, enter, esc).',
+    tags: ['kbd', 'keyboard', 'shortcut', 'key', 'hotkey'],
+    props: {
+      keys: { type: 'text', default: 'cmd+k', description: 'Shortcut combination string (e.g. cmd+k, opt+shift+p).' },
+      size: { type: 'select', options: ['xs', 'sm', 'md', 'lg'], default: 'md', description: 'Key size scale.' },
+      variant: { type: 'select', options: ['default', 'glass', 'outline'], default: 'default', description: 'Visual styling.' }
+    },
+    vueCode: (p) => `<script setup>
+import { IdKbd } from '@idesign/vue'
+<\/script>
+
+<template>
+  <IdKbd keys="${p.keys}" size="${p.size}" variant="${p.variant}" />
+</template>`,
+    nuxtCode: (p) => `<!-- Nuxt 3 Auto-Import -->
+<template>
+  <IdKbd keys="${p.keys}" />
+</template>`,
+    htmlCode: (p) => `<kbd class="id-kbd size-${p.size}">⌘K</kbd>`
+  },
+
+  // ─── ADVANCED FORM INPUTS ───
+  {
+    id: 'pin-input',
+    name: 'PIN & OTP Code Input',
+    category: 'forms',
+    description: 'Multi-box verification code input with auto-advance, backspace navigation, paste handling, and masked mode.',
+    tags: ['pin', 'otp', 'verification', 'code', 'auth', 'input'],
+    props: {
+      length: { type: 'number', default: 6, description: 'Number of PIN digit boxes.' },
+      size: { type: 'select', options: ['sm', 'md', 'lg'], default: 'md', description: 'Box sizing scale.' },
+      masked: { type: 'boolean', default: false, description: 'Masks digits with dots for password protection.' },
+      label: { type: 'text', default: 'Verification Code', description: 'Form field label.' }
+    },
+    vueCode: (p) => `<script setup>
+import { ref } from 'vue'
+import { IdPinInput } from '@idesign/vue'
+
+const code = ref('')
+const onComplete = (val) => console.log('PIN completed:', val)
+<\/script>
+
+<template>
+  <IdPinInput
+    v-model="code"
+    :length="${p.length}"
+    size="${p.size}"
+    :masked="${p.masked}"
+    label="${p.label}"
+    @complete="onComplete"
+  />
+</template>`,
+    nuxtCode: (p) => `<!-- Nuxt 3 Auto-Import -->
+<template>
+  <IdPinInput v-model="code" :length="${p.length}" />
+</template>`,
+    htmlCode: (p) => `<div class="id-pin-input size-${p.size}">
+  <input class="pin-digit-input" maxlength="1" />
+</div>`
+  },
+
+  {
+    id: 'time-picker',
+    name: 'Time Input & Stepper',
+    category: 'forms',
+    description: 'Time input control with 12h/24h formats, hour/minute steppers, AM/PM toggle, and keyboard arrow adjustments.',
+    tags: ['time', 'picker', 'clock', 'hour', 'minute', 'input'],
+    props: {
+      label: { type: 'text', default: 'Meeting Start Time', description: 'Form field label.' },
+      is24Hour: { type: 'boolean', default: false, description: 'Toggles between 12-hour AM/PM and 24-hour mode.' },
+      showSeconds: { type: 'boolean', default: false, description: 'Enables seconds precision segment.' },
+      size: { type: 'select', options: ['sm', 'md', 'lg'], default: 'md', description: 'Input sizing.' }
+    },
+    vueCode: (p) => `<script setup>
+import { ref } from 'vue'
+import { IdTimePicker } from '@idesign/vue'
+
+const meetingTime = ref('09:41')
+<\/script>
+
+<template>
+  <IdTimePicker
+    v-model="meetingTime"
+    label="${p.label}"
+    :is-24-hour="${p.is24Hour}"
+    :show-seconds="${p.showSeconds}"
+    size="${p.size}"
+  />
+</template>`,
+    nuxtCode: (p) => `<!-- Nuxt 3 Auto-Import -->
+<template>
+  <IdTimePicker v-model="meetingTime" label="${p.label}" />
+</template>`,
+    htmlCode: (p) => `<div class="id-time-picker">
+  <input type="text" value="09:41" />
+</div>`
+  },
+
+  {
+    id: 'tag-input',
+    name: 'Tag & Pill Creator Input',
+    category: 'forms',
+    description: 'Interactive tag chip creator with Enter/Comma tag addition, backspace deletion, and removable pills.',
+    tags: ['tags', 'chips', 'pills', 'tokens', 'input', 'creator'],
+    props: {
+      label: { type: 'text', default: 'Project Tags', description: 'Form field label.' },
+      placeholder: { type: 'text', default: 'Add tag...', description: 'Input placeholder.' },
+      tagVariant: { type: 'select', options: ['default', 'accent', 'heat', 'live', 'gray'], default: 'accent', description: 'Tag chip color variant.' },
+      size: { type: 'select', options: ['sm', 'md', 'lg'], default: 'md', description: 'Input sizing.' }
+    },
+    vueCode: (p) => `<script setup>
+import { ref } from 'vue'
+import { IdTagInput } from '@idesign/vue'
+
+const tags = ref(['Design', 'Vue3', 'LiquidGlass'])
+<\/script>
+
+<template>
+  <IdTagInput
+    v-model="tags"
+    label="${p.label}"
+    placeholder="${p.placeholder}"
+    tag-variant="${p.tagVariant}"
+    size="${p.size}"
+  />
+</template>`,
+    nuxtCode: (p) => `<!-- Nuxt 3 Auto-Import -->
+<template>
+  <IdTagInput v-model="tags" />
+</template>`,
+    htmlCode: (p) => `<div class="id-tag-input">
+  <div class="tag-pill">Design</div>
+</div>`
+  },
+
+  {
+    id: 'rating',
+    name: 'Interactive Star Rating',
+    category: 'forms',
+    description: 'Star rating input with hover preview, half-star accuracy, customizable colors, and keyboard rating.',
+    tags: ['rating', 'stars', 'review', 'feedback', 'score', 'input'],
+    props: {
+      label: { type: 'text', default: 'Customer Satisfaction', description: 'Rating field label.' },
+      count: { type: 'number', default: 5, description: 'Total number of stars.' },
+      allowHalf: { type: 'boolean', default: false, description: 'Enables 0.5 step fractional ratings.' },
+      showScore: { type: 'boolean', default: true, description: 'Displays numeric score alongside stars.' },
+      size: { type: 'select', options: ['sm', 'md', 'lg'], default: 'md', description: 'Star icon sizing.' }
+    },
+    vueCode: (p) => `<script setup>
+import { ref } from 'vue'
+import { IdRating } from '@idesign/vue'
+
+const ratingScore = ref(4)
+<\/script>
+
+<template>
+  <IdRating
+    v-model="ratingScore"
+    label="${p.label}"
+    :count="${p.count}"
+    :allow-half="${p.allowHalf}"
+    :show-score="${p.showScore}"
+    size="${p.size}"
+  />
+</template>`,
+    nuxtCode: (p) => `<!-- Nuxt 3 Auto-Import -->
+<template>
+  <IdRating v-model="ratingScore" />
+</template>`,
+    htmlCode: (p) => `<div class="id-rating">
+  <button class="star-btn filled">★</button>
+</div>`
+  },
+
+  {
+    id: 'number-input',
+    name: 'Numeric Stepper Input',
+    category: 'forms',
+    description: 'Precision numeric input with glass increment/decrement buttons, min/max clamps, step increments, and unit suffixes.',
+    tags: ['number', 'stepper', 'counter', 'quantity', 'spin', 'input'],
+    props: {
+      label: { type: 'text', default: 'Border Radius', description: 'Field label.' },
+      unit: { type: 'text', default: 'px', description: 'Unit suffix label (e.g. px, %, ms).' },
+      stepVal: { type: 'number', default: 2, description: 'Increment/decrement step size.' },
+      min: { type: 'number', default: 0, description: 'Minimum allowed value.' },
+      max: { type: 'number', default: 100, description: 'Maximum allowed value.' },
+      size: { type: 'select', options: ['sm', 'md', 'lg'], default: 'md', description: 'Component sizing.' }
+    },
+    vueCode: (p) => `<script setup>
+import { ref } from 'vue'
+import { IdNumberInput } from '@idesign/vue'
+
+const radius = ref(16)
+<\/script>
+
+<template>
+  <IdNumberInput
+    v-model="radius"
+    label="${p.label}"
+    unit="${p.unit}"
+    :step-val="${p.stepVal}"
+    :min="${p.min}"
+    :max="${p.max}"
+    size="${p.size}"
+  />
+</template>`,
+    nuxtCode: (p) => `<!-- Nuxt 3 Auto-Import -->
+<template>
+  <IdNumberInput v-model="radius" unit="${p.unit}" />
+</template>`,
+    htmlCode: (p) => `<div class="id-number-input">
+  <button class="stepper-btn">−</button>
+  <input type="number" value="16" />
+  <button class="stepper-btn">+</button>
+</div>`
+  },
+
+  {
+    id: 'color-picker',
+    name: 'Visual Color Picker',
+    category: 'forms',
+    description: 'Visual color picker with curated Apple palette presets, hex/RGB inputs, and eyedropper trigger.',
+    tags: ['color', 'picker', 'palette', 'swatch', 'hex', 'input'],
+    props: {
+      label: { type: 'text', default: 'Brand Accent Color', description: 'Field label.' },
+      size: { type: 'select', options: ['sm', 'md', 'lg'], default: 'md', description: 'Picker sizing.' }
+    },
+    vueCode: (p) => `<script setup>
+import { ref } from 'vue'
+import { IdColorPicker } from '@idesign/vue'
+
+const brandColor = ref('#0071E3')
+<\/script>
+
+<template>
+  <IdColorPicker
+    v-model="brandColor"
+    label="${p.label}"
+    size="${p.size}"
+  />
+</template>`,
+    nuxtCode: (p) => `<!-- Nuxt 3 Auto-Import -->
+<template>
+  <IdColorPicker v-model="brandColor" />
+</template>`,
+    htmlCode: (p) => `<div class="id-color-picker">
+  <input type="color" value="#0071E3" />
+</div>`
+  }
+]
+

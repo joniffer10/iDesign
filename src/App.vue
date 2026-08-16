@@ -3,6 +3,8 @@
     <Navbar
       ref="navbarRef"
       v-model:search-query="searchQuery"
+      :active-category="selectedCategory"
+      @select-category="handleSelectCategory"
       @open-tokens="showTokensModal = true"
       @open-mobile-demo="showMobileModal = true"
       @open-install="showInstallModal = true"
@@ -14,6 +16,7 @@
     <!-- Main Catalog Grid -->
     <CatalogGrid
       v-model:search-query="searchQuery"
+      v-model:active-category="selectedCategory"
       :components="componentsData"
       :categories="componentCategories"
       @select-component="selectedComponent = $event"
@@ -23,7 +26,7 @@
     <!-- Mobile Shell Simulator Modal -->
     <IdModal
       v-model="showMobileModal"
-      title="Apple iOS Mobile Shell Simulator"
+      title="Mobile Shell Simulator"
       max-width="420px"
     >
       <div style="display: flex; justify-content: center; padding: 10px 0;">
@@ -33,12 +36,12 @@
               APP SHELL DEMO
             </div>
             <h2 style="font-size: 22px; font-weight: 700; letter-spacing: -0.02em; margin-top: 4px;">
-              Idesign iOS
+              Idesign Mobile
             </h2>
             
             <div style="margin-top: 16px;">
               <IdPanel>
-                <IdPanelRow title="Large Title Collapse Nav" subtitle="Smooth iOS scrolling behavior" />
+                <IdPanelRow title="Large Title Collapse Nav" subtitle="Smooth mobile scrolling behavior" />
                 <IdPanelRow title="Edge Bottom Sheet" subtitle="Native sheet transitions" />
                 <IdPanelRow title="Safe Areas & Targets" subtitle="Touch target ≥ 44px" />
               </IdPanel>
@@ -71,12 +74,15 @@
     <footer class="main-footer">
       <div class="footer-container">
         <div class="footer-brand">
-          <span class="footer-logo">⚡ Idesign</span>
-          <p class="footer-tagline">Apple-grade component system for Vue 3 and Nuxt 3.</p>
+          <span class="footer-logo">
+            <img src="/icon.png" alt="Idesign Logo" class="footer-icon-img" />
+            Idesign
+          </span>
+          <p class="footer-tagline">Production-grade component system for Vue 3 and Nuxt 3.</p>
         </div>
         <div class="footer-links">
           <a href="#components">Components</a>
-          <a href="#" @click.prevent="showTokensModal = true">Tokens</a>
+          <a href="#" @click.prevent="showTokensModal = true">UI Guidelines & Tokens</a>
           <a href="#" @click.prevent="showInstallModal = true">CLI Installation</a>
         </div>
       </div>
@@ -105,11 +111,17 @@ import { componentsData, componentCategories } from './data/componentsData'
 
 const navbarRef = ref(null)
 const searchQuery = ref('')
+const selectedCategory = ref('all')
 const selectedComponent = ref(null)
 const showTokensModal = ref(false)
 const showMobileModal = ref(false)
 const showInstallModal = ref(false)
 const toastMsg = ref(null)
+
+const handleSelectCategory = (catId) => {
+  selectedCategory.value = catId
+  searchQuery.value = ''
+}
 
 let toastTimer = null
 
@@ -175,6 +187,14 @@ onUnmounted(() => {
   font-size: 16px;
   font-weight: 700;
   color: var(--text);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.footer-icon-img {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
 }
 .footer-tagline {
   font-size: 13.5px;
