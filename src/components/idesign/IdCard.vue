@@ -205,6 +205,10 @@ const currentVariant = computed(() => config.resolvedVariant.value || 'default')
   transform: translateY(-4px); box-shadow: var(--sh-lift); cursor: pointer;
   border-color: var(--accent);
 }
+.id-card.is-interactive:active {
+  transform: translateY(-1px) scale(0.985);
+  transition: transform 0.12s var(--ease-spring);
+}
 .id-card.is-interactive:hover .card-banner-img,
 .id-card.is-interactive:hover .card-bg-img {
   transform: scale(1.04);

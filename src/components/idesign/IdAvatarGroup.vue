@@ -5,38 +5,71 @@
       `variant-${currentVariant}`,
       `dir-${currentDirection}`,
       `size-${currentSize}`,
-      { 'is-interactive': interactive },
-      config.mergedUi.value.base
+      {
+        'is-interactive': interactive,
+        'is-framed-group': framed
+      },
+      config.mergedUi.value.base,
+      currentVariant === 'stacked' ? config.mergedUi.value.stacked : ''
     ]"
     role="group"
     aria-label="Avatar group"
   >
-    <div :class="['avatars-container', config.mergedUi.value.container]">
+    <div
+      :class="[
+        'avatars-container',
+        { 'is-stacked': currentVariant === 'stacked' },
+        config.mergedUi.value.container
+      ]"
+    >
+      <!-- Visible Avatars -->
       <div
         v-for="(user, idx) in visibleUsers"
         :key="user.id || idx"
-        :class="['avatar-item', config.mergedUi.value.item]"
+        :class="[
+          'avatar-item',
+          { 'is-stacked-item': currentVariant === 'stacked' },
+          config.mergedUi.value.item
+        ]"
         :style="currentVariant === 'stacked' ? { zIndex: visibleUsers.length - idx } : {}"
         @click="interactive && $emit('click-avatar', user, idx)"
       >
         <IdAvatar
           :src="user.src"
           :name="user.name"
+          :icon="user.icon"
           :size="currentSize"
           :shape="shape"
           :framed="framed"
           :status="user.status"
+          :ui="avatarUiProp"
         />
       </div>
 
-      <!-- Overflow Count Badge -->
+      <!-- Overflow / +More Avatar Indicator -->
       <div
         v-if="overflowCount > 0"
-        :class="['avatar-overflow', `size-${currentSize}`, `shape-${shape}`, { 'is-framed': framed }, config.mergedUi.value.overflow]"
+        :class="[
+          'avatar-overflow',
+          'avatar-more',
+          `size-${currentSize}`,
+          `shape-${shape}`,
+          {
+            'is-stacked-item': currentVariant === 'stacked',
+            'is-framed': framed
+          },
+          config.mergedUi.value.more,
+          config.mergedUi.value.overflow
+        ]"
+        :style="currentVariant === 'stacked' ? { zIndex: 0 } : {}"
+        role="button"
+        :tabindex="interactive ? 0 : undefined"
+        :aria-label="`+${overflowCount} more members`"
         @click="interactive && $emit('click-overflow', overflowCount)"
+        @keydown.enter="interactive && $emit('click-overflow', overflowCount)"
       >
         <slot name="overflow" :count="overflowCount">
-          +{{ overflowCount }}
+          <span class="overflow-text">+{{ overflowCount }}</span>
         </slot>
       </div>
     </div>
@@ -75,135 +108,251 @@ const currentSize = computed(() => config.resolvedSize.value || 'md')
 const currentVariant = computed(() => config.resolvedVariant.value || 'stacked')
 const currentDirection = computed(() => config.resolvedDirection.value || 'row')
 
-const visibleUsers = computed(() => props.users.slice(0, props.max))
-const overflowCount = computed(() => Math.max(0, props.users.length - props.max))
+const visibleUsers = computed(() => (props.users || []).slice(0, props.max))
+const overflowCount = computed(() => Math.max(0, (props.users?.length || 0) - props.max))
+
+const avatarUiProp = computed(() => {
+  const customAvatar = config.mergedUi.value.avatar
+  if (!customAvatar) return {}
+  if (typeof customAvatar === 'string') {
+    return { avatar: customAvatar }
+  }
+  return customAvatar
+})
 </script>
 
 <style scoped>
 .id-avatar-group {
-  display: inline-flex; align-items: center; gap: 10px; font-family: var(--font);
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font);
 }
 
 .avatars-container {
-  display: inline-flex; align-items: center;
+  display: inline-flex;
+  align-items: center;
 }
 
 .dir-column .avatars-container {
-  flex-direction: column; align-items: flex-start;
+  flex-direction: column;
+  align-items: flex-start;
 }
 
-/* Stacked Variant (Overlapping with hover z-index elevation) */
-.variant-stacked .avatar-item {
-  margin-left: -10px; transition: transform 0.2s var(--ease-out-quart), z-index 0.2s;
-}
-.size-xs.variant-stacked .avatar-item { margin-left: -6px; }
-.size-sm.variant-stacked .avatar-item { margin-left: -8px; }
-.size-md.variant-stacked .avatar-item { margin-left: -10px; }
-.size-lg.variant-stacked .avatar-item { margin-left: -14px; }
-.size-xl.variant-stacked .avatar-item { margin-left: -18px; }
-
-.dir-column.variant-stacked .avatar-item {
-  margin-left: 0; margin-top: -10px;
-}
-.size-xs.dir-column.variant-stacked .avatar-item { margin-top: -6px; }
-.size-sm.dir-column.variant-stacked .avatar-item { margin-top: -8px; }
-.size-md.dir-column.variant-stacked .avatar-item { margin-top: -10px; }
-.size-lg.dir-column.variant-stacked .avatar-item { margin-top: -14px; }
-.size-xl.dir-column.variant-stacked .avatar-item { margin-top: -18px; }
-
-.variant-stacked .avatar-item:first-child { margin: 0; }
-
-.is-interactive .variant-stacked .avatar-item:hover {
-  transform: translateY(-3px) scale(1.08); z-index: 50 !important; cursor: pointer;
+/* ──────────────────────────────────────────────────────────
+   STACKED VARIANT (Overlapping avatars with smooth hover lift)
+   ────────────────────────────────────────────────────────── */
+.variant-stacked .avatar-item,
+.variant-stacked .avatar-overflow {
+  margin-left: -10px;
+  transition: transform 0.2s var(--ease-out-quart), z-index 0.2s;
 }
 
-/* Grid Variant (Spaced apart) */
+.size-xs.variant-stacked .avatar-item,
+.size-xs.variant-stacked .avatar-overflow { margin-left: -6px; }
+.size-sm.variant-stacked .avatar-item,
+.size-sm.variant-stacked .avatar-overflow { margin-left: -8px; }
+.size-md.variant-stacked .avatar-item,
+.size-md.variant-stacked .avatar-overflow { margin-left: -10px; }
+.size-lg.variant-stacked .avatar-item,
+.size-lg.variant-stacked .avatar-overflow { margin-left: -14px; }
+.size-xl.variant-stacked .avatar-item,
+.size-xl.variant-stacked .avatar-overflow { margin-left: -18px; }
+
+.dir-column.variant-stacked .avatar-item,
+.dir-column.variant-stacked .avatar-overflow {
+  margin-left: 0;
+  margin-top: -10px;
+}
+.size-xs.dir-column.variant-stacked .avatar-item,
+.size-xs.dir-column.variant-stacked .avatar-overflow { margin-top: -6px; }
+.size-sm.dir-column.variant-stacked .avatar-item,
+.size-sm.dir-column.variant-stacked .avatar-overflow { margin-top: -8px; }
+.size-md.dir-column.variant-stacked .avatar-item,
+.size-md.dir-column.variant-stacked .avatar-overflow { margin-top: -10px; }
+.size-lg.dir-column.variant-stacked .avatar-item,
+.size-lg.dir-column.variant-stacked .avatar-overflow { margin-top: -14px; }
+.size-xl.dir-column.variant-stacked .avatar-item,
+.size-xl.dir-column.variant-stacked .avatar-overflow { margin-top: -18px; }
+
+.variant-stacked .avatar-item:first-child {
+  margin-left: 0;
+  margin-top: 0;
+}
+
+/* Framed Stacking Adjustments so outer frame rings have breathing room */
+.is-framed-group.variant-stacked .avatar-item,
+.is-framed-group.variant-stacked .avatar-overflow {
+  margin-left: -6px;
+}
+.size-xs.is-framed-group.variant-stacked .avatar-item,
+.size-xs.is-framed-group.variant-stacked .avatar-overflow { margin-left: -3px; }
+.size-sm.is-framed-group.variant-stacked .avatar-item,
+.size-sm.is-framed-group.variant-stacked .avatar-overflow { margin-left: -5px; }
+.size-md.is-framed-group.variant-stacked .avatar-item,
+.size-md.is-framed-group.variant-stacked .avatar-overflow { margin-left: -6px; }
+.size-lg.is-framed-group.variant-stacked .avatar-item,
+.size-lg.is-framed-group.variant-stacked .avatar-overflow { margin-left: -8px; }
+.size-xl.is-framed-group.variant-stacked .avatar-item,
+.size-xl.is-framed-group.variant-stacked .avatar-overflow { margin-left: -10px; }
+
+.is-framed-group .avatar-item:first-child {
+  margin-left: 0 !important;
+}
+
+.is-interactive .variant-stacked .avatar-item:hover,
+.is-interactive .variant-stacked .avatar-overflow:hover {
+  transform: translateY(-3px) scale(1.08);
+  z-index: 50 !important;
+  cursor: pointer;
+}
+
+/* ──────────────────────────────────────────────────────────
+   GRID VARIANT (Spaced apart)
+   ────────────────────────────────────────────────────────── */
 .variant-grid .avatars-container {
   gap: 8px;
 }
-.variant-grid .avatar-item { margin: 0; }
+.variant-grid .avatar-item,
+.variant-grid .avatar-overflow {
+  margin: 0;
+}
 
-/* Hero Liquid Glass Variant */
+/* ──────────────────────────────────────────────────────────
+   HERO LIQUID GLASS VARIANT
+   ────────────────────────────────────────────────────────── */
 .variant-hero {
-  padding: 6px 14px; border-radius: var(--r-pill); background: rgba(255, 255, 255, 0.65);
-  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-  border: 1px solid var(--hairline); box-shadow: var(--sh-card);
+  padding: 6px 14px;
+  border-radius: var(--r-pill);
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: saturate(180%) blur(16px);
+  -webkit-backdrop-filter: saturate(180%) blur(16px);
+  border: 1px solid var(--hairline);
+  box-shadow: var(--sh-card);
+  transition: all 0.25s var(--ease-out-quart);
 }
-:root.dark .variant-hero { background: rgba(28, 28, 30, 0.65); }
+:root.dark .variant-hero {
+  background: rgba(28, 28, 30, 0.65);
+}
 
-/* Expanded Variant */
+/* Hero variant when framed is active: expands padding so outer rings fit cleanly */
+.variant-hero.is-framed-group {
+  padding: 10px 18px;
+  gap: 16px;
+}
+
+.variant-hero.is-framed-group .avatars-container {
+  padding: 4px 6px;
+}
+
+/* ──────────────────────────────────────────────────────────
+   EXPANDED VARIANT
+   ────────────────────────────────────────────────────────── */
 .variant-expanded .group-label {
-  font-size: 13px; font-weight: 550; color: var(--text-2);
+  font-size: 13px;
+  font-weight: 550;
+  color: var(--text-2);
 }
 
-/* Overflow Badge styling */
+/* ──────────────────────────────────────────────────────────
+   OVERFLOW / +MORE AVATAR INDICATOR
+   Behaves visually like another avatar in the group:
+   - Same dimensions per size tier
+   - Circular / matching shape
+   - Clean surface background token (var(--surface-2))
+   - High-contrast tabular numbers
+   - Framed ring support when framed is enabled
+   ────────────────────────────────────────────────────────── */
 .avatar-overflow {
-  box-sizing: border-box !important;
-  background: var(--hover); color: var(--text); font-weight: 700;
-  border: 2px solid var(--surface); display: inline-flex;
-  align-items: center; justify-content: center; z-index: 0; flex-shrink: 0;
-  line-height: 1; text-align: center;
-  transition: all 0.2s ease;
+  box-sizing: border-box;
+  background: var(--surface-2, rgba(0, 0, 0, 0.06));
+  color: var(--text);
+  font-family: var(--font);
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: var(--tracking-tight, -0.02em);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 0;
+  flex-shrink: 0;
+  line-height: 1;
+  text-align: center;
+  border: none;
+  box-shadow: none;
+  transition: transform 0.2s var(--ease-out-quart), background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+  user-select: none;
 }
+
 :root.dark .avatar-overflow {
-  background: rgba(255, 255, 255, 0.12); color: #ffffff; border-color: #1c1c1e;
+  background: rgba(255, 255, 255, 0.12);
+  color: var(--text, #f5f5f7);
 }
 
-.variant-stacked .avatar-overflow { margin-left: -10px; }
-.size-xs.variant-stacked .avatar-overflow { margin-left: -6px; }
-.size-sm.variant-stacked .avatar-overflow { margin-left: -8px; }
-.size-md.variant-stacked .avatar-overflow { margin-left: -10px; }
-.size-lg.variant-stacked .avatar-overflow { margin-left: -14px; }
-.size-xl.variant-stacked .avatar-overflow { margin-left: -18px; }
+.shape-circle {
+  border-radius: 50% !important;
+}
 
-.dir-column.variant-stacked .avatar-overflow { margin-left: 0; margin-top: -10px; }
+.shape-squircle {
+  border-radius: 24% !important;
+}
 
-.shape-circle { border-radius: 50% !important; }
-.shape-squircle { border-radius: 24% !important; }
+.overflow-text {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
 
-.is-framed {
+/* Framed Ring for +more avatar indicator */
+.avatar-overflow.is-framed {
   box-shadow: 0 0 0 6px var(--hover), 0 0 0 7px var(--hairline);
 }
-:root.dark .is-framed {
+:root.dark .avatar-overflow.is-framed {
   box-shadow: 0 0 0 7px #2c2c2e, 0 0 0 8px rgba(255, 255, 255, 0.12);
 }
 
 .is-interactive .avatar-overflow:hover {
-  background: var(--accent); color: #ffffff; cursor: pointer; transform: scale(1.05);
+  background: var(--hover, rgba(0, 0, 0, 0.09));
+  cursor: pointer;
+}
+:root.dark .is-interactive .avatar-overflow:hover {
+  background: rgba(255, 255, 255, 0.2);
 }
 
-.id-avatar-group.size-xs .avatar-overflow,
-.avatar-overflow.size-xs {
-  width: 28px !important; height: 28px !important;
-  min-width: 28px !important; min-height: 28px !important;
-  font-size: 11px !important; border-width: 2px;
+/* Precise Avatar Sizes Matching IdAvatar */
+.size-xs.avatar-overflow,
+.id-avatar-group.size-xs .avatar-overflow {
+  width: 28px; height: 28px;
+  min-width: 28px; min-height: 28px;
+  font-size: 11px;
 }
 
-.id-avatar-group.size-sm .avatar-overflow,
-.avatar-overflow.size-sm {
-  width: 36px !important; height: 36px !important;
-  min-width: 36px !important; min-height: 36px !important;
-  font-size: 13px !important; border-width: 2px;
+.size-sm.avatar-overflow,
+.id-avatar-group.size-sm .avatar-overflow {
+  width: 36px; height: 36px;
+  min-width: 36px; min-height: 36px;
+  font-size: 13px;
 }
 
-.id-avatar-group.size-md .avatar-overflow,
-.avatar-overflow.size-md {
-  width: 44px !important; height: 44px !important;
-  min-width: 44px !important; min-height: 44px !important;
-  font-size: 15px !important; border-width: 2px;
+.size-md.avatar-overflow,
+.id-avatar-group.size-md .avatar-overflow {
+  width: 44px; height: 44px;
+  min-width: 44px; min-height: 44px;
+  font-size: 14.5px;
 }
 
-.id-avatar-group.size-lg .avatar-overflow,
-.avatar-overflow.size-lg {
-  width: 56px !important; height: 56px !important;
-  min-width: 56px !important; min-height: 56px !important;
-  font-size: 19px !important; border-width: 3px;
+.size-lg.avatar-overflow,
+.id-avatar-group.size-lg .avatar-overflow {
+  width: 56px; height: 56px;
+  min-width: 56px; min-height: 56px;
+  font-size: 17px;
 }
 
-.id-avatar-group.size-xl .avatar-overflow,
-.avatar-overflow.size-xl {
-  width: 72px !important; height: 72px !important;
-  min-width: 72px !important; min-height: 72px !important;
-  font-size: 24px !important; border-width: 4px;
+.size-xl.avatar-overflow,
+.id-avatar-group.size-xl .avatar-overflow {
+  width: 72px; height: 72px;
+  min-width: 72px; min-height: 72px;
+  font-size: 21px;
 }
 </style>

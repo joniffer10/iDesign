@@ -31,14 +31,19 @@
     "./dist/idesign.css": "./dist/idesign.css",
     "./styles.css": "./dist/idesign.css",
     "./tokens": "./src/styles/tokens.css",
-    "./styles": "./src/styles/tokens.css"
+    "./styles": "./src/styles/tokens.css",
+    "./nuxt": "./src/nuxt.js",
+    "./resolver": "./src/resolver.js"
   },
   "files": [
     "dist",
     "bin",
     "src/styles",
     "src/components/idesign",
+    "src/components/templates",
     "src/composables",
+    "src/nuxt.js",
+    "src/resolver.js",
     "src/index.js",
     "src/index.d.ts"
   ],

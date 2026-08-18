@@ -19,9 +19,14 @@
         @click="$emit('select-component', item)"
       >
         <!-- Live Mini Preview Box -->
-        <div class="preview-box">
+        <div :class="['preview-box', { 'has-image-preview': !!item.image }]">
+          <!-- Image preview if defined on item -->
+          <div v-if="item.image" class="card-image-preview-wrapper">
+            <img :src="item.image" :alt="item.name" class="card-img-preview" loading="lazy" />
+          </div>
+
           <!-- Glass Nav Mini -->
-          <template v-if="item.id === 'glass-nav'">
+          <template v-else-if="item.id === 'glass-nav'">
             <div class="mini-nav">
               <div class="mini-brand"><span>⚡</span> Idesign</div>
               <div class="mini-links"><span>Docs</span> <span class="mini-btn">Action</span></div>
@@ -44,6 +49,28 @@
               <span class="active">Overview</span>
               <span>Components</span>
               <span>Tokens</span>
+            </div>
+          </template>
+
+          <!-- Mobile Navbar Mini -->
+          <template v-else-if="item.id === 'mobile-navbar'">
+            <div class="mini-mobile-navbar">
+              <div class="mini-mn-item active">
+                <span class="mini-mn-ic">🏠</span>
+                <span class="mini-mn-lbl">Home</span>
+              </div>
+              <div class="mini-mn-item">
+                <span class="mini-mn-ic">🧭</span>
+                <span class="mini-mn-lbl">Explore</span>
+              </div>
+              <div class="mini-mn-item">
+                <span class="mini-mn-ic">🔔<span class="mini-mn-dot"></span></span>
+                <span class="mini-mn-lbl">Alerts</span>
+              </div>
+              <div class="mini-mn-item">
+                <span class="mini-mn-ic">👤</span>
+                <span class="mini-mn-lbl">Profile</span>
+              </div>
             </div>
           </template>
 
@@ -539,6 +566,206 @@
             </div>
           </template>
 
+          <!-- Settings Page Mini -->
+          <template v-else-if="item.id === 'settings-page'">
+            <div class="mini-settings-page">
+              <div class="m-set-sidebar">
+                <span class="active">General</span>
+                <span>Security</span>
+              </div>
+              <div class="m-set-content">
+                <div class="m-set-row"><span>Dark Mode</span><div class="m-switch mini on"><span class="m-thumb"></span></div></div>
+                <div class="m-set-row"><span>Two-Factor</span><span class="m-badge-active">On</span></div>
+              </div>
+            </div>
+          </template>
+
+          <!-- Analytics Page Mini -->
+          <template v-else-if="item.id === 'analytics-page'">
+            <div class="mini-analytics-page">
+              <div class="m-an-card">
+                <div class="m-an-top"><span class="m-an-title">Monthly Revenue</span><span class="m-an-up">+18.4%</span></div>
+                <div class="m-an-val">$48,250</div>
+                <div class="m-an-bars">
+                  <span style="height:35%"></span><span style="height:60%"></span><span style="height:45%"></span><span style="height:90%" class="act"></span><span style="height:70%"></span>
+                </div>
+              </div>
+            </div>
+          </template>
+
+          <!-- Checkout Page Mini -->
+          <template v-else-if="item.id === 'checkout-page'">
+            <div class="mini-checkout-page">
+              <div class="m-chk-header"><span>Pay Express Checkout</span></div>
+              <div class="m-chk-row"><span>Vision Studio Pro</span><b>$3,499</b></div>
+              <div class="m-chk-card"><span>•••• 4242</span><span class="m-visa">VISA</span></div>
+            </div>
+          </template>
+
+          <!-- iPhone Shell Mini -->
+          <template v-else-if="item.id === 'iphone-shell'">
+            <div class="mini-iphone-shell">
+              <div class="m-ip-notch"></div>
+              <div class="m-ip-screen">
+                <div class="m-ip-app">✦ Idesign</div>
+                <div class="m-ip-card"></div>
+              </div>
+              <div class="m-ip-bar"></div>
+            </div>
+          </template>
+
+          <!-- MacBook Frame Mini -->
+          <template v-else-if="item.id === 'macbook-frame'">
+            <div class="mini-macbook-frame">
+              <div class="m-mb-screen">
+                <div class="m-mb-topbar"><span class="m-mb-dot r"></span><span class="m-mb-dot y"></span><span class="m-mb-dot g"></span></div>
+                <div class="m-mb-body"><span>Spatial App</span></div>
+              </div>
+              <div class="m-mb-base"></div>
+            </div>
+          </template>
+
+          <!-- iPad Frame Mini -->
+          <template v-else-if="item.id === 'ipad-frame'">
+            <div class="mini-ipad-frame">
+              <div class="m-ipad-screen">
+                <div class="m-ipad-nav"><span>Idesign Studio</span></div>
+                <div class="m-ipad-grid"><div></div><div></div></div>
+              </div>
+            </div>
+          </template>
+
+          <!-- Sidebar Mini -->
+          <template v-else-if="item.id === 'sidebar'">
+            <div class="mini-sidebar-layout">
+              <div class="m-sb-panel">
+                <div class="m-sb-brand">⚡ Idesign</div>
+                <div class="m-sb-item active">📊 Dashboard</div>
+                <div class="m-sb-item">📁 Projects</div>
+                <div class="m-sb-user"><span>👤 Jane</span></div>
+              </div>
+            </div>
+          </template>
+
+          <!-- Header Mini -->
+          <template v-else-if="item.id === 'header'">
+            <div class="mini-header-bar">
+              <div class="m-hdr-brand">⚡ Idesign</div>
+              <div class="m-hdr-links"><span>Products</span><span>Docs</span></div>
+              <div class="m-hdr-actions"><span class="m-btn-mini">Account</span></div>
+            </div>
+          </template>
+
+          <!-- Footer Mini -->
+          <template v-else-if="item.id === 'footer'">
+            <div class="mini-footer-box">
+              <div class="m-ft-cols">
+                <div><b>Product</b><span>Features</span></div>
+                <div><b>Resources</b><span>Docs</span></div>
+                <div><b>Legal</b><span>Privacy</span></div>
+              </div>
+              <div class="m-ft-bottom"><span>© 2026 Idesign</span><span class="m-dot live"></span></div>
+            </div>
+          </template>
+
+          <!-- Banner Mini -->
+          <template v-else-if="item.id === 'banner'">
+            <div class="mini-banner-box">
+              <div class="m-banner-pill">
+                <span class="m-banner-ic">✨</span>
+                <span>v2.4 Released with Liquid Glass</span>
+                <span class="m-banner-action">Learn More →</span>
+              </div>
+            </div>
+          </template>
+
+          <!-- Separator Mini -->
+          <template v-else-if="item.id === 'separator'">
+            <div class="mini-separator-box">
+              <div class="m-sep-row">
+                <span class="m-sep-line"></span>
+                <span class="m-sep-label">CONTINUE WITH</span>
+                <span class="m-sep-line"></span>
+              </div>
+            </div>
+          </template>
+
+          <!-- Kbd Mini -->
+          <template v-else-if="item.id === 'kbd'">
+            <div class="mini-kbd-box">
+              <kbd class="m-kbd">⌘K</kbd>
+              <kbd class="m-kbd">⌥⇧P</kbd>
+              <kbd class="m-kbd">⎋ Esc</kbd>
+            </div>
+          </template>
+
+          <!-- PIN & OTP Code Input Mini -->
+          <template v-else-if="item.id === 'pin-input'">
+            <div class="mini-pin-box">
+              <span class="m-pin-box filled">8</span>
+              <span class="m-pin-box filled">4</span>
+              <span class="m-pin-box filled">9</span>
+              <span class="m-pin-box active">2</span>
+              <span class="m-pin-box">·</span>
+              <span class="m-pin-box">·</span>
+            </div>
+          </template>
+
+          <!-- Time Picker Mini -->
+          <template v-else-if="item.id === 'time-picker'">
+            <div class="mini-time-box">
+              <button class="m-time-btn">−</button>
+              <div class="m-time-digits"><span>10</span>:<span>30</span><span class="m-ampm">AM</span></div>
+              <button class="m-time-btn">+</button>
+            </div>
+          </template>
+
+          <!-- Tag Input Mini -->
+          <template v-else-if="item.id === 'tag-input'">
+            <div class="mini-tag-input-box">
+              <span class="m-tag-chip">Design <span class="x">×</span></span>
+              <span class="m-tag-chip">Vue <span class="x">×</span></span>
+              <span class="m-tag-add">+ Add</span>
+            </div>
+          </template>
+
+          <!-- Rating Mini -->
+          <template v-else-if="item.id === 'rating'">
+            <div class="mini-rating-box">
+              <div class="m-stars">
+                <span class="star gold">★</span>
+                <span class="star gold">★</span>
+                <span class="star gold">★</span>
+                <span class="star gold">★</span>
+                <span class="star gold">★</span>
+              </div>
+              <span class="m-rate-score">5.0</span>
+            </div>
+          </template>
+
+          <!-- Number Input Mini -->
+          <template v-else-if="item.id === 'number-input'">
+            <div class="mini-num-input-box">
+              <button class="m-num-btn">−</button>
+              <span class="m-num-val">42 <small>px</small></span>
+              <button class="m-num-btn">+</button>
+            </div>
+          </template>
+
+          <!-- Color Picker Mini -->
+          <template v-else-if="item.id === 'color-picker'">
+            <div class="mini-color-box">
+              <div class="m-color-swatch-main"></div>
+              <div class="m-color-dots">
+                <span style="background:#0071e3;" class="active"></span>
+                <span style="background:#30d158;"></span>
+                <span style="background:#ff9f0a;"></span>
+                <span style="background:#ff375f;"></span>
+                <span style="background:#5e5ce6;"></span>
+              </div>
+            </div>
+          </template>
+
           <!-- Default Generic Graphic Fallback -->
           <template v-else>
             <div class="generic-preview">
@@ -559,16 +786,27 @@
           <p class="card-description">{{ item.description }}</p>
 
           <div class="card-actions">
-            <button
-              class="quick-copy-btn"
-              title="Copy SFC code"
-              @click.stop="$emit('quick-copy', item)"
-            >
-              <Copy :size="13" />
-              Copy SFC
-            </button>
+            <div class="action-btn-group">
+              <button
+                class="quick-cli-btn"
+                :title="`Copy CLI: npx idesign add ${item.id}`"
+                @click.stop="copyCliCommand(item)"
+              >
+                <Terminal :size="12" />
+                CLI Add
+              </button>
 
-            <span class="explore-link">Inspect & Edit →</span>
+              <button
+                class="quick-copy-btn"
+                title="Copy Vue 3 SFC code"
+                @click.stop="$emit('quick-copy', item)"
+              >
+                <Copy :size="12" />
+                SFC
+              </button>
+            </div>
+
+            <span class="explore-link">Inspect →</span>
           </div>
         </div>
       </div>
@@ -586,7 +824,7 @@
 
 <script setup>
 import { computed } from 'vue'
-import { Copy } from '@lucide/vue'
+import { Copy, Terminal } from '@lucide/vue'
 import IdSegmentedControl from './idesign/IdSegmentedControl.vue'
 
 const props = defineProps({
@@ -608,7 +846,13 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['select-component', 'quick-copy', 'update:searchQuery', 'update:activeCategory'])
+const emit = defineEmits(['select-component', 'quick-copy', 'toast', 'update:searchQuery', 'update:activeCategory'])
+
+const copyCliCommand = (item) => {
+  const cmd = `npx idesign add ${item.id}`
+  navigator.clipboard.writeText(cmd)
+  emit('toast', `Copied "${cmd}" to clipboard!`)
+}
 
 const selectedCategory = computed({
   get: () => props.activeCategory,
@@ -619,14 +863,19 @@ const filteredComponents = computed(() => {
   return props.components.filter(c => {
     // Category match using category ID
     const cat = props.activeCategory || 'all'
-    const categoryMatch = cat === 'all' || c.category === cat
+    const categoryMatch = cat === 'all' ||
+      c.category === cat ||
+      (Array.isArray(c.categories) && c.categories.includes(cat)) ||
+      (cat === 'inputs' && (c.category === 'inputs' || c.category === 'forms')) ||
+      (cat === 'mobile' && (c.category === 'mobile' || c.tags?.includes('mobile') || c.id === 'mobile-navbar')) ||
+      (cat === 'navigation' && (c.category === 'navigation' || c.tags?.includes('navigation') || c.id === 'mobile-navbar'))
 
     // Search query match
     const q = props.searchQuery.toLowerCase().trim()
     const searchMatch = !q ||
       c.name.toLowerCase().includes(q) ||
       c.description.toLowerCase().includes(q) ||
-      c.tags.some(t => t.toLowerCase().includes(q))
+      (Array.isArray(c.tags) && c.tags.some(t => t.toLowerCase().includes(q)))
 
     return categoryMatch && searchMatch
   })
@@ -641,17 +890,26 @@ const filteredComponents = computed(() => {
 }
 
 .catalog-controls {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: flex-start;
   margin-bottom: 32px;
+  width: 100%;
+  max-width: 100%;
   overflow-x: auto;
-  padding-bottom: 6px;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding: 4px 0 8px;
+}
+.catalog-controls::-webkit-scrollbar {
+  display: none;
 }
 
 .cards-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
   gap: 24px;
 }
 
@@ -700,6 +958,14 @@ const filteredComponents = computed(() => {
 .mini-seg { display: inline-flex; background: var(--faint); padding: 3px; border-radius: 999px; font-size: 12px; gap: 4px; }
 .mini-seg span { padding: 4px 10px; border-radius: 999px; color: var(--text-2); }
 .mini-seg span.active { background: var(--surface); color: var(--text); font-weight: 600; box-shadow: 0 1px 3px rgba(0,0,0,0.15); }
+
+.mini-mobile-navbar { display: flex; align-items: center; justify-content: space-around; background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid var(--hairline); border-radius: 999px; padding: 4px 8px; width: 100%; max-width: 220px; box-shadow: var(--sh-card); }
+:root.dark .mini-mobile-navbar { background: rgba(28, 28, 30, 0.85); }
+.mini-mn-item { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 3px 6px; border-radius: 999px; font-size: 9.5px; color: var(--text-2); position: relative; }
+.mini-mn-item.active { background: var(--surface); color: var(--accent); font-weight: 600; box-shadow: 0 1px 3px rgba(0,0,0,0.12); }
+.mini-mn-ic { font-size: 13px; line-height: 1; position: relative; display: inline-flex; }
+.mini-mn-lbl { font-size: 8.5px; margin-top: 1px; }
+.mini-mn-dot { position: absolute; top: -1px; right: -3px; width: 5px; height: 5px; border-radius: 50%; background: #ff3b30; }
 
 .mini-tabs { display: flex; flex-direction: column; gap: 4px; font-size: 12.5px; position: relative; }
 .mini-tab-item { display: inline-block; padding: 4px 12px; color: var(--text-2); }
@@ -947,11 +1213,141 @@ const filteredComponents = computed(() => {
 .m-tour-icon { font-size: 16px; }
 .m-tour-title { font-size: 11.5px; font-weight: 700; color: var(--text); }
 
+.card-image-preview-wrapper { width: 100%; height: 100%; position: absolute; inset: 0; overflow: hidden; }
+.card-img-preview { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.35s var(--ease-out-quart); }
+.component-card:hover .card-img-preview { transform: scale(1.04); }
+
 .mini-auth-page { width: 100%; background: var(--surface); border: 1px solid var(--hairline); border-radius: 12px; padding: 10px 12px; display: flex; flex-direction: column; gap: 6px; font-size: 11px; }
 .m-auth-tabs { display: flex; gap: 10px; font-weight: 600; color: var(--text-3); border-bottom: 1px solid var(--hairline); padding-bottom: 4px; }
 .m-auth-tabs span.active { color: var(--text); border-bottom: 2px solid var(--accent); }
 .m-auth-field { background: var(--hover); border: 1px solid var(--hairline); border-radius: 6px; padding: 4px 8px; color: var(--text-3); }
 .m-auth-btn { background: var(--accent); color: #fff; border-radius: 999px; text-align: center; padding: 4px; font-weight: 600; margin-top: 2px; }
+
+/* Settings Page */
+.mini-settings-page { width: 100%; max-width: 220px; background: var(--surface); border: 1px solid var(--hairline); border-radius: 12px; display: flex; box-shadow: var(--sh-card); overflow: hidden; font-size: 10.5px; }
+.m-set-sidebar { width: 70px; background: var(--hover); padding: 8px 6px; display: flex; flex-direction: column; gap: 4px; border-right: 1px solid var(--hairline); color: var(--text-3); font-weight: 600; }
+.m-set-sidebar span.active { color: var(--text); background: var(--surface); padding: 2px 4px; border-radius: 4px; box-shadow: 0 1px 2px rgba(0,0,0,0.04); }
+.m-set-content { flex: 1; padding: 8px 10px; display: flex; flex-direction: column; gap: 6px; justify-content: center; }
+.m-set-row { display: flex; justify-content: space-between; align-items: center; font-weight: 600; color: var(--text); }
+.m-badge-active { font-size: 9px; font-weight: 700; color: #248a3d; background: rgba(52, 199, 89, 0.15); padding: 1px 5px; border-radius: 4px; }
+
+/* Analytics Page */
+.mini-analytics-page { width: 100%; max-width: 210px; background: var(--surface); border: 1px solid var(--hairline); border-radius: 12px; padding: 10px 12px; box-shadow: var(--sh-card); }
+.m-an-top { display: flex; justify-content: space-between; align-items: center; font-size: 10px; color: var(--text-3); font-weight: 600; }
+.m-an-up { color: #248a3d; font-weight: 700; }
+.m-an-val { font-size: 16px; font-weight: 800; color: var(--text); font-family: var(--mono); font-feature-settings: 'tnum'; margin: 4px 0 6px; }
+.m-an-bars { display: flex; align-items: flex-end; gap: 4px; height: 28px; }
+.m-an-bars span { flex: 1; background: rgba(0,113,227,0.18); border-radius: 3px 3px 0 0; }
+.m-an-bars span.act { background: var(--accent); }
+
+/* Checkout Page */
+.mini-checkout-page { width: 100%; max-width: 210px; background: var(--surface); border: 1px solid var(--hairline); border-radius: 12px; padding: 8px 12px; box-shadow: var(--sh-card); display: flex; flex-direction: column; gap: 6px; font-size: 10.5px; }
+.m-chk-header { background: #000; color: #fff; border-radius: 6px; padding: 4px 8px; text-align: center; font-weight: 700; font-size: 10px; }
+:root.dark .m-chk-header { background: #fff; color: #000; }
+.m-chk-row { display: flex; justify-content: space-between; align-items: center; color: var(--text); font-weight: 600; }
+.m-chk-card { display: flex; justify-content: space-between; align-items: center; background: var(--hover); border: 1px solid var(--hairline); border-radius: 6px; padding: 4px 8px; font-family: var(--mono); font-size: 9.5px; color: var(--text-2); }
+.m-visa { font-weight: 800; color: var(--accent); font-style: italic; }
+
+/* iPhone Shell */
+.mini-iphone-shell { width: 80px; height: 100px; background: #000; border: 3px solid #333; border-radius: 20px; box-shadow: var(--sh-overlay); padding: 4px; display: flex; flex-direction: column; position: relative; }
+.m-ip-notch { width: 28px; height: 5px; background: #000; border-radius: 999px; margin: 0 auto 4px; }
+.m-ip-screen { flex: 1; background: var(--surface); border-radius: 14px; padding: 6px; display: flex; flex-direction: column; gap: 4px; }
+.m-ip-app { font-size: 8px; font-weight: 800; color: var(--accent); }
+.m-ip-card { flex: 1; background: var(--hover); border: 1px solid var(--hairline); border-radius: 6px; }
+.m-ip-bar { width: 26px; height: 2px; background: #fff; border-radius: 999px; margin: 3px auto 0; opacity: 0.6; }
+
+/* MacBook Frame */
+.mini-macbook-frame { width: 140px; display: flex; flex-direction: column; align-items: center; }
+.m-mb-screen { width: 120px; height: 75px; background: #111; border: 3px solid #222; border-radius: 8px 8px 0 0; padding: 4px; display: flex; flex-direction: column; }
+.m-mb-topbar { display: flex; gap: 3px; margin-bottom: 4px; }
+.m-mb-dot { width: 4px; height: 4px; border-radius: 50%; }
+.m-mb-dot.r { background: #ff5f56; }
+.m-mb-dot.y { background: #ffbd2e; }
+.m-mb-dot.g { background: #27c93f; }
+.m-mb-body { flex: 1; background: var(--surface); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; color: var(--text-2); }
+.m-mb-base { width: 140px; height: 5px; background: #c5c5c7; border-radius: 0 0 4px 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.15); }
+
+/* iPad Frame */
+.mini-ipad-frame { width: 110px; height: 85px; background: #1a1a1a; border: 4px solid #333; border-radius: 14px; padding: 4px; box-shadow: var(--sh-card); display: flex; flex-direction: column; }
+.m-ipad-screen { flex: 1; background: var(--surface); border-radius: 9px; padding: 6px; display: flex; flex-direction: column; gap: 4px; }
+.m-ipad-nav { font-size: 8px; font-weight: 800; color: var(--text); border-bottom: 1px solid var(--hairline); padding-bottom: 2px; }
+.m-ipad-grid { display: flex; gap: 4px; flex: 1; }
+.m-ipad-grid div { flex: 1; background: var(--hover); border: 1px solid var(--hairline); border-radius: 4px; }
+
+/* Sidebar Layout */
+.mini-sidebar-layout { width: 100%; max-width: 200px; }
+.m-sb-panel { background: var(--surface); border: 1px solid var(--hairline); border-radius: 12px; padding: 8px 10px; box-shadow: var(--sh-card); display: flex; flex-direction: column; gap: 4px; font-size: 10.5px; }
+.m-sb-brand { font-weight: 800; color: var(--text); margin-bottom: 2px; font-size: 11px; }
+.m-sb-item { padding: 3px 6px; border-radius: 6px; font-weight: 600; color: var(--text-2); }
+.m-sb-item.active { background: rgba(0,113,227,0.12); color: var(--accent); }
+.m-sb-user { border-top: 1px solid var(--hairline); padding-top: 4px; margin-top: 2px; font-size: 9.5px; color: var(--text-3); font-weight: 600; }
+
+/* Header Bar */
+.mini-header-bar { width: 100%; max-width: 230px; background: var(--surface); border: 1px solid var(--hairline); border-radius: 10px; padding: 6px 10px; display: flex; justify-content: space-between; align-items: center; box-shadow: var(--sh-card); font-size: 10.5px; }
+.m-hdr-brand { font-weight: 800; color: var(--text); }
+.m-hdr-links { display: flex; gap: 8px; font-weight: 600; color: var(--text-3); }
+.m-hdr-actions .m-btn-mini { background: var(--accent); color: #fff; padding: 2px 7px; border-radius: 999px; font-weight: 600; font-size: 9.5px; }
+
+/* Footer Box */
+.mini-footer-box { width: 100%; max-width: 220px; background: var(--surface); border: 1px solid var(--hairline); border-radius: 12px; padding: 8px 12px; box-shadow: var(--sh-card); display: flex; flex-direction: column; gap: 6px; font-size: 9.5px; }
+.m-ft-cols { display: flex; justify-content: space-between; }
+.m-ft-cols div { display: flex; flex-direction: column; gap: 2px; }
+.m-ft-cols b { color: var(--text); }
+.m-ft-cols span { color: var(--text-3); }
+.m-ft-bottom { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--hairline); padding-top: 4px; color: var(--text-3); font-size: 8.5px; }
+.m-dot.live { width: 6px; height: 6px; border-radius: 50%; background: #34c759; }
+
+/* Banner */
+.mini-banner-box { width: 100%; max-width: 220px; display: flex; justify-content: center; }
+.m-banner-pill { background: rgba(0, 113, 227, 0.08); border: 1px solid rgba(0, 113, 227, 0.2); border-radius: 999px; padding: 4px 10px; display: flex; align-items: center; gap: 6px; font-size: 10px; font-weight: 600; color: var(--text); }
+.m-banner-ic { font-size: 11px; }
+.m-banner-action { color: var(--accent); font-weight: 700; }
+
+/* Separator */
+.mini-separator-box { width: 180px; }
+.m-sep-row { display: flex; align-items: center; gap: 8px; width: 100%; }
+.m-sep-line { flex: 1; height: 1px; background: var(--hairline); }
+.m-sep-label { font-size: 9px; font-weight: 700; color: var(--text-3); letter-spacing: 0.06em; }
+
+/* Kbd */
+.mini-kbd-box { display: flex; gap: 6px; }
+.m-kbd { font-family: var(--mono); font-size: 11px; font-weight: 700; background: var(--surface); border: 1px solid var(--hairline); border-bottom: 2px solid var(--faint); border-radius: 6px; padding: 3px 7px; color: var(--text); box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+
+/* PIN Input */
+.mini-pin-box { display: flex; gap: 5px; }
+.m-pin-box { width: 22px; height: 26px; border-radius: 6px; background: var(--surface); border: 1px solid var(--hairline); display: flex; align-items: center; justify-content: center; font-family: var(--mono); font-weight: 700; font-size: 12px; color: var(--text); box-shadow: 0 1px 2px rgba(0,0,0,0.04); }
+.m-pin-box.filled { border-color: rgba(0, 113, 227, 0.4); }
+.m-pin-box.active { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(0, 113, 227, 0.2); }
+
+/* Time Picker */
+.mini-time-box { display: flex; align-items: center; gap: 6px; background: var(--surface); border: 1px solid var(--hairline); border-radius: 999px; padding: 3px 8px; box-shadow: 0 1px 2px rgba(0,0,0,0.04); }
+.m-time-btn { width: 18px; height: 18px; border-radius: 50%; border: none; background: var(--hover); color: var(--text-2); font-size: 11px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.m-time-digits { font-family: var(--mono); font-weight: 700; font-size: 12px; color: var(--text); display: flex; align-items: center; gap: 2px; }
+.m-ampm { font-size: 9px; font-family: var(--font); font-weight: 800; color: var(--accent); background: rgba(0,113,227,0.1); padding: 1px 4px; border-radius: 4px; margin-left: 3px; }
+
+/* Tag Input */
+.mini-tag-input-box { display: flex; gap: 4px; align-items: center; background: var(--surface); border: 1px solid var(--hairline); border-radius: 10px; padding: 4px 8px; width: 190px; }
+.m-tag-chip { background: rgba(0,113,227,0.12); color: var(--accent); font-size: 10px; font-weight: 600; padding: 2px 6px; border-radius: 999px; display: flex; align-items: center; gap: 3px; }
+.m-tag-chip .x { opacity: 0.6; font-size: 10px; }
+.m-tag-add { font-size: 10px; color: var(--text-3); font-weight: 600; margin-left: 2px; }
+
+/* Rating */
+.mini-rating-box { display: flex; align-items: center; gap: 6px; background: var(--surface); border: 1px solid var(--hairline); border-radius: 999px; padding: 4px 10px; box-shadow: 0 1px 2px rgba(0,0,0,0.04); }
+.m-stars { display: flex; gap: 2px; font-size: 13px; color: #ff9f0a; }
+.m-rate-score { font-family: var(--mono); font-weight: 700; font-size: 11.5px; color: var(--text); }
+
+/* Number Input */
+.mini-num-input-box { display: flex; align-items: center; gap: 6px; background: var(--surface); border: 1px solid var(--hairline); border-radius: 999px; padding: 3px 8px; box-shadow: 0 1px 2px rgba(0,0,0,0.04); }
+.m-num-btn { width: 20px; height: 20px; border-radius: 50%; border: none; background: var(--hover); color: var(--text); font-size: 12px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.m-num-val { font-family: var(--mono); font-weight: 700; font-size: 12.5px; color: var(--text); }
+.m-num-val small { font-size: 10px; font-family: var(--font); color: var(--text-3); font-weight: 600; margin-left: 2px; }
+
+/* Color Picker */
+.mini-color-box { display: flex; align-items: center; gap: 8px; background: var(--surface); border: 1px solid var(--hairline); border-radius: 999px; padding: 4px 10px; box-shadow: 0 1px 2px rgba(0,0,0,0.04); }
+.m-color-swatch-main { width: 18px; height: 18px; border-radius: 50%; background: linear-gradient(135deg, #0071e3, #5e5ce6); box-shadow: 0 1px 3px rgba(0,0,0,0.15); }
+.m-color-dots { display: flex; gap: 4px; }
+.m-color-dots span { width: 10px; height: 10px; border-radius: 50%; }
+.m-color-dots span.active { outline: 2px solid var(--accent); outline-offset: 1px; }
 
 .generic-preview { display: flex; flex-direction: column; align-items: center; gap: 6px; font-size: 13px; font-weight: 650; color: var(--text-2); }
 .m-icon-box { font-size: 24px; color: var(--accent); }
@@ -964,20 +1360,25 @@ const filteredComponents = computed(() => {
 .card-title { font-size: 16.5px; font-weight: 650; letter-spacing: -0.015em; color: var(--text); margin-bottom: 6px; }
 .card-description { font-size: 13.5px; color: var(--text-2); line-height: 1.5; flex: 1; margin-bottom: 16px; }
 .card-actions { display: flex; align-items: center; justify-content: space-between; font-size: 13px; font-weight: 600; margin-top: auto; }
-.quick-copy-btn { border: none; background: var(--hover); color: var(--text); padding: 5px 11px; border-radius: var(--r-pill); font-family: var(--font); font-size: 12px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 5px; transition: background 0.15s; }
+.action-btn-group { display: flex; align-items: center; gap: 6px; }
+.quick-cli-btn { border: 1px solid rgba(255, 255, 255, 0.1); background: #1d1d1f; color: #ffffff; padding: 4px 10px; border-radius: var(--r-pill); font-family: var(--font); font-size: 11.5px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 4px; transition: background 0.15s, transform 0.12s var(--ease-spring); }
+.quick-cli-btn:hover { background: var(--accent); color: #ffffff; }
+.quick-cli-btn:active { transform: scale(0.96); }
+.quick-copy-btn { border: 1px solid var(--hairline); background: var(--hover); color: var(--text); padding: 4px 10px; border-radius: var(--r-pill); font-family: var(--font); font-size: 11.5px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 4px; transition: background 0.15s, transform 0.12s var(--ease-spring); }
 .quick-copy-btn:hover { background: var(--track); color: var(--text); }
+.quick-copy-btn:active { transform: scale(0.96); }
 .explore-link { color: var(--accent); }
 .empty-state { text-align: center; padding: 60px 20px; background: var(--surface); border-radius: var(--r-card); border: 1px dashed var(--hairline); }
 .empty-icon { font-size: 32px; margin-bottom: 12px; }
 .reset-btn { margin-top: 16px; background: var(--accent); color: #fff; border: none; padding: 8px 18px; border-radius: var(--r-pill); font-weight: 600; cursor: pointer; }
 
 /* ── Responsive Media Queries ── */
-@media (max-width: 840px) {
+@media (max-width: 900px) {
   .catalog-section {
     padding: 32px 20px;
   }
   .cards-grid {
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    grid-template-columns: repeat(2, 1fr);
     gap: 20px;
   }
   .catalog-controls {

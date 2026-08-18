@@ -253,11 +253,13 @@ const mobileMenuOpen = ref(false)
 
 const quickCategories = [
   { id: 'all', label: 'All' },
-  { id: 'inputs', label: 'Form Inputs' },
   { id: 'navigation', label: 'Navigation' },
+  { id: 'mobile', label: 'Mobile Shell' },
+  { id: 'inputs', label: 'Form Inputs' },
   { id: 'buttons', label: 'Buttons' },
   { id: 'panels', label: 'Panels & Cards' },
   { id: 'overlays', label: 'Overlays' },
+  { id: 'indicators', label: 'Indicators' },
   { id: 'data', label: 'Data Display' },
   { id: 'layout', label: 'Layout' },
   { id: 'templates', label: 'Templates' }

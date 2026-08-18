@@ -12,6 +12,10 @@ export function useModal() {
         title: options.title || '',
         component: options.component ? markRaw(options.component) : null,
         message: options.message || '',
+        description: options.description || options.message || '',
+        content: options.content || '',
+        variant: options.variant || 'inset',
+        danger: options.danger || false,
         confirmText: options.confirmText || 'Confirm',
         cancelText: options.cancelText || 'Cancel',
         resolve

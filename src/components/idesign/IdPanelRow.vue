@@ -53,10 +53,11 @@ defineEmits(['click'])
 <style scoped>
 .id-panel-row {
   display: flex; align-items: center; gap: 14px; padding: 16px clamp(17px, 3vw, 24px);
-  color: var(--text); text-decoration: none; background: var(--surface); transition: background 0.15s ease;
+  color: var(--text); text-decoration: none; background: var(--surface); transition: background 0.15s ease, transform 0.12s var(--ease-spring);
 }
 .id-panel-row + .id-panel-row { border-top: 1px solid var(--hairline); }
 .id-panel-row.is-clickable:hover { background: var(--hover); cursor: pointer; }
+.id-panel-row.is-clickable:active { background: var(--track); transform: scale(0.995); }
 
 .row-icon-wrap {
   width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center;

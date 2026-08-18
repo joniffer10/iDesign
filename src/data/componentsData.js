@@ -1,15 +1,15 @@
 export const componentCategories = [
   { id: 'all', label: 'All' },
-  { id: 'templates', label: 'Page Templates ✨' },
+  { id: 'templates', label: 'Templates' },
   { id: 'navigation', label: 'Navigation' },
   { id: 'buttons', label: 'Buttons' },
-  { id: 'panels', label: 'Panels & Cards' },
-  { id: 'inputs', label: 'Form Inputs' },
+  { id: 'panels', label: 'Panels' },
+  { id: 'inputs', label: 'Inputs' },
   { id: 'overlays', label: 'Overlays' },
   { id: 'indicators', label: 'Indicators' },
-  { id: 'data', label: 'Data Display' },
+  { id: 'data', label: 'Data' },
   { id: 'layout', label: 'Layout' },
-  { id: 'mobile', label: 'Mobile Shell' }
+  { id: 'mobile', label: 'Mobile' }
 ]
 
 export const componentsData = [
@@ -18,6 +18,7 @@ export const componentsData = [
     id: 'hero-page',
     name: 'Hero, Headlines & CTA Page',
     category: 'templates',
+    image: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=600&auto=format&fit=crop&q=80',
     description: 'Production-grade landing page with sticky glass nav, ambient gradient glow orbs, headlines, key metrics row, and feature cards.',
     tags: ['template', 'hero', 'landing', 'headline', 'cta', 'page'],
     props: {},
@@ -53,6 +54,7 @@ import { HeroTemplate } from '@idesign/vue'
     id: 'product-page',
     name: 'Product Showcase & Store Page',
     category: 'templates',
+    image: 'https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=600&auto=format&fit=crop&q=80',
     description: 'Store e-commerce page with category pill filters, image banner cards, price tags, quick view modal, and shopping bag counter.',
     tags: ['template', 'product', 'store', 'ecommerce', 'shop', 'page'],
     props: {},
@@ -87,6 +89,7 @@ import { ProductShowcaseTemplate } from '@idesign/vue'
     id: 'ai-chat-page',
     name: 'AI Chat Interface',
     category: 'templates',
+    image: 'https://images.unsplash.com/photo-1677442136019-21780efad99a?w=600&auto=format&fit=crop&q=80',
     description: 'AI assistant page with variants for full page with sidebar vs standalone chat window without sidebar.',
     tags: ['template', 'ai', 'chat', 'imessage', 'assistant', 'prompt', 'page'],
     props: {
@@ -124,6 +127,7 @@ import { AiChatTemplate } from '@idesign/vue'
     id: 'dashboard-page',
     name: 'Analytics & Systems Dashboard',
     category: 'templates',
+    image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&auto=format&fit=crop&q=80',
     description: 'System & Health dashboard with 4 KPI stat cards, interactive data table with search/selection, control panels, and team collaborators.',
     tags: ['template', 'dashboard', 'analytics', 'admin', 'table', 'kpi', 'page'],
     props: {},
@@ -162,6 +166,7 @@ import { DashboardTemplate } from '@idesign/vue'
     id: 'auth-page',
     name: 'Login & Sign Up Page',
     category: 'templates',
+    image: 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=600&auto=format&fit=crop&q=80',
     description: 'Liquid Glass authentication page supporting split-hero, centered-card, and minimal-glass passkey layouts.',
     tags: ['template', 'login', 'signup', 'auth', 'signin', 'register', 'page', 'passkey'],
     props: {
@@ -202,8 +207,8 @@ import { AuthTemplate } from '@idesign/vue'
   {
     id: 'settings-page',
     name: 'System Preferences & Settings Page',
-
     category: 'templates',
+    image: 'https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?w=600&auto=format&fit=crop&q=80',
     description: 'Liquid Glass system settings panel with profile management, appearance/density controls, 2FA security keys, and billing usage meters.',
     tags: ['template', 'settings', 'preferences', 'profile', 'security', 'billing', 'page'],
     props: {},
@@ -229,6 +234,7 @@ import { SettingsTemplate } from '@idesign/vue'
     id: 'analytics-page',
     name: 'Real-Time Telemetry & Metrics Page',
     category: 'templates',
+    image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600&auto=format&fit=crop&q=80',
     description: 'Real-time telemetry dashboard with interactive metric tiles, sparklines, cohort bar charts, traffic distribution, and live activity streams.',
     tags: ['template', 'analytics', 'telemetry', 'metrics', 'charts', 'sparkline', 'page'],
     props: {},
@@ -254,6 +260,7 @@ import { AnalyticsTemplate } from '@idesign/vue'
     id: 'checkout-page',
     name: 'Compound Form & Checkout Page',
     category: 'templates',
+    image: 'https://images.unsplash.com/photo-1556742049-0a67c5574f73?w=600&auto=format&fit=crop&q=80',
     description: 'Production onboarding & checkout flow demonstrating the new Compound Form System with step indicators, organization setup, payment authorization, and receipt summary.',
     tags: ['template', 'checkout', 'form', 'compound', 'onboarding', 'payment', 'stepper', 'page'],
     props: {},
@@ -344,6 +351,7 @@ import { IdGlassNav, IdButton } from '@idesign/vue'
     tags: ['stepper', 'steps', 'progress', 'wizard'],
     props: {
       activeStep: { type: 'number', default: 1, description: 'Zero-based index of the currently active step.' },
+      orientation: { type: 'select', options: ['horizontal', 'vertical'], default: 'horizontal', description: 'Progress bar layout orientation.' },
       size: { type: 'select', options: ['sm', 'md', 'lg'], default: 'md', description: 'Sizing scale for step indicators and labels.' },
       variant: { type: 'select', options: ['default', 'glass'], default: 'default', description: 'Container surface background variant.' },
       color: { type: 'select', options: ['blue', 'green', 'purple', 'orange'], default: 'blue', description: 'Active step accent theme color.' },
@@ -364,6 +372,7 @@ const steps = [
 <template>
   <IdStepper
     v-model="currentStep"
+    orientation="${p.orientation || 'horizontal'}"
     size="${p.size}"
     variant="${p.variant}"
     color="${p.color}"
@@ -408,7 +417,7 @@ const steps = [
     tags: ['segmented', 'pill', 'filter', 'active'],
     props: {
       active: { type: 'select', options: ['Overview', 'Components', 'Tokens'], default: 'Overview', description: 'Currently active tab label.' },
-      size: { type: 'select', options: ['sm', 'md', 'lg'], default: 'md', description: 'Padding and text scale.' },
+      size: { type: 'select', options: ['xs', 'sm', 'md', 'lg', 'xl'], default: 'md', description: 'Padding and text scale.' },
       theme: { type: 'select', options: ['white', 'black'], default: 'white', description: 'Active pill background theme color.' }
     },
     vueCode: (p) => `<script setup>
@@ -441,6 +450,92 @@ const options = ['Overview', 'Components', 'Tokens']
   <button class="seg-item ${p.active === 'Components' ? 'is-active' : ''}">Components</button>
   <button class="seg-item ${p.active === 'Tokens' ? 'is-active' : ''}">Tokens</button>
 </div>`
+  },
+
+  {
+    id: 'mobile-navbar',
+    name: 'Mobile Navbar',
+    category: 'navigation',
+    categories: ['navigation', 'mobile'],
+    description: 'Large pill mobile navigation bar with vertically stacked icons and labels, subtle selected pill background, 44px+ touch targets, and notification badges.',
+    tags: ['mobile', 'navbar', 'navigation', 'pill', 'bottombar', 'tabbar', 'badge', 'bar', 'segmented', 'app'],
+    props: {
+      active: { type: 'select', options: ['home', 'explore', 'notifications', 'profile'], default: 'home', description: 'Currently active navigation item ID.' },
+      variant: { type: 'select', options: ['glass', 'liquid', 'floating', 'solid', 'bordered', 'flat', 'minimal'], default: 'glass', description: 'Container surface treatment (liquid glass glow, frosted glass, floating elevated, solid, bordered, flat track, minimal).' },
+      size: { type: 'select', options: ['sm', 'md', 'lg'], default: 'md', description: 'Container dimensions and label scale.' },
+      color: { type: 'select', options: ['blue', 'purple', 'green', 'orange', 'red', 'black'], default: 'blue', description: 'Active item highlight color.' },
+      position: { type: 'select', options: ['static', 'fixed', 'sticky'], default: 'static', description: 'Positioning strategy.' },
+      safeArea: { type: 'boolean', default: true, description: 'Respect mobile safe-area bottom padding.' }
+    },
+    vueCode: (p) => `<script setup>
+import { ref } from 'vue'
+import { IdMobileNavbar } from '@idesign/vue'
+import { Home, Compass, Bell, User } from 'lucide-vue-next'
+
+const currentTab = ref('${p.active}')
+
+const navItems = [
+  { id: 'home', label: 'Home', icon: Home },
+  { id: 'explore', label: 'Explore', icon: Compass },
+  { id: 'notifications', label: 'Alerts', icon: Bell, badge: 3 },
+  { id: 'profile', label: 'Profile', icon: User }
+]
+</script>
+
+<template>
+  <IdMobileNavbar
+    v-model="currentTab"
+    variant="${p.variant}"
+    size="${p.size}"
+    color="${p.color}"
+    position="${p.position}"
+    :safe-area="${p.safeArea}"
+    :items="navItems"
+  />
+</template>`,
+    nuxtCode: (p) => `<!-- Nuxt 3 Auto-Import -->
+<script setup>
+const currentTab = ref('${p.active}')
+
+const navItems = [
+  { id: 'home', label: 'Home', icon: 'Home' },
+  { id: 'explore', label: 'Explore', icon: 'Compass' },
+  { id: 'notifications', label: 'Alerts', icon: 'Bell', badge: 3 },
+  { id: 'profile', label: 'Profile', icon: 'User' }
+]
+</script>
+
+<template>
+  <IdMobileNavbar
+    v-model="currentTab"
+    variant="${p.variant}"
+    size="${p.size}"
+    color="${p.color}"
+    position="${p.position}"
+    :safe-area="${p.safeArea}"
+    :items="navItems"
+  />
+</template>`,
+    htmlCode: (p) => `<nav class="id-mobile-navbar-wrapper position-${p.position}">
+  <div class="id-mobile-navbar size-${p.size} variant-${p.variant} color-${p.color}" role="tablist">
+    <button class="id-navbar-item ${p.active === 'home' ? 'is-active' : ''}" role="tab">
+      <span class="id-navbar-icon-box">🏠</span>
+      <span class="id-navbar-label">Home</span>
+    </button>
+    <button class="id-navbar-item ${p.active === 'explore' ? 'is-active' : ''}" role="tab">
+      <span class="id-navbar-icon-box">🧭</span>
+      <span class="id-navbar-label">Explore</span>
+    </button>
+    <button class="id-navbar-item ${p.active === 'notifications' ? 'is-active' : ''}" role="tab">
+      <span class="id-navbar-icon-box">🔔<span class="id-navbar-badge">3</span></span>
+      <span class="id-navbar-label">Alerts</span>
+    </button>
+    <button class="id-navbar-item ${p.active === 'profile' ? 'is-active' : ''}" role="tab">
+      <span class="id-navbar-icon-box">👤</span>
+      <span class="id-navbar-label">Profile</span>
+    </button>
+  </div>
+</nav>`
   },
 
   {
@@ -927,13 +1022,14 @@ import { IdCard, IdButton } from '@idesign/vue'
     id: 'input',
     name: 'Text Input',
     category: 'inputs',
-    description: 'Quiet text input with search variant, clearable button, trailing text, and status rings.',
-    tags: ['input', 'text', 'form', 'search'],
+    description: 'Quiet text input with search variant, password masking with eye toggle, clearable button, trailing text, and status rings.',
+    tags: ['input', 'text', 'password', 'masked', 'form', 'search'],
     props: {
       placeholder: { type: 'text', default: 'Enter text...', description: 'Input placeholder guidance text.' },
       label: { type: 'text', default: 'Label', description: 'Top label text.' },
       variant: { type: 'select', options: ['default', 'search', 'error', 'success'], default: 'default', description: 'Input status or search variant.' },
       size: { type: 'select', options: ['sm', 'md', 'lg'], default: 'md', description: 'Input height scale.' },
+      masked: { type: 'boolean', default: false, description: 'Masks input content as a password with an eye reveal toggle.' },
       clearable: { type: 'boolean', default: true, description: 'Displays an (x) clear button when text is present.' },
       trailingText: { type: 'text', default: '', description: 'Trailing text unit badge (e.g. "USD").' }
     },
@@ -951,6 +1047,7 @@ const textValue = ref('')
     placeholder="${p.placeholder}"
     variant="${p.variant}"
     size="${p.size}"
+    ${p.masked ? 'masked' : ''}
     ${p.clearable ? 'clearable' : ''}
     ${p.trailingText ? `trailing-text="${p.trailingText}"` : ''}
   />
@@ -963,13 +1060,15 @@ const textValue = ref('')
     placeholder="${p.placeholder}"
     variant="${p.variant}"
     size="${p.size}"
+    ${p.masked ? 'masked' : ''}
   />
 </template>`,
     htmlCode: (p) => `<div class="id-input-group size-${p.size} variant-${p.variant}">
   <label class="input-label">${p.label}</label>
   <div class="input-wrapper">
-    <input type="text" class="id-input" placeholder="${p.placeholder}" />
-    ${p.clearable ? '<button class="clear-btn" aria-label="Clear input">✕</button>' : ''}
+    <input type="${p.masked ? 'password' : 'text'}" class="id-input" placeholder="${p.placeholder}" />
+    ${p.masked ? '<button class="mask-toggle-btn" aria-label="Toggle password">👁️</button>' : ''}
+    ${p.clearable && !p.masked ? '<button class="clear-btn" aria-label="Clear input">✕</button>' : ''}
   </div>
 </div>`
   },
@@ -1022,10 +1121,12 @@ const message = ref('')
     id: 'select',
     name: 'Select Dropdown',
     category: 'inputs',
-    description: 'Custom dropdown with keyboard nav, ARIA combobox role, size, and glass variants.',
-    tags: ['select', 'dropdown', 'form', 'no-divider', 'glass'],
+    description: 'Custom dropdown with real-time search filter, keyboard navigation, clearable value, ARIA combobox role, and Liquid Glass variants.',
+    tags: ['select', 'dropdown', 'searchable', 'filter', 'combobox', 'form', 'no-divider', 'glass'],
     props: {
       label: { type: 'text', default: 'Framework', description: 'Label text above dropdown trigger.' },
+      searchable: { type: 'boolean', default: true, description: 'Enables real-time search filter input inside dropdown.' },
+      clearable: { type: 'boolean', default: true, description: 'Shows clear icon button when value is selected.' },
       size: { type: 'select', options: ['sm', 'md', 'lg'], default: 'md', description: 'Height and font size scale.' },
       variant: { type: 'select', options: ['default', 'no-divider', 'glass'], default: 'default', description: 'Dropdown item divider visual style.' }
     },
@@ -1034,7 +1135,7 @@ import { ref } from 'vue'
 import { IdSelect } from '@idesign/vue'
 
 const selected = ref('Vue 3')
-const options = ['Vue 3', 'Nuxt 3', 'React', 'Svelte']
+const options = ['Vue 3', 'Nuxt 3', 'React', 'Svelte', 'Solid', 'Astro', 'Angular']
 </script>
 
 <template>
@@ -1043,6 +1144,8 @@ const options = ['Vue 3', 'Nuxt 3', 'React', 'Svelte']
     label="${p.label}"
     size="${p.size}"
     variant="${p.variant}"
+    :searchable="${p.searchable}"
+    :clearable="${p.clearable}"
     :options="options"
   />
 </template>`,
@@ -1053,7 +1156,9 @@ const options = ['Vue 3', 'Nuxt 3', 'React', 'Svelte']
     label="${p.label}"
     size="${p.size}"
     variant="${p.variant}"
-    :options="['Vue 3', 'Nuxt 3', 'React']"
+    :searchable="${p.searchable}"
+    :clearable="${p.clearable}"
+    :options="['Vue 3', 'Nuxt 3', 'React', 'Svelte', 'Solid', 'Astro']"
   />
 </template>`,
     htmlCode: (p) => `<div class="id-select-group size-${p.size} variant-${p.variant}">
@@ -1295,6 +1400,60 @@ const date = ref('2026-08-15')
 </div>`
   },
 
+  {
+    id: 'file-upload',
+    name: 'File & Avatar Upload',
+    category: 'inputs',
+    description: 'Versatile Liquid Glass file uploader supporting full drag-and-drop dropzone, standalone button trigger, circular/squircle avatar with + badge, photo thumbnail card, and compact inline bar.',
+    tags: ['file', 'upload', 'avatar', 'dropzone', 'attachment', 'image', 'photo', 'media'],
+    props: {
+      variant: { type: 'select', options: ['default', 'avatar', 'button', 'image-card', 'compact', 'glass'], default: 'default', description: 'Upload visual variant style.' },
+      size: { type: 'select', options: ['xs', 'sm', 'md', 'lg', 'xl'], default: 'md', description: 'Uploader sizing tier.' },
+      shape: { type: 'select', options: ['circle', 'squircle', 'rounded'], default: 'circle', description: 'Avatar / media thumbnail silhouette.' },
+      title: { type: 'text', default: 'Upload your photo or file', description: 'Primary headline text.' },
+      hint: { type: 'text', default: 'PNG, JPG, WebP or PDF (up to 25MB)', description: 'Secondary guidance text.' },
+      buttonLabel: { type: 'text', default: 'Choose File', description: 'Button label for button variant.' },
+      buttonVariant: { type: 'select', options: ['primary', 'secondary', 'glass'], default: 'primary', description: 'Button variant style.' },
+      multiple: { type: 'boolean', default: false, description: 'Allow multiple files.' }
+    },
+    vueCode: (p) => `<script setup>
+import { ref } from 'vue'
+import { IdFileUpload } from '@idesign/vue'
+
+const uploadedFiles = ref([])
+const avatarUrl = ref('')
+</script>
+
+<template>
+  <IdFileUpload
+    v-model="uploadedFiles"
+    v-model:src="avatarUrl"
+    variant="${p.variant || 'default'}"
+    size="${p.size || 'md'}"
+    shape="${p.shape || 'circle'}"
+    title="${p.title || 'Upload your photo or file'}"
+    hint="${p.hint || 'PNG, JPG, WebP up to 25MB'}"
+    ${p.buttonLabel ? `button-label="${p.buttonLabel}"\n    ` : ''}button-variant="${p.buttonVariant || 'primary'}"
+    ${p.multiple ? 'multiple' : ''}
+  />
+</template>`,
+    nuxtCode: (p) => `<!-- Nuxt 3 Auto-Import -->
+<template>
+  <IdFileUpload
+    variant="${p.variant || 'default'}"
+    size="${p.size || 'md'}"
+    shape="${p.shape || 'circle'}"
+  />
+</template>`,
+    htmlCode: (p) => `<div class="id-file-upload variant-${p.variant || 'default'} size-${p.size || 'md'}">
+  <div class="drop-zone">
+    <div class="upload-icon-wrapper">☁️</div>
+    <span class="upload-title">${p.title || 'Click to upload or drag and drop'}</span>
+    <span class="upload-hint">${p.hint || 'PNG, JPG, WebP up to 25MB'}</span>
+  </div>
+</div>`
+  },
+
   // ─── OVERLAYS ───
   {
     id: 'command-palette',
@@ -1336,14 +1495,17 @@ const groups = [
     id: 'liquid-modal',
     name: 'Liquid Glass Modal',
     category: 'overlays',
-    description: 'Clean frosted modal materializing with scale+opacity spring animation, body text prop, action slots, and glass/alert variants.',
-    tags: ['modal', 'dialog', 'overlay', 'glass'],
+    description: 'Clean frosted modal materializing with scale+opacity spring animation, seamless unified surface glass variant, body text prop, action slots, and dismissal controls.',
+    tags: ['modal', 'dialog', 'overlay', 'glass', 'seamless'],
     props: {
-      title: { type: 'text', default: 'Confirm Action', description: 'Modal header title.' },
-      subtitle: { type: 'text', default: 'Are you sure you want to proceed?', description: 'Subheader metadata text.' },
-      content: { type: 'text', default: 'Modal body content and description text goes here.', description: 'Body text content.' },
-      variant: { type: 'select', options: ['default', 'glass', 'alert'], default: 'default', description: 'Modal backdrop and card visual style.' },
-      size: { type: 'select', options: ['sm', 'md', 'lg', 'xl'], default: 'md', description: 'Modal width scale.' }
+      title: { type: 'text', default: 'Save Workspace Changes', description: 'Modal header title.' },
+      description: { type: 'text', default: 'Your changes will be synced across all connected devices.', description: 'Header description text.' },
+      content: { type: 'text', default: 'Review your team settings before publishing. All active sessions will automatically receive the updated profile.', description: 'Body text content.' },
+      variant: { type: 'select', options: ['glass', 'seamless', 'clean', 'plain', 'default', 'alert'], default: 'glass', description: 'Modal surface visual style (glass frosted, clean solid with no dividers, default, or alert).' },
+      size: { type: 'select', options: ['sm', 'md', 'lg', 'xl'], default: 'md', description: 'Modal width scale.' },
+      closeOnOutsideClick: { type: 'boolean', default: true, description: 'Dismiss when clicking outside modal.' },
+      closeOnEscape: { type: 'boolean', default: true, description: 'Dismiss when pressing Escape key.' },
+      showClose: { type: 'boolean', default: true, description: 'Show top-corner close button.' }
     },
     vueCode: (p) => `<script setup>
 import { ref } from 'vue'
@@ -1353,13 +1515,18 @@ const open = ref(false)
 </script>
 
 <template>
+  <IdButton variant="primary" @click="open = true">Launch Modal</IdButton>
+
   <IdModal
     v-model="open"
     title="${p.title}"
-    subtitle="${p.subtitle}"
+    description="${p.description || p.subtitle || ''}"
     content="${p.content}"
     variant="${p.variant}"
     size="${p.size}"
+    :close-on-outside-click="${p.closeOnOutsideClick ?? true}"
+    :close-on-escape="${p.closeOnEscape ?? true}"
+    :show-close="${p.showClose ?? true}"
   >
     <template #actions>
       <IdButton variant="secondary" @click="open = false">Cancel</IdButton>
@@ -1369,18 +1536,31 @@ const open = ref(false)
 </template>`,
     nuxtCode: (p) => `<!-- Nuxt 3 Auto-Import -->
 <template>
+  <IdButton variant="primary" @click="open = true">Launch Modal</IdButton>
+
   <IdModal
     v-model="open"
     title="${p.title}"
-    subtitle="${p.subtitle}"
+    description="${p.description || p.subtitle || ''}"
     content="${p.content}"
     variant="${p.variant}"
     size="${p.size}"
-  />
+    :close-on-outside-click="${p.closeOnOutsideClick ?? true}"
+    :close-on-escape="${p.closeOnEscape ?? true}"
+    :show-close="${p.showClose ?? true}"
+  >
+    <template #actions>
+      <IdButton variant="secondary" @click="open = false">Cancel</IdButton>
+      <IdButton variant="primary" @click="open = false">Confirm</IdButton>
+    </template>
+  </IdModal>
 </template>`,
     htmlCode: (p) => `<div class="id-modal-overlay">
   <div class="modal-card size-${p.size} variant-${p.variant}" role="dialog">
-    <div class="modal-header"><h3>${p.title}</h3><p>${p.subtitle}</p></div>
+    <div class="modal-header">
+      <h3>${p.title}</h3>
+      <p>${p.description || p.subtitle || ''}</p>
+    </div>
     <div class="modal-body"><p>${p.content}</p></div>
     <div class="modal-actions">
       <button class="btn btn-secondary">Cancel</button>
@@ -1403,6 +1583,7 @@ const open = ref(false)
       position: { type: 'select', options: ['bottom', 'bottom-start', 'bottom-end', 'top', 'top-start', 'top-end', 'left', 'right', 'center'], default: 'bottom', description: 'Screen alignment anchor position.' },
       showGrabber: { type: 'boolean', default: true, description: 'Shows the drag grabber handle.' },
       closeOnBackdrop: { type: 'boolean', default: true, description: 'Closes when backdrop is clicked.' },
+      backdrop: { type: 'select', options: ['blur', 'dim', 'glass', 'none', 'transparent'], default: 'blur', description: 'Backdrop overlay background appearance or invisible.' },
       closeOnEsc: { type: 'boolean', default: true, description: 'Closes when Escape key is pressed.' },
       dismissible: { type: 'boolean', default: true, description: 'Shows left close button.' },
       height: { type: 'text', default: '', description: 'Configurable height (e.g. 50vh, 400px).' },
@@ -1641,10 +1822,12 @@ import { IdTag } from '@idesign/vue'
     description: 'Info/success/warning/error/glass alert banner supporting custom icons, sizes, title, description, and dismissible props.',
     tags: ['alert', 'banner', 'notification', 'icon', 'glass'],
     props: {
-      variant: { type: 'select', options: ['info', 'success', 'warning', 'error', 'glass'], default: 'info', description: 'Alert tone variant.' },
+      color: { type: 'select', options: ['info', 'success', 'warning', 'error'], default: 'info', description: 'Semantic status tone.' },
+      variant: { type: 'select', options: ['subtle', 'solid', 'glass', 'outline'], default: 'subtle', description: 'Surface visual style.' },
       size: { type: 'select', options: ['sm', 'md', 'lg'], default: 'md', description: 'Padding and text scale.' },
       title: { type: 'text', default: 'Update Available', description: 'Header title.' },
-      description: { type: 'text', default: 'A new version is ready to install.', description: 'Body text content.' }
+      description: { type: 'text', default: 'A new version is ready to install.', description: 'Body text content.' },
+      dismissible: { type: 'boolean', default: true, description: 'Shows close button.' }
     },
     vueCode: (p) => `<script setup>
 import { IdAlert } from '@idesign/vue'
@@ -1652,11 +1835,12 @@ import { IdAlert } from '@idesign/vue'
 
 <template>
   <IdAlert
+    color="${p.color}"
     variant="${p.variant}"
     size="${p.size}"
     title="${p.title}"
     description="${p.description}"
-    dismissible
+    ${p.dismissible ? 'dismissible' : ''}
   />
 </template>`,
     nuxtCode: (p) => `<!-- Nuxt 3 Auto-Import -->
@@ -1975,6 +2159,8 @@ import { IdBadge, IdButton } from '@idesign/vue'
     tags: ['progress', 'loading', 'bar', 'color'],
     props: {
       value: { type: 'number', default: 65, description: 'Completion percentage (0-100).' },
+      label: { type: 'text', default: 'Upload Progress', description: 'Progress bar text label.' },
+      showValue: { type: 'boolean', default: true, description: 'Display percentage value.' },
       size: { type: 'select', options: ['sm', 'md', 'lg'], default: 'md', description: 'Progress bar height.' },
       variant: { type: 'select', options: ['default', 'glass'], default: 'default', description: 'Track surface style.' },
       color: { type: 'select', options: ['blue', 'green', 'purple', 'orange', 'red'], default: 'blue', description: 'Fill accent color.' },
@@ -1987,7 +2173,8 @@ import { IdProgress } from '@idesign/vue'
 <template>
   <IdProgress
     :value="${p.value}"
-    label="Upload"
+    label="${p.label || 'Upload Progress'}"
+    :show-value="${p.showValue !== false}"
     size="${p.size}"
     variant="${p.variant}"
     color="${p.color}"
@@ -2160,13 +2347,14 @@ import { IdFileUpload } from '@idesign/vue'
     id: 'confirm-dialog',
     name: 'Confirm Dialog',
     category: 'overlays',
-    description: 'Action confirm dialog supporting default and centered-empty variants matching IdEmpty layout.',
-    tags: ['confirm', 'dialog', 'modal', 'centered'],
+    description: 'Apple-grade confirmation dialog supporting inset, compact, default, and centered-empty variants with soft content area.',
+    tags: ['confirm', 'dialog', 'modal', 'centered', 'inset', 'compact'],
     props: {
       title: { type: 'text', default: 'Delete Security Token', description: 'Dialog title.' },
-      message: { type: 'text', default: 'Are you sure you want to proceed?', description: 'Message explanation.' },
-      variant: { type: 'select', options: ['default', 'centered-empty'], default: 'default', description: 'Visual dialog layout.' },
-      danger: { type: 'boolean', default: true, description: 'Highlights primary button in red danger styling.' }
+      description: { type: 'text', default: 'This action is irreversible. All connected apps will lose access immediately.', description: 'Description explaining the consequence.' },
+      variant: { type: 'select', options: ['inset', 'compact', 'default', 'centered-empty'], default: 'inset', description: 'Visual dialog layout.' },
+      danger: { type: 'boolean', default: true, description: 'Highlights primary button in red danger styling.' },
+      content: { type: 'text', default: 'Token ID: sec_live_99f018a38c', description: 'Optional soft inset content or details.' }
     },
     vueCode: (p) => `<script setup>
 import { ref } from 'vue'
@@ -2179,8 +2367,9 @@ const open = ref(false)
   <IdConfirmDialog
     v-model="open"
     title="${p.title}"
-    message="${p.message}"
+    description="${p.description}"
     variant="${p.variant}"
+    content="${p.content}"
     ${p.danger ? 'danger' : ''}
   />
 </template>`,
@@ -2189,14 +2378,17 @@ const open = ref(false)
   <IdConfirmDialog
     v-model="open"
     title="${p.title}"
-    message="${p.message}"
+    description="${p.description}"
     variant="${p.variant}"
+    content="${p.content}"
+    ${p.danger ? 'danger' : ''}
   />
 </template>`,
     htmlCode: (p) => `<div class="confirm-dialog-overlay">
   <div class="confirm-card variant-${p.variant}">
     <h3>${p.title}</h3>
-    <p>${p.message}</p>
+    <p>${p.description}</p>
+    ${p.content ? `<div class="confirm-inset-box">${p.content}</div>` : ''}
     <div class="actions">
       <button class="btn btn-secondary">Cancel</button>
       <button class="btn ${p.danger ? 'btn-danger' : 'btn-primary'}">Confirm</button>
@@ -2454,30 +2646,50 @@ const chartData = [
     id: 'pie-chart',
     name: 'Dashboard Donut Chart',
     category: 'data',
-    description: 'Interactive SVG donut / pie chart component with center summary total and legend.',
-    tags: ['chart', 'pie', 'donut', 'graph', 'dashboard', 'analytics'],
+    description: 'Interactive SVG donut & progress ring chart component with closed full and open activity gauge variants, composable center content, and legend.',
+    tags: ['chart', 'pie', 'donut', 'progress', 'ring', 'gauge', 'graph', 'dashboard', 'analytics'],
     props: {
-      centerLabel: { type: 'text', default: 'Direct Traffic', description: 'Label shown inside center donut hole.' }
+      variant: { type: 'select', default: 'progress', options: ['full', 'progress'], description: 'Visual style: full closed 360 circle or open 240 progress gauge.' },
+      value: { type: 'number', default: 78, description: 'Progress / metric numeric value.' },
+      max: { type: 'number', default: 100, description: 'Maximum scale value.' },
+      unit: { type: 'text', default: 'AQI', description: 'Unit or secondary metric text.' },
+      label: { type: 'text', default: 'Air Quality', description: 'Center label text.' },
+      color: { type: 'select', default: 'blue', options: ['blue', 'green', 'orange', 'red', 'purple', 'indigo', 'gradient-cta', 'gradient-warm'], description: 'Progress arc stroke color.' },
+      size: { type: 'select', default: 'md', options: ['xs', 'sm', 'md', 'lg', 'xl'], description: 'Donut diameter size.' }
     },
     vueCode: (p) => `<script setup>
-import { IdPieChart } from '@idesign/vue'
-
-const data = [
-  { label: 'Direct', value: 45, color: '#0071e3' },
-  { label: 'Social', value: 25, color: '#30d158' },
-  { label: 'Referral', value: 30, color: '#af52de' }
-]
+import { IdDonutChart } from '@idesign/vue'
 </script>
 
 <template>
-  <IdPieChart center-label="${p.centerLabel}" :data="data" />
+  <IdDonutChart
+    variant="${p.variant || 'progress'}"
+    :value="${p.value || 78}"
+    :max="${p.max || 100}"
+    unit="${p.unit || 'AQI'}"
+    label="${p.label || 'Air Quality'}"
+    color="${p.color || 'blue'}"
+    size="${p.size || 'md'}"
+  />
 </template>`,
     nuxtCode: (p) => `<!-- Nuxt 3 Auto-Import -->
 <template>
-  <IdPieChart center-label="${p.centerLabel}" :data="data" />
+  <IdDonutChart
+    variant="${p.variant || 'progress'}"
+    :value="${p.value || 78}"
+    :max="${p.max || 100}"
+    unit="${p.unit || 'AQI'}"
+    label="${p.label || 'Air Quality'}"
+    color="${p.color || 'blue'}"
+    size="${p.size || 'md'}"
+  />
 </template>`,
-    htmlCode: (p) => `<div class="id-pie-chart">
-  <div class="donut-center">${p.centerLabel}</div>
+    htmlCode: (p) => `<div class="id-donut-chart variant-${p.variant || 'progress'} size-${p.size || 'md'}">
+  <div class="donut-center">
+    <span class="donut-value">${p.value || 78}</span>
+    <span class="donut-unit">${p.unit || 'AQI'}</span>
+    <span class="donut-label">${p.label || 'Air Quality'}</span>
+  </div>
 </div>`
   },
 
@@ -2485,30 +2697,48 @@ const data = [
     id: 'timeline',
     name: 'Activity Timeline',
     category: 'data',
-    description: 'Vertical timeline component for activity feeds, release changelogs, audit logs, and status history.',
-    tags: ['timeline', 'activity', 'feed', 'history', 'changelog'],
-    props: {},
+    description: 'Vertical timeline component for activity feeds, release changelogs, audit logs, and status history with default line and cards variants.',
+    tags: ['timeline', 'activity', 'feed', 'history', 'changelog', 'cards'],
+    props: {
+      variant: { type: 'select', options: ['default', 'cards'], default: 'cards', description: 'Timeline display style.' },
+      size: { type: 'select', options: ['sm', 'md', 'lg'], default: 'md', description: 'Timeline size scale.' },
+      connector: { type: 'boolean', default: true, description: 'Shows vertical timeline spine connector.' }
+    },
     vueCode: (p) => `<script setup>
 import { IdTimeline } from '@idesign/vue'
 
 const items = [
-  { title: 'v2.4 Released', description: 'Added new components.', time: '10 min ago' }
+  { title: 'v2.4 Released', description: 'Added 5 new Liquid Glass components and tokens.', time: '10 min ago', status: 'primary' },
+  { title: 'Security Audit Passed', description: 'Enclave verification completed cleanly.', time: '2 hours ago', status: 'success' },
+  { title: 'System Deployment', description: 'Deployed edge cluster to 14 regions.', time: 'Yesterday', status: 'info' }
 ]
 </script>
 
 <template>
-  <IdTimeline :items="items" />
+  <IdTimeline
+    variant="${p.variant || 'cards'}"
+    size="${p.size || 'md'}"
+    :connector="${p.connector !== false}"
+    :items="items"
+  />
 </template>`,
     nuxtCode: (p) => `<!-- Nuxt 3 Auto-Import -->
 <template>
-  <IdTimeline :items="items" />
+  <IdTimeline
+    variant="${p.variant || 'cards'}"
+    size="${p.size || 'md'}"
+    :items="items"
+  />
 </template>`,
-    htmlCode: (p) => `<div class="id-timeline">
+    htmlCode: (p) => `<div class="id-timeline variant-${p.variant || 'cards'}">
   <div class="timeline-item">
-    <span class="timeline-node"></span>
-    <div class="timeline-content">
+    <div class="timeline-spine">
+      <div class="timeline-indicator status-primary"></div>
+      <div class="timeline-line"></div>
+    </div>
+    <div class="timeline-content timeline-card">
       <h4>v2.4 Released</h4>
-      <p>Added new components.</p>
+      <p>Added 5 new Liquid Glass components.</p>
     </div>
   </div>
 </div>`
@@ -2659,8 +2889,10 @@ import { IdIpadFrame } from '@idesign/vue'
     tags: ['sidebar', 'menu', 'navigation', 'drawer', 'nav'],
     props: {
       title: { type: 'text', default: 'Idesign Studio', description: 'Brand title in header.' },
-      variant: { type: 'select', options: ['default', 'glass'], default: 'default', description: 'Surface treatment.' },
-      collapsible: { type: 'boolean', default: true, description: 'Allows collapsing sidebar to icon-only mode.' }
+      variant: { type: 'select', options: ['default', 'glass', 'bordered', 'floating'], default: 'default', description: 'Surface treatment.' },
+      size: { type: 'select', options: ['sm', 'md', 'lg'], default: 'md', description: 'Navigation size scale.' },
+      collapsible: { type: 'boolean', default: true, description: 'Allows collapsing sidebar to icon-only mode.' },
+      collapsed: { type: 'boolean', default: false, description: 'Collapsed state.' }
     },
     vueCode: (p) => `<script setup>
 import { ref } from 'vue'
@@ -2670,20 +2902,40 @@ const activeItem = ref('dashboard')
 const groups = [
   {
     title: 'Workspace',
+    collapsible: true,
     items: [
       { id: 'dashboard', label: 'Overview', icon: '📊' },
-      { id: 'projects', label: 'Projects', icon: '📁', badge: '12' },
+      {
+        id: 'projects',
+        label: 'Projects',
+        icon: '📁',
+        badge: '12',
+        children: [
+          { id: 'all-projects', label: 'All Projects' },
+          { id: 'archived', label: 'Archived' }
+        ]
+      },
       { id: 'analytics', label: 'Analytics', icon: '⚡' }
+    ]
+  },
+  {
+    title: 'Settings',
+    items: [
+      { id: 'team', label: 'Team Members', icon: '👥', badge: '3' },
+      { id: 'billing', label: 'Billing & Plan', icon: '💳' }
     ]
   }
 ]
-<\/script>
+</script>
 
 <template>
   <IdSidebar
     v-model="activeItem"
     title="${p.title}"
     variant="${p.variant}"
+    size="${p.size}"
+    :collapsible="${p.collapsible}"
+    :collapsed="${p.collapsed}"
     :groups="groups"
     :user="{ name: 'Alex Rivera', role: 'Lead Architect' }"
   />
@@ -2870,12 +3122,14 @@ import { IdKbd } from '@idesign/vue'
     id: 'pin-input',
     name: 'PIN & OTP Code Input',
     category: 'forms',
-    description: 'Multi-box verification code input with auto-advance, backspace navigation, paste handling, and masked mode.',
-    tags: ['pin', 'otp', 'verification', 'code', 'auth', 'input'],
+    description: 'Multi-box verification code input with auto-advance, backspace navigation, paste handling, individual box & full clearing, masked mode, and separator groups.',
+    tags: ['pin', 'otp', 'verification', 'code', 'auth', 'input', 'paste', 'clear'],
     props: {
       length: { type: 'number', default: 6, description: 'Number of PIN digit boxes.' },
-      size: { type: 'select', options: ['sm', 'md', 'lg'], default: 'md', description: 'Box sizing scale.' },
+      type: { type: 'select', options: ['numeric', 'alphanumeric', 'alpha', 'any'], default: 'numeric', description: 'Character validation type.' },
+      size: { type: 'select', options: ['sm', 'md', 'lg', 'xl'], default: 'md', description: 'Box sizing scale.' },
       masked: { type: 'boolean', default: false, description: 'Masks digits with dots for password protection.' },
+      separator: { type: 'boolean', default: false, description: 'Inserts visual separator between digit groups.' },
       label: { type: 'text', default: 'Verification Code', description: 'Form field label.' }
     },
     vueCode: (p) => `<script setup>
@@ -2890,8 +3144,10 @@ const onComplete = (val) => console.log('PIN completed:', val)
   <IdPinInput
     v-model="code"
     :length="${p.length}"
+    type="${p.type}"
     size="${p.size}"
     :masked="${p.masked}"
+    :separator="${p.separator}"
     label="${p.label}"
     @complete="onComplete"
   />
@@ -2909,36 +3165,59 @@ const onComplete = (val) => console.log('PIN completed:', val)
     id: 'time-picker',
     name: 'Time Input & Stepper',
     category: 'forms',
-    description: 'Time input control with 12h/24h formats, hour/minute steppers, AM/PM toggle, and keyboard arrow adjustments.',
-    tags: ['time', 'picker', 'clock', 'hour', 'minute', 'input'],
+    description: 'Precision Liquid Glass time input control combining editable segments (hours, minutes, seconds, AM/PM) with synchronized horizontal or vertical steppers, continuous-hold repeat, bounds, and full variant support.',
+    tags: ['time', 'picker', 'clock', 'hour', 'minute', 'second', 'stepper', 'input', 'schedule'],
     props: {
       label: { type: 'text', default: 'Meeting Start Time', description: 'Form field label.' },
+      variant: { type: 'select', options: ['default', 'glass', 'subtle', 'ghost', 'outline', 'pill'], default: 'default', description: 'Visual surface style.' },
+      size: { type: 'select', options: ['xs', 'sm', 'md', 'lg', 'xl'], default: 'md', description: 'Component height and font scale.' },
+      direction: { type: 'select', options: ['horizontal', 'vertical'], default: 'horizontal', description: 'Stepper controls layout.' },
+      radius: { type: 'select', options: ['none', 'sm', 'md', 'lg', 'full'], default: 'full', description: 'Corner radius semantic tier.' },
+      color: { type: 'select', options: ['default', 'primary', 'secondary', 'success', 'warning', 'danger', 'info'], default: 'default', description: 'Accent focus color.' },
       is24Hour: { type: 'boolean', default: false, description: 'Toggles between 12-hour AM/PM and 24-hour mode.' },
       showSeconds: { type: 'boolean', default: false, description: 'Enables seconds precision segment.' },
-      size: { type: 'select', options: ['sm', 'md', 'lg'], default: 'md', description: 'Input sizing.' }
+      minuteStep: { type: 'number', default: 5, description: 'Minute stepping interval (e.g. 1, 5, 15, 30).' }
     },
     vueCode: (p) => `<script setup>
 import { ref } from 'vue'
 import { IdTimePicker } from '@idesign/vue'
 
-const meetingTime = ref('09:41')
+const meetingTime = ref('09:41 AM')
 <\/script>
 
 <template>
   <IdTimePicker
     v-model="meetingTime"
     label="${p.label}"
-    :is-24-hour="${p.is24Hour}"
-    :show-seconds="${p.showSeconds}"
-    size="${p.size}"
+    variant="${p.variant || 'default'}"
+    size="${p.size || 'md'}"
+    direction="${p.direction || 'horizontal'}"
+    radius="${p.radius || 'full'}"
+    color="${p.color || 'default'}"
+    ${p.is24Hour ? 'is-24-hour\n    ' : ''}${p.showSeconds ? 'show-seconds\n    ' : ''}:minute-step="${p.minuteStep || 5}"
   />
 </template>`,
     nuxtCode: (p) => `<!-- Nuxt 3 Auto-Import -->
 <template>
-  <IdTimePicker v-model="meetingTime" label="${p.label}" />
+  <IdTimePicker v-model="meetingTime" label="${p.label}" variant="${p.variant || 'default'}" direction="${p.direction || 'horizontal'}" />
 </template>`,
-    htmlCode: (p) => `<div class="id-time-picker">
-  <input type="text" value="09:41" />
+    htmlCode: (p) => `<div class="id-time-picker-group size-${p.size || 'md'} direction-${p.direction || 'horizontal'} variant-${p.variant || 'default'}">
+  <label class="time-label">${p.label}</label>
+  <div class="time-stepper-box is-${p.direction || 'horizontal'}">
+    <button class="stepper-btn decrement" aria-label="Decrement">−</button>
+    <div class="time-value-wrapper">
+      <div class="time-segments">
+        <input class="time-unit-input hour" value="09" />
+        <span class="time-separator">:</span>
+        <input class="time-unit-input minute" value="41" />
+      </div>
+      <div class="time-period-toggle">
+        <button class="period-btn active">AM</button>
+        <button class="period-btn">PM</button>
+      </div>
+    </div>
+    <button class="stepper-btn increment" aria-label="Increment">+</button>
+  </div>
 </div>`
   },
 
@@ -2946,13 +3225,19 @@ const meetingTime = ref('09:41')
     id: 'tag-input',
     name: 'Tag & Pill Creator Input',
     category: 'forms',
-    description: 'Interactive tag chip creator with Enter/Comma tag addition, backspace deletion, and removable pills.',
-    tags: ['tags', 'chips', 'pills', 'tokens', 'input', 'creator'],
+    description: 'Compact Liquid Glass inline tag & pill creator input with Enter/Comma addition, backspace deletion, duplicate prevention, overflow handling, and customizable ui system.',
+    tags: ['tags', 'chips', 'pills', 'tokens', 'input', 'creator', 'badge'],
     props: {
       label: { type: 'text', default: 'Project Tags', description: 'Form field label.' },
       placeholder: { type: 'text', default: 'Add tag...', description: 'Input placeholder.' },
-      tagVariant: { type: 'select', options: ['default', 'accent', 'heat', 'live', 'gray'], default: 'accent', description: 'Tag chip color variant.' },
-      size: { type: 'select', options: ['sm', 'md', 'lg'], default: 'md', description: 'Input sizing.' }
+      tagVariant: { type: 'select', options: ['default', 'accent', 'heat', 'live', 'gray', 'warning', 'danger', 'mono'], default: 'accent', description: 'Tag chip color variant.' },
+      size: { type: 'select', options: ['xs', 'sm', 'md', 'lg', 'xl'], default: 'md', description: 'Input sizing.' },
+      clearable: { type: 'boolean', default: false, description: 'Shows clear all tags action.' },
+      allowDuplicates: { type: 'boolean', default: false, description: 'Allows duplicate tags.' },
+      loading: { type: 'boolean', default: false, description: 'Loading spinner state.' },
+      disabled: { type: 'boolean', default: false, description: 'Disables user input.' },
+      readonly: { type: 'boolean', default: false, description: 'Readonly presentation state.' },
+      errorText: { type: 'text', default: '', description: 'Validation error message.' }
     },
     vueCode: (p) => `<script setup>
 import { ref } from 'vue'
@@ -2967,15 +3252,33 @@ const tags = ref(['Design', 'Vue3', 'LiquidGlass'])
     label="${p.label}"
     placeholder="${p.placeholder}"
     tag-variant="${p.tagVariant}"
-    size="${p.size}"
+    size="${p.size}"${p.clearable ? '\n    clearable' : ''}${p.allowDuplicates ? '\n    allow-duplicates' : ''}${p.loading ? '\n    loading' : ''}${p.disabled ? '\n    disabled' : ''}${p.readonly ? '\n    readonly' : ''}${p.errorText ? `\n    error-text="${p.errorText}"` : ''}
   />
 </template>`,
     nuxtCode: (p) => `<!-- Nuxt 3 Auto-Import -->
+<script setup>
+const tags = ref(['Design', 'Vue3', 'LiquidGlass'])
+<\/script>
+
 <template>
-  <IdTagInput v-model="tags" />
+  <IdTagInput
+    v-model="tags"
+    label="${p.label}"
+    tag-variant="${p.tagVariant}"
+    size="${p.size}"
+  />
 </template>`,
-    htmlCode: (p) => `<div class="id-tag-input">
-  <div class="tag-pill">Design</div>
+    htmlCode: (p) => `<div class="id-tag-input size-${p.size}">
+  <label class="tag-input-label">${p.label}</label>
+  <div class="tag-input-box">
+    <div class="tags-list">
+      <span class="tag-pill variant-${p.tagVariant}">
+        <span class="tag-text">Design</span>
+        <button class="tag-remove-btn" type="button" aria-label="Remove Design">×</button>
+      </span>
+    </div>
+    <input type="text" class="tag-native-input" placeholder="${p.placeholder}" />
+  </div>
 </div>`
   },
 
@@ -2983,14 +3286,19 @@ const tags = ref(['Design', 'Vue3', 'LiquidGlass'])
     id: 'rating',
     name: 'Interactive Star Rating',
     category: 'forms',
-    description: 'Star rating input with hover preview, half-star accuracy, customizable colors, and keyboard rating.',
-    tags: ['rating', 'stars', 'review', 'feedback', 'score', 'input'],
+    description: 'Apple-grade interactive star rating component with hover preview, half-star precision, customizable colors, keyboard navigation, and full UI customization.',
+    tags: ['rating', 'stars', 'review', 'feedback', 'score', 'input', 'half-star'],
     props: {
+      modelValue: { type: 'number', default: 4, description: 'Current rating value.' },
       label: { type: 'text', default: 'Customer Satisfaction', description: 'Rating field label.' },
-      count: { type: 'number', default: 5, description: 'Total number of stars.' },
-      allowHalf: { type: 'boolean', default: false, description: 'Enables 0.5 step fractional ratings.' },
+      max: { type: 'number', default: 5, description: 'Total number of stars.' },
+      allowHalf: { type: 'boolean', default: true, description: 'Enables 0.5 step fractional ratings.' },
+      clearable: { type: 'boolean', default: true, description: 'Allows clearing rating on second click.' },
       showScore: { type: 'boolean', default: true, description: 'Displays numeric score alongside stars.' },
-      size: { type: 'select', options: ['sm', 'md', 'lg'], default: 'md', description: 'Star icon sizing.' }
+      size: { type: 'select', options: ['xs', 'sm', 'md', 'lg', 'xl'], default: 'md', description: 'Star icon sizing.' },
+      color: { type: 'select', options: ['amber', 'blue', 'green', 'red', 'orange', 'purple'], default: 'amber', description: 'Active star color token.' },
+      disabled: { type: 'boolean', default: false, description: 'Disables rating control.' },
+      readonly: { type: 'boolean', default: false, description: 'Readonly display mode.' }
     },
     vueCode: (p) => `<script setup>
 import { ref } from 'vue'
@@ -3002,19 +3310,33 @@ const ratingScore = ref(4)
 <template>
   <IdRating
     v-model="ratingScore"
-    label="${p.label}"
-    :count="${p.count}"
-    :allow-half="${p.allowHalf}"
-    :show-score="${p.showScore}"
-    size="${p.size}"
+    label="${p.label || 'Customer Satisfaction'}"
+    :max="${p.max || 5}"
+    :allow-half="${p.allowHalf !== false}"
+    :clearable="${p.clearable !== false}"
+    :show-score="${p.showScore !== false}"
+    size="${p.size || 'md'}"
+    color="${p.color || 'amber'}"
+    :disabled="${p.disabled || false}"
+    :readonly="${p.readonly || false}"
   />
 </template>`,
     nuxtCode: (p) => `<!-- Nuxt 3 Auto-Import -->
 <template>
-  <IdRating v-model="ratingScore" />
+  <IdRating v-model="ratingScore" :allow-half="true" show-score />
 </template>`,
-    htmlCode: (p) => `<div class="id-rating">
-  <button class="star-btn filled">★</button>
+    htmlCode: (p) => `<div class="id-rating size-md color-amber">
+  <label class="rating-label">Customer Satisfaction</label>
+  <div class="rating-body">
+    <div class="stars-row">
+      <button class="star-btn is-filled">★</button>
+      <button class="star-btn is-filled">★</button>
+      <button class="star-btn is-filled">★</button>
+      <button class="star-btn is-filled">★</button>
+      <button class="star-btn is-empty">★</button>
+    </div>
+    <span class="rating-score">4 / 5</span>
+  </div>
 </div>`
   },
 
@@ -3022,42 +3344,56 @@ const ratingScore = ref(4)
     id: 'number-input',
     name: 'Numeric Stepper Input',
     category: 'forms',
-    description: 'Precision numeric input with glass increment/decrement buttons, min/max clamps, step increments, and unit suffixes.',
-    tags: ['number', 'stepper', 'counter', 'quantity', 'spin', 'input'],
+    description: 'Precision Apple-inspired numeric stepper with editable center input, horizontal & vertical layouts, continuous hold-to-repeat, min/max limits, step precision, prefix/suffix affixes, and ui customization.',
+    tags: ['number', 'stepper', 'counter', 'quantity', 'spin', 'input', 'numeric'],
     props: {
+      modelValue: { type: 'number', default: 16, description: 'Current numeric value.' },
       label: { type: 'text', default: 'Border Radius', description: 'Field label.' },
-      unit: { type: 'text', default: 'px', description: 'Unit suffix label (e.g. px, %, ms).' },
-      stepVal: { type: 'number', default: 2, description: 'Increment/decrement step size.' },
+      unit: { type: 'text', default: 'px', description: 'Unit suffix label (e.g. px, %, ms, kg).' },
+      prefix: { type: 'text', default: '', description: 'Optional prefix string or symbol (e.g. $).' },
+      step: { type: 'number', default: 2, description: 'Increment/decrement step size.' },
       min: { type: 'number', default: 0, description: 'Minimum allowed value.' },
       max: { type: 'number', default: 100, description: 'Maximum allowed value.' },
-      size: { type: 'select', options: ['sm', 'md', 'lg'], default: 'md', description: 'Component sizing.' }
+      variant: { type: 'select', options: ['default', 'glass', 'subtle', 'ghost', 'outline', 'pill'], default: 'default', description: 'Visual surface style.' },
+      size: { type: 'select', options: ['xs', 'sm', 'md', 'lg', 'xl'], default: 'md', description: 'Component sizing.' },
+      direction: { type: 'select', options: ['horizontal', 'vertical'], default: 'horizontal', description: 'Layout orientation.' },
+      radius: { type: 'select', options: ['none', 'sm', 'md', 'lg', 'full'], default: 'full', description: 'Corner radius tier.' },
+      color: { type: 'select', options: ['default', 'primary', 'secondary', 'success', 'warning', 'danger', 'info'], default: 'default', description: 'Accent color.' }
     },
     vueCode: (p) => `<script setup>
 import { ref } from 'vue'
 import { IdNumberInput } from '@idesign/vue'
 
-const radius = ref(16)
+const count = ref(16)
 <\/script>
 
 <template>
   <IdNumberInput
-    v-model="radius"
+    v-model="count"
     label="${p.label}"
-    unit="${p.unit}"
-    :step-val="${p.stepVal}"
-    :min="${p.min}"
-    :max="${p.max}"
-    size="${p.size}"
+    variant="${p.variant || 'default'}"
+    size="${p.size || 'md'}"
+    direction="${p.direction || 'horizontal'}"
+    radius="${p.radius || 'full'}"
+    color="${p.color || 'default'}"
+    ${p.prefix ? `prefix="${p.prefix}"\n    ` : ''}${p.unit ? `unit="${p.unit}"\n    ` : ''}:step="${p.step || 2}"
+    :min="${p.min || 0}"
+    :max="${p.max || 100}"
   />
 </template>`,
     nuxtCode: (p) => `<!-- Nuxt 3 Auto-Import -->
 <template>
-  <IdNumberInput v-model="radius" unit="${p.unit}" />
+  <IdNumberInput v-model="count" variant="${p.variant || 'default'}" direction="${p.direction || 'horizontal'}" unit="${p.unit || 'px'}" />
 </template>`,
-    htmlCode: (p) => `<div class="id-number-input">
-  <button class="stepper-btn">−</button>
-  <input type="number" value="16" />
-  <button class="stepper-btn">+</button>
+    htmlCode: (p) => `<div class="id-number-input-group size-${p.size || 'md'} direction-${p.direction || 'horizontal'} variant-${p.variant || 'default'}">
+  <div class="number-stepper-box is-${p.direction || 'horizontal'}">
+    <button class="stepper-btn decrement" aria-label="Decrement">−</button>
+    <div class="number-value-wrapper">
+      <input type="text" class="number-native-input" value="16" />
+      <span class="number-affix unit">px</span>
+    </div>
+    <button class="stepper-btn increment" aria-label="Increment">+</button>
+  </div>
 </div>`
   },
 
@@ -3065,11 +3401,15 @@ const radius = ref(16)
     id: 'color-picker',
     name: 'Visual Color Picker',
     category: 'forms',
-    description: 'Visual color picker with curated Apple palette presets, hex/RGB inputs, and eyedropper trigger.',
-    tags: ['color', 'picker', 'palette', 'swatch', 'hex', 'input'],
+    description: 'Premier Liquid Glass visual color picker with 2D saturation/brightness spectrum, continuous hue and alpha sliders, multi-format inputs (HEX, RGB, HSL, HSV), palette grid, and eyedropper.',
+    tags: ['color', 'picker', 'palette', 'swatch', 'hex', 'rgb', 'hsl', 'spectrum', 'input'],
     props: {
-      label: { type: 'text', default: 'Brand Accent Color', description: 'Field label.' },
-      size: { type: 'select', options: ['sm', 'md', 'lg'], default: 'md', description: 'Picker sizing.' }
+      label: { type: 'text', default: 'Accent Color', description: 'Field label.' },
+      mode: { type: 'select', options: ['spectrum', 'grid', 'sliders'], default: 'spectrum', description: 'Picker layout mode.' },
+      format: { type: 'select', options: ['auto', 'hex', 'rgb', 'hsl', 'hsv'], default: 'auto', description: 'Color output format.' },
+      size: { type: 'select', options: ['sm', 'md', 'lg'], default: 'md', description: 'Picker sizing tier.' },
+      inline: { type: 'boolean', default: false, description: 'Render directly inline instead of floating popover.' },
+      opacity: { type: 'boolean', default: true, description: 'Enable alpha/opacity channel.' }
     },
     vueCode: (p) => `<script setup>
 import { ref } from 'vue'
@@ -3082,15 +3422,29 @@ const brandColor = ref('#0071E3')
   <IdColorPicker
     v-model="brandColor"
     label="${p.label}"
+    mode="${p.mode}"
+    format="${p.format}"
     size="${p.size}"
+    :inline="${p.inline}"
+    :opacity="${p.opacity}"
   />
 </template>`,
     nuxtCode: (p) => `<!-- Nuxt 3 Auto-Import -->
 <template>
-  <IdColorPicker v-model="brandColor" />
+  <IdColorPicker
+    v-model="brandColor"
+    label="${p.label}"
+    mode="${p.mode}"
+  />
 </template>`,
-    htmlCode: (p) => `<div class="id-color-picker">
-  <input type="color" value="#0071E3" />
+    htmlCode: (p) => `<div class="id-color-picker-root">
+  <label class="picker-label">${p.label}</label>
+  <div class="picker-trigger">
+    <div class="trigger-swatch-wrapper">
+      <div class="swatch-fill" style="background-color: #0071E3;"></div>
+    </div>
+    <span class="trigger-value-text">#0071E3</span>
+  </div>
 </div>`
   }
 ]

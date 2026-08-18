@@ -47,12 +47,13 @@
       <input
         :id="inputId"
         ref="inputRef"
-        :type="type"
+        :type="resolvedType"
+        :name="name || (formFieldContext?.name?.value)"
         :value="modelValue"
         :placeholder="placeholder || (currentVariant === 'search' ? 'Search...' : '')"
-        :disabled="disabled || loading"
+        :disabled="isDisabled || loading"
         :readonly="readonly"
-        :required="required"
+        :required="isRequired"
         :aria-invalid="currentVariant === 'error' || hasError"
         :aria-describedby="hint || errorText || description ? `${inputId}-hint` : undefined"
         :class="['id-input', config.mergedUi.value.input]"
@@ -62,6 +63,20 @@
         @blur="handleBlur"
       />
 
+      <!-- Masked / Password Visibility Toggle -->
+      <button
+        v-if="(masked || type === 'password') && !disabled && !readonly"
+        type="button"
+        :class="['mask-toggle-btn', config.mergedUi.value.maskButton]"
+        :aria-label="isMaskedVisible ? 'Hide password' : 'Show password'"
+        :title="isMaskedVisible ? 'Hide password' : 'Show password'"
+        tabindex="-1"
+        @click="isMaskedVisible = !isMaskedVisible"
+      >
+        <EyeOff v-if="isMaskedVisible" :size="iconSize" />
+        <Eye v-else :size="iconSize" />
+      </button>
+
       <!-- Loading Spinner -->
       <span v-if="loading" :class="['input-icon loading-icon', config.mergedUi.value.spinner]">
         <Loader2 class="input-spinner" :size="iconSize" />
@@ -69,7 +84,7 @@
 
       <!-- Clear button when clearable -->
       <button
-        v-else-if="clearable && modelValue && !disabled && !readonly"
+        v-else-if="clearable && modelValue && !disabled && !readonly && !(masked || type === 'password')"
         type="button"
         :class="['clear-btn', config.mergedUi.value.clearButton]"
         aria-label="Clear text"
@@ -103,12 +118,13 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
-import { Search, X, Loader2 } from '@lucide/vue'
+import { ref, computed, inject } from 'vue'
+import { Search, X, Loader2, Eye, EyeOff } from '@lucide/vue'
 import { useIdesignConfig } from '../../composables/useIdesignConfig'
 
 const props = defineProps({
   modelValue: { type: [String, Number], default: '' },
+  name: String,
   label: String,
   placeholder: String,
   hint: String,
@@ -119,6 +135,7 @@ const props = defineProps({
   warning: [Boolean, String],
   trailingText: String,
   type: { type: String, default: 'text' },
+  masked: Boolean,
   size: { type: String, default: undefined },
   variant: { type: String, default: undefined },
   iconLeft: [Object, Function, String],
@@ -136,6 +153,8 @@ const props = defineProps({
 
 const emit = defineEmits(['update:modelValue', 'update:value', 'change', 'focus', 'blur', 'clear', 'input'])
 
+const formFieldContext = inject('id-form-field-context', null)
+
 const config = useIdesignConfig('Input', props)
 const currentSize = computed(() => config.resolvedSize.value || 'md')
 const currentRadius = computed(() => config.resolvedRadius.value || 'md')
@@ -143,6 +162,14 @@ const currentVariant = computed(() => config.resolvedVariant.value || 'default')
 
 const isFocused = ref(false)
 const inputRef = ref(null)
+const isMaskedVisible = ref(false)
+
+const resolvedType = computed(() => {
+  if (props.masked || props.type === 'password') {
+    return isMaskedVisible.value ? 'text' : 'password'
+  }
+  return props.type || 'text'
+})
 
 const inputId = computed(() => props.id || `id-input-${Math.random().toString(36).substring(2, 9)}`)
 const iconSize = computed(() => {
@@ -152,9 +179,23 @@ const iconSize = computed(() => {
 
 const isComponent = (val) => typeof val === 'object' || typeof val === 'function'
 
-const hasError = computed(() => Boolean(props.error) || Boolean(props.errorText))
+const hasError = computed(() => {
+  if (Boolean(props.error) || Boolean(props.errorText)) return true
+  if (formFieldContext && formFieldContext.error.value) return true
+  return false
+})
 const hasSuccess = computed(() => Boolean(props.success))
 const hasWarning = computed(() => Boolean(props.warning))
+const isRequired = computed(() => {
+  if (props.required) return true
+  if (formFieldContext && formFieldContext.required.value) return true
+  return false
+})
+const isDisabled = computed(() => {
+  if (props.disabled) return true
+  if (formFieldContext && formFieldContext.disabled.value) return true
+  return false
+})
 
 const displayHint = computed(() => {
   if (typeof props.error === 'string') return props.error
@@ -251,6 +292,23 @@ defineExpose({
 .clear-btn { border: none; background: rgba(0,0,0,0.1); color: var(--text-2); border-radius: 50%; width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; font-size: 14px; cursor: pointer; }
 .clear-btn:hover { background: rgba(0,0,0,0.2); color: var(--text); }
 :root.dark .clear-btn { background: rgba(255,255,255,0.15); color: #fff; }
+
+.mask-toggle-btn {
+  border: none;
+  background: transparent;
+  color: var(--text-3);
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  transition: color 0.15s, background 0.15s;
+}
+.mask-toggle-btn:hover {
+  color: var(--text);
+  background: var(--hover);
+}
 
 .input-spinner { animation: id-spin 0.8s linear infinite; }
 @keyframes id-spin { to { transform: rotate(360deg); } }

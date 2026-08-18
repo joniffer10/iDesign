@@ -58,7 +58,7 @@ const compoundBundles = {
   card: ['IdCard', 'IdCardHeader', 'IdCardTitle', 'IdCardDescription', 'IdCardContent', 'IdCardFooter'],
   dialog: ['IdDialog', 'IdDialogHeader', 'IdDialogTitle', 'IdDialogDescription', 'IdDialogBody', 'IdDialogFooter'],
   frames: ['IdMacbookFrame', 'IdIpadFrame', 'IdIphoneFrame', 'IdImageFrame'],
-  charts: ['IdBarChart', 'IdPieChart', 'IdSparkline']
+  charts: ['IdBarChart', 'IdPieChart', 'IdDonutChart', 'IdSparkline']
 }
 
 // Page Templates Mapping

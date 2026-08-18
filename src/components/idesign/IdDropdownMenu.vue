@@ -1,18 +1,42 @@
 <template>
-  <div ref="menuRef" :class="['id-dropdown-menu-wrapper', config.mergedUi.value.base]">
-    <div :class="config.mergedUi.value.trigger" @click="toggle">
+  <div
+    ref="menuRef"
+    :class="['id-dropdown-menu-wrapper', config.mergedUi.value.base]"
+    @keydown.down.prevent="onArrowDown"
+    @keydown.up.prevent="onArrowUp"
+    @keydown.esc="closeMenu"
+  >
+    <div
+      ref="triggerRef"
+      :class="config.mergedUi.value.trigger"
+      aria-haspopup="menu"
+      :aria-expanded="isOpen"
+      tabindex="0"
+      @click="toggle"
+      @keydown.enter.prevent="toggle"
+      @keydown.space.prevent="toggle"
+    >
       <slot name="trigger" />
     </div>
     <Transition name="menu-pop">
-      <div v-if="isOpen" :class="['dropdown-menu', `align-${align}`, `size-${currentSize}`, `variant-${currentVariant}`, config.mergedUi.value.menu]" role="menu">
+      <div
+        v-if="isOpen"
+        ref="listRef"
+        :class="['dropdown-menu', `align-${align}`, `size-${currentSize}`, `variant-${currentVariant}`, config.mergedUi.value.menu]"
+        role="menu"
+        :aria-orientation="'vertical'"
+      >
         <div
           v-for="(item, idx) in items"
           :key="idx"
-          :class="['menu-item', { 'is-danger': item.danger, 'is-separator': item.separator }, config.mergedUi.value.item]"
+          :class="['menu-item', { 'is-danger': item.danger, 'is-separator': item.separator, 'is-focused': activeIndex === idx }, config.mergedUi.value.item]"
           :role="item.separator ? 'separator' : 'menuitem'"
           :tabindex="item.separator ? -1 : 0"
-          @click="!item.separator && selectItem(item)"
-          @keydown.enter="!item.separator && selectItem(item)"
+          :aria-disabled="item.disabled"
+          @mouseenter="!item.separator && (activeIndex = idx)"
+          @click="!item.separator && !item.disabled && selectItem(item)"
+          @keydown.enter="!item.separator && !item.disabled && selectItem(item)"
+          @keydown.space.prevent="!item.separator && !item.disabled && selectItem(item)"
         >
           <template v-if="!item.separator">
             <span :class="['menu-label', config.mergedUi.value.label]">{{ item.label }}</span>
@@ -25,7 +49,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount, nextTick } from 'vue'
 import { useIdesignConfig } from '../../composables/useIdesignConfig'
 
 const props = defineProps({
@@ -36,18 +60,73 @@ const props = defineProps({
   ui: { type: Object, default: () => ({}) }
 })
 
-const emit = defineEmits(['select'])
+const emit = defineEmits(['select', 'open', 'close'])
 
 const config = useIdesignConfig('DropdownMenu', props)
 const currentSize = computed(() => config.resolvedSize.value || 'md')
 const currentVariant = computed(() => config.resolvedVariant.value || 'default')
 
 const menuRef = ref(null)
+const triggerRef = ref(null)
+const listRef = ref(null)
 const isOpen = ref(false)
+const activeIndex = ref(-1)
 
-const toggle = () => { isOpen.value = !isOpen.value }
-const selectItem = (item) => { emit('select', item); isOpen.value = false }
-const handleOutside = (e) => { if (menuRef.value && !menuRef.value.contains(e.target)) isOpen.value = false }
+const toggle = () => {
+  isOpen.value = !isOpen.value
+  if (isOpen.value) {
+    activeIndex.value = 0
+    emit('open')
+  } else {
+    activeIndex.value = -1
+    emit('close')
+  }
+}
+
+const closeMenu = () => {
+  if (isOpen.value) {
+    isOpen.value = false
+    activeIndex.value = -1
+    emit('close')
+    triggerRef.value?.focus()
+  }
+}
+
+const selectItem = (item) => {
+  emit('select', item)
+  closeMenu()
+}
+
+const onArrowDown = () => {
+  if (!isOpen.value) {
+    toggle()
+    return
+  }
+  const selectable = props.items.map((it, i) => (!it.separator && !it.disabled ? i : -1)).filter(i => i >= 0)
+  if (selectable.length === 0) return
+  const currentPos = selectable.indexOf(activeIndex.value)
+  const nextPos = currentPos < selectable.length - 1 ? currentPos + 1 : 0
+  activeIndex.value = selectable[nextPos]
+}
+
+const onArrowUp = () => {
+  if (!isOpen.value) {
+    toggle()
+    return
+  }
+  const selectable = props.items.map((it, i) => (!it.separator && !it.disabled ? i : -1)).filter(i => i >= 0)
+  if (selectable.length === 0) return
+  const currentPos = selectable.indexOf(activeIndex.value)
+  const prevPos = currentPos > 0 ? currentPos - 1 : selectable.length - 1
+  activeIndex.value = selectable[prevPos]
+}
+
+const handleOutside = (e) => {
+  if (menuRef.value && !menuRef.value.contains(e.target)) {
+    isOpen.value = false
+    activeIndex.value = -1
+  }
+}
 
 onMounted(() => document.addEventListener('click', handleOutside))
 onBeforeUnmount(() => document.removeEventListener('click', handleOutside))
@@ -80,10 +159,12 @@ onBeforeUnmount(() => document.removeEventListener('click', handleOutside))
 .menu-item {
   display: flex; align-items: center; justify-content: space-between;
   font-weight: 550; color: var(--text); cursor: pointer; border-radius: 10px;
-  transition: background .1s;
+  transition: background .1s; outline: none;
 }
-.menu-item:hover { background: var(--hover); }
+.menu-item:hover, .menu-item.is-focused { background: var(--hover); color: var(--text); }
+:root.dark .menu-item:hover, :root.dark .menu-item.is-focused { background: var(--hover); }
 .menu-item.is-danger { color: #ff3b30; }
+.menu-item.is-danger.is-focused { background: rgba(255, 59, 48, 0.1); }
 .menu-item.is-separator { height: 1px; padding: 0; margin: 4px 10px; background: var(--hairline); cursor: default; }
 .menu-item.is-separator:hover { background: var(--hairline); }
 

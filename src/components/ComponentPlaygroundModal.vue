@@ -13,6 +13,41 @@
           <span class="vue-tag">Vue 3 / Nuxt 3 Component</span>
         </div>
         <p class="component-desc">{{ component.description }}</p>
+
+        <!-- Quick CLI Install & Guide Action Bar -->
+        <div class="quick-install-bar">
+          <div
+            class="install-pill"
+            :class="{ 'is-copied': cliCopied }"
+            :title="'Click to copy: npx idesign add ' + cliTargetName"
+            role="button"
+            tabindex="0"
+            @click="copyCliCommand"
+            @keydown.enter="copyCliCommand"
+          >
+            <div class="pill-leading">
+              <span class="cli-prompt">$</span>
+              <code class="cli-cmd">npx idesign add {{ cliTargetName }}</code>
+            </div>
+            <div class="mini-copy-btn" :aria-label="cliCopied ? 'Command copied' : 'Copy command'">
+              <svg v-if="cliCopied" class="copy-icon check-icon" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+              <svg v-else class="copy-icon" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+              </svg>
+              <span class="copy-label">{{ cliCopied ? 'Copied' : 'Copy' }}</span>
+            </div>
+          </div>
+
+          <button type="button" class="install-guide-btn" @click="showInstallModal = true">
+            <span class="guide-btn-text">Installation Guide</span>
+            <svg class="guide-arrow-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+          </button>
+        </div>
       </div>
 
       <!-- Live Preview Box with Controls -->
@@ -54,6 +89,7 @@
               <IdStepper
                 :model-value="propState.activeStep ?? demoStep"
                 @update:model-value="val => { demoStep = val; propState.activeStep = val; }"
+                :orientation="propState.orientation || 'horizontal'"
                 :size="propState.size || 'md'"
                 :variant="propState.variant || 'default'"
                 :color="propState.color || 'blue'"
@@ -64,8 +100,17 @@
           </template>
 
           <template v-else-if="component.id === 'timeline'">
-            <div style="width: 100%; max-width: 440px;">
-              <IdTimeline :items="[{ title: 'v2.4 System Update Released', description: 'Added 5 new Liquid Glass components.', time: '10 min ago', variant: 'primary', icon: Zap }, { title: 'Security Audit Passed', description: 'Enclave verification completed cleanly.', time: '2 hours ago', variant: 'success', icon: Check }]" />
+            <div style="width: 100%; max-width: 480px;">
+              <IdTimeline
+                :variant="propState.variant || 'cards'"
+                :size="propState.size || 'md'"
+                :connector="propState.connector !== false"
+                :items="[
+                  { title: 'v2.4 System Update Released', description: 'Added 5 new Liquid Glass components and tokens.', time: '10 min ago', status: 'primary', icon: Zap },
+                  { title: 'Security Audit Passed', description: 'Enclave verification completed cleanly.', time: '2 hours ago', status: 'success', icon: Check },
+                  { title: 'Edge Deployment', description: 'Synced 14 edge cluster nodes.', time: 'Yesterday', status: 'info' }
+                ]"
+              />
             </div>
           </template>
 
@@ -86,8 +131,16 @@
           </template>
 
           <template v-else-if="component.id === 'pie-chart'">
-            <div style="width: 100%; max-width: 440px;">
-              <IdPieChart :center-label="propState.centerLabel !== undefined ? propState.centerLabel : 'Direct Traffic'" :data="[{ label: 'Direct', value: 45, color: '#0071e3' }, { label: 'Social', value: 25, color: '#30d158' }, { label: 'Referral', value: 30, color: '#af52de' }]" />
+            <div style="width: 100%; display: flex; justify-content: center; align-items: center; padding: 20px;">
+              <IdPieChart
+                :variant="propState.variant || 'progress'"
+                :value="propState.value !== undefined ? Number(propState.value) : 78"
+                :max="propState.max !== undefined ? Number(propState.max) : 100"
+                :unit="propState.unit !== undefined ? propState.unit : 'AQI'"
+                :label="propState.label !== undefined ? propState.label : (propState.centerLabel || 'Air Quality')"
+                :color="propState.color || 'blue'"
+                :size="propState.size || 'md'"
+              />
             </div>
           </template>
 
@@ -98,6 +151,25 @@
               :options="['Overview', 'Components', 'Tokens']"
               :theme="propState.theme || 'white'"
             />
+          </template>
+
+          <template v-else-if="component.id === 'mobile-navbar'">
+            <div style="width: 100%; max-width: 440px; display: flex; justify-content: center; padding: 20px 0;">
+              <IdMobileNavbar
+                v-model="demoMobileNav"
+                :variant="propState.variant || 'glass'"
+                :size="propState.size || 'md'"
+                :color="propState.color || 'blue'"
+                :position="propState.position || 'static'"
+                :safe-area="propState.safeArea !== false"
+                :items="[
+                  { id: 'home', label: 'Home', icon: Home },
+                  { id: 'explore', label: 'Explore', icon: Compass },
+                  { id: 'notifications', label: 'Alerts', icon: Bell, badge: 3 },
+                  { id: 'profile', label: 'Profile', icon: User }
+                ]"
+              />
+            </div>
           </template>
 
           <template v-else-if="component.id === 'tabs'">
@@ -218,7 +290,7 @@
                 :shape="propState.shape || 'squircle'"
                 :aspect-ratio="propState.aspectRatio || '1-1'"
                 :bezel-size="propState.bezelSize || 'md'"
-                :caption="propState.caption || 'Studio Portrait'"
+                :caption="propState.caption !== undefined ? propState.caption : 'Studio Portrait'"
                 :interactive="propState.interactive !== false"
               />
             </div>
@@ -245,10 +317,11 @@
             <div style="width: 100%; max-width: 340px;">
               <IdInput
                 v-model="demoText"
-                :label="propState.label || 'Search components'"
+                :label="propState.label || 'Text Input'"
                 :placeholder="propState.placeholder || 'Type here...'"
                 :variant="propState.variant || 'default'"
                 :size="propState.size || 'md'"
+                :masked="propState.masked"
                 :clearable="propState.clearable"
                 :trailing-text="propState.trailingText"
               />
@@ -275,7 +348,9 @@
                 :label="propState.label || 'Framework'"
                 :size="propState.size || 'md'"
                 :variant="propState.variant || 'default'"
-                :options="['Vue 3', 'Nuxt 3', 'React', 'Svelte', 'Angular']"
+                :searchable="propState.searchable"
+                :clearable="propState.clearable"
+                :options="['Vue 3', 'Nuxt 3', 'React', 'Svelte', 'Solid', 'Astro', 'Angular', 'Qwik', 'Preact', 'Next.js']"
                 placeholder="Choose a framework..."
               />
             </div>
@@ -318,20 +393,26 @@
           </template>
 
           <template v-else-if="component.id === 'liquid-modal'">
-            <div style="display: flex; flex-direction: column; align-items: center; gap: 12px;">
-              <IdButton variant="primary" @click="demoModalOpen = true">Trigger Modal ({{ propState.variant || 'default' }})</IdButton>
+            <div style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
+              <IdButton variant="primary" @click="demoModalOpen = true">
+                Launch Modal ({{ propState.variant || 'glass' }})
+              </IdButton>
+
               <IdModal
                 v-model="demoModalOpen"
-                :title="propState.title || 'Confirm Action'"
-                :subtitle="propState.subtitle || 'Are you sure you want to proceed?'"
-                :content="propState.content || 'Modal body content and description text goes here.'"
-                :variant="propState.variant || 'default'"
+                :title="propState.title || 'Save Workspace Changes'"
+                :description="propState.description || propState.subtitle || 'Your changes will be synced across all connected devices.'"
+                :content="propState.content || 'Review your team settings before publishing. All active sessions will automatically receive the updated security profile.'"
+                :variant="propState.variant || 'glass'"
                 :size="propState.size || 'md'"
-                :teleport="false"
+                :close-on-outside-click="propState.closeOnOutsideClick !== undefined ? propState.closeOnOutsideClick : true"
+                :close-on-escape="propState.closeOnEscape !== undefined ? propState.closeOnEscape : true"
+                :show-close="propState.showClose !== undefined ? propState.showClose : true"
+                :teleport="true"
               >
                 <template #actions>
                   <IdButton variant="secondary" @click="demoModalOpen = false">Cancel</IdButton>
-                  <IdButton variant="primary" @click="demoModalOpen = false">Confirm</IdButton>
+                  <IdButton variant="primary" @click="demoModalOpen = false; emit('toast', 'Settings successfully saved!')">Confirm</IdButton>
                 </template>
               </IdModal>
             </div>
@@ -344,7 +425,10 @@
                 v-model="demoSheetOpen"
                 :title="propState.title || 'Sheet Actions'"
                 :description="propState.description || 'Choose an action to proceed.'"
+                :variant="propState.variant || 'default'"
+                :position="propState.position || 'bottom'"
                 :show-grabber="propState.showGrabber"
+                :backdrop="propState.backdrop"
                 :close-on-backdrop="propState.closeOnBackdrop"
                 :close-on-esc="propState.closeOnEsc"
                 :dismissible="propState.dismissible"
@@ -408,11 +492,12 @@
           <template v-else-if="component.id === 'alert'">
             <div style="width: 100%; max-width: 480px;">
               <IdAlert
-                :variant="propState.variant || 'info'"
+                :color="propState.color || 'info'"
+                :variant="propState.variant || 'subtle'"
                 :size="propState.size || 'md'"
-                :title="propState.title || 'Update Available'"
-                :description="propState.description || 'A new software version is ready to install.'"
-                dismissible
+                :title="propState.title !== undefined ? propState.title : 'Update Available'"
+                :description="propState.description !== undefined ? propState.description : 'A new software version is ready to install.'"
+                :dismissible="propState.dismissible !== false"
               />
             </div>
           </template>
@@ -540,13 +625,14 @@
           <template v-else-if="component.id === 'progress'">
             <div style="width: 100%; max-width: 380px;">
               <IdProgress
-                :key="`prog-${propState.size}-${propState.variant}-${propState.color}-${propState.indeterminate}`"
+                :key="`prog-${propState.size}-${propState.variant}-${propState.color}-${propState.indeterminate}-${propState.label}-${propState.showValue}`"
                 :value="propState.value ?? 65"
                 :size="propState.size || 'md'"
                 :variant="propState.variant || 'default'"
                 :color="propState.color || 'blue'"
                 :indeterminate="!!propState.indeterminate"
-                label="Upload Progress"
+                :label="propState.label !== undefined ? propState.label : 'Upload Progress'"
+                :show-value="propState.showValue !== false"
               />
             </div>
           </template>
@@ -591,15 +677,32 @@
           </template>
 
           <template v-else-if="component.id === 'file-upload'">
-            <div style="width: 100%; max-width: 400px;">
-              <IdFileUpload hint="Upload files up to 25MB" />
+            <div style="width: 100%; max-width: 440px; display: flex; justify-content: center; align-items: center;">
+              <IdFileUpload
+                :variant="propState.variant || 'default'"
+                :size="propState.size || 'md'"
+                :shape="propState.shape || 'circle'"
+                :title="propState.title || 'Upload your photo or file'"
+                :hint="propState.hint || 'PNG, JPG, WebP up to 25MB'"
+                :button-label="propState.buttonLabel || 'Choose File'"
+                :button-variant="propState.buttonVariant || 'primary'"
+                :multiple="propState.multiple"
+              />
             </div>
           </template>
 
           <template v-else-if="component.id === 'confirm-dialog'">
             <div style="display: flex; flex-direction: column; align-items: center; gap: 12px;">
-              <IdButton variant="primary" @click="demoConfirmOpen = true">Trigger Confirm Dialog ({{ propState.variant || 'default' }})</IdButton>
-              <IdConfirmDialog v-model="demoConfirmOpen" :title="propState.title || 'Delete Security Token'" :message="propState.message || 'Are you sure you want to delete this key? This action cannot be undone.'" :variant="propState.variant || 'default'" :danger="propState.danger" :teleport="false" />
+              <IdButton variant="primary" @click="demoConfirmOpen = true">Trigger Confirm Dialog ({{ propState.variant || 'inset' }})</IdButton>
+              <IdConfirmDialog
+                v-model="demoConfirmOpen"
+                :title="propState.title || 'Delete Security Token'"
+                :description="propState.description || 'This action is irreversible. All connected apps will lose access immediately.'"
+                :content="propState.content || 'Token ID: sec_live_99f018a38c'"
+                :variant="propState.variant || 'inset'"
+                :danger="propState.danger"
+                :teleport="false"
+              />
             </div>
           </template>
 
@@ -792,14 +895,39 @@
           </template>
 
           <template v-else-if="component.id === 'sidebar'">
-            <div style="height: 380px; width: 100%; max-width: 280px; border: 1px solid var(--hairline); border-radius: 16px; overflow: hidden;">
+            <div style="height: 420px; width: 100%; max-width: 300px; border: 1px solid var(--hairline); border-radius: 18px; overflow: hidden; display: flex;">
               <IdSidebar
-                :title="propState.title || 'Idesign Studio'"
+                v-model="activeSidebarItem"
+                :title="propState.title !== undefined ? propState.title : 'Idesign Studio'"
                 :variant="propState.variant || 'default'"
+                :size="propState.size || 'md'"
                 :collapsible="propState.collapsible !== false"
+                :collapsed="propState.collapsed"
                 :groups="[
-                  { title: 'Workspace', items: [{ id: 'dashboard', label: 'Overview', icon: '📊' }, { id: 'projects', label: 'Projects', icon: '📁', badge: '12' }, { id: 'analytics', label: 'Analytics', icon: '⚡' }] },
-                  { title: 'System', items: [{ id: 'settings', label: 'Settings', icon: '⚙️' }] }
+                  {
+                    title: 'Workspace',
+                    collapsible: true,
+                    items: [
+                      { id: 'dashboard', label: 'Overview', icon: '📊' },
+                      {
+                        id: 'projects',
+                        label: 'Projects',
+                        icon: '📁',
+                        badge: '12',
+                        children: [
+                          { id: 'all-projects', label: 'All Projects' },
+                          { id: 'archived', label: 'Archived' }
+                        ]
+                      },
+                      { id: 'analytics', label: 'Analytics', icon: '⚡' }
+                    ]
+                  },
+                  {
+                    title: 'System',
+                    items: [
+                      { id: 'settings', label: 'Settings', icon: '⚙️', badge: '3' }
+                    ]
+                  }
                 ]"
                 :user="{ name: 'Alex Rivera', role: 'Staff Architect' }"
               />
@@ -870,8 +998,10 @@
           <template v-else-if="component.id === 'pin-input'">
             <IdPinInput
               :length="Number(propState.length) || 6"
+              :type="propState.type || 'numeric'"
               :size="propState.size || 'md'"
               :masked="propState.masked || false"
+              :separator="propState.separator || false"
               :label="propState.label || 'Verification Code'"
             />
           </template>
@@ -879,48 +1009,75 @@
           <template v-else-if="component.id === 'time-picker'">
             <IdTimePicker
               :label="propState.label || 'Meeting Start Time'"
+              :variant="propState.variant || 'default'"
+              :size="propState.size || 'md'"
+              :direction="propState.direction || 'horizontal'"
+              :radius="propState.radius || 'full'"
+              :color="propState.color || 'default'"
               :is-24-hour="propState.is24Hour || false"
               :show-seconds="propState.showSeconds || false"
-              :size="propState.size || 'md'"
+              :minute-step="Number(propState.minuteStep) || 5"
             />
           </template>
 
           <template v-else-if="component.id === 'tag-input'">
             <div style="width: 100%; max-width: 440px;">
               <IdTagInput
+                v-model="demoTags"
                 :label="propState.label || 'Project Tags'"
                 :placeholder="propState.placeholder || 'Add tag...'"
                 :tag-variant="propState.tagVariant || 'accent'"
                 :size="propState.size || 'md'"
+                :disabled="propState.disabled || false"
+                :readonly="propState.readonly || false"
+                :loading="propState.loading || false"
+                :clearable="propState.clearable || false"
+                :allow-duplicates="propState.allowDuplicates || false"
+                :error-text="propState.errorText || ''"
               />
             </div>
           </template>
 
           <template v-else-if="component.id === 'rating'">
             <IdRating
+              v-model="propState.modelValue"
               :label="propState.label || 'Customer Satisfaction'"
-              :count="Number(propState.count) || 5"
-              :allow-half="propState.allowHalf || false"
+              :max="Number(propState.max || propState.count) || 5"
+              :allow-half="propState.allowHalf !== false"
+              :clearable="propState.clearable !== false"
               :show-score="propState.showScore !== false"
               :size="propState.size || 'md'"
+              :color="propState.color || 'amber'"
+              :disabled="propState.disabled || false"
+              :readonly="propState.readonly || false"
             />
           </template>
 
           <template v-else-if="component.id === 'number-input'">
             <IdNumberInput
+              v-model="propState.modelValue"
               :label="propState.label || 'Border Radius'"
-              :unit="propState.unit || 'px'"
-              :step-val="Number(propState.stepVal) || 2"
-              :min="Number(propState.min) || 0"
-              :max="Number(propState.max) || 100"
+              :unit="propState.unit !== undefined ? propState.unit : 'px'"
+              :prefix="propState.prefix || ''"
+              :step="propState.step !== undefined && propState.step !== '' ? Number(propState.step) : 2"
+              :min="propState.min !== undefined && propState.min !== '' ? Number(propState.min) : 0"
+              :max="propState.max !== undefined && propState.max !== '' ? Number(propState.max) : 100"
+              :direction="propState.direction || 'horizontal'"
               :size="propState.size || 'md'"
+              :variant="propState.variant || 'default'"
+              :radius="propState.radius || 'full'"
+              :color="propState.color || 'default'"
             />
           </template>
 
           <template v-else-if="component.id === 'color-picker'">
             <IdColorPicker
-              :label="propState.label || 'Brand Accent Color'"
+              :label="propState.label || 'Accent Color'"
               :size="propState.size || 'md'"
+              :mode="propState.mode || 'spectrum'"
+              :format="propState.format || 'auto'"
+              :inline="propState.inline === true || propState.inline === 'true'"
+              :opacity="propState.opacity !== false && propState.opacity !== 'false'"
             />
           </template>
 
@@ -1086,6 +1243,64 @@
 
     </div>
   </IdModal>
+
+  <!-- Dedicated Component Installation Guide Modal -->
+  <IdModal
+    v-model="showInstallModal"
+    :title="'Install ' + componentTag"
+    max-width="640px"
+  >
+    <div class="install-modal-content">
+      <p class="install-modal-desc">
+        Add <strong>{{ componentTag }}</strong> to your Vue 3 or Nuxt 3 project using your preferred workflow.
+      </p>
+
+      <div class="guide-grid">
+        <!-- Option 1: CLI Add (Single Component) -->
+        <div class="guide-card">
+          <div class="guide-card-head">
+            <span class="guide-chip cli-chip">Option 1 • CLI Add (Recommended — Zero Bloat)</span>
+            <button type="button" class="guide-mini-copy" @click="copySnippetText(`npx idesign add ${cliTargetName}`, 'CLI command')">
+              Copy
+            </button>
+          </div>
+          <p class="guide-desc">
+            Copies <code>{{ componentTag }}.vue</code> directly into your <code>src/components/idesign/</code> folder:
+          </p>
+          <pre class="guide-cmd"><code>npx idesign init
+npx idesign add {{ cliTargetName }}</code></pre>
+        </div>
+
+        <!-- Option 2: Full Package Import -->
+        <div class="guide-card">
+          <div class="guide-card-head">
+            <span class="guide-chip npm-chip">Option 2 • NPM Package Tree-Shaked Import</span>
+            <button type="button" class="guide-mini-copy" @click="copySnippetText(`import { ${componentTag} } from '@idesign/vue'\nimport '@idesign/vue/tokens'`, 'Import statement')">
+              Copy
+            </button>
+          </div>
+          <p class="guide-desc">
+            Install <code>@idesign/vue</code> and import with automatic tree-shaking:
+          </p>
+          <pre class="guide-cmd"><code>npm install @idesign/vue
+
+// In your script:
+import { {{ componentTag }} } from '@idesign/vue'
+import '@idesign/vue/tokens'</code></pre>
+        </div>
+
+        <!-- Option 3: Nuxt 3 Zero-Config Auto-Import -->
+        <div class="guide-card">
+          <div class="guide-card-head">
+            <span class="guide-chip nuxt-chip">Option 3 • Nuxt 3 Auto-Import</span>
+          </div>
+          <p class="guide-desc">
+            When placed in your Nuxt <code>components/idesign/</code> directory, simply write <code>&lt;{{ componentTag }} /&gt;</code> in templates with zero manual imports.
+          </p>
+        </div>
+      </div>
+    </div>
+  </IdModal>
 </template>
 
 <script setup>
@@ -1170,9 +1385,9 @@ import IdTagInput from './idesign/IdTagInput.vue'
 import IdRating from './idesign/IdRating.vue'
 import IdNumberInput from './idesign/IdNumberInput.vue'
 import IdColorPicker from './idesign/IdColorPicker.vue'
+import IdMobileNavbar from './idesign/IdMobileNavbar.vue'
 
-
-import { Search, FolderOpen, Inbox, AlertCircle, Sparkles, Lock, Zap, Box, Folder, Check, Wifi, Bluetooth, Bell } from '@lucide/vue'
+import { Search, FolderOpen, Inbox, AlertCircle, Sparkles, Lock, Zap, Box, Folder, Check, Wifi, Bluetooth, Bell, Home, Compass, User } from '@lucide/vue'
 import { useToast } from '../composables/useToast'
 
 const iconMap = {
@@ -1203,6 +1418,7 @@ const props = defineProps({
 const emit = defineEmits(['close', 'toast'])
 
 const bgMode = ref('light')
+const activeSidebarItem = ref('dashboard')
 
 const setMode = (mode) => {
   bgMode.value = mode
@@ -1241,6 +1457,7 @@ const demoSheetOpen = ref(false)
 const demoDrawerOpen = ref(false)
 const demoTab = ref('overview')
 const demoPage = ref(1)
+const demoMobileNav = ref('home')
 
 const toastInstance = useToast()
 const triggerToast = (type) => {
@@ -1248,6 +1465,7 @@ const triggerToast = (type) => {
   toastInstance[type](msg, { description: 'All changes synchronized to your cloud account.' })
 }
 const demoText = ref('Sample text')
+const demoTags = ref(['Design', 'Vue3', 'LiquidGlass'])
 const demoTextarea = ref('')
 const demoSelect = ref('Vue 3')
 const demoCheck1 = ref(true)
@@ -1260,6 +1478,13 @@ const demoConfirmOpen = ref(false)
 const demoDate = ref('2026-08-15')
 const demoCommandOpen = ref(false)
 const demoTourOpen = ref(false)
+
+const openConfirmModalDemo = () => {
+  propState.variant = 'alert'
+  propState.title = 'Delete Workspace?'
+  propState.content = 'Are you sure you want to delete this workspace? This action cannot be undone.'
+  demoModalOpen.value = true
+}
 
 const propState = reactive({})
 
@@ -1292,17 +1517,54 @@ const displayedCode = computed(() => {
     }
     return props.component.nuxtCode || (typeof props.component.vueCode === 'function' ? props.component.vueCode(propState) : props.component.vueCode)
   } else {
-    return typeof props.component.htmlCode === 'function' ? props.component.htmlCode(propState) : props.component.htmlCode
+    const rawHtml = typeof props.component.htmlCode === 'function' ? props.component.htmlCode(propState) : props.component.htmlCode
+    if (!rawHtml) return ''
+    return `<!-- 1. Include Liquid Glass Tokens & Styles in <head> -->
+<link rel="stylesheet" href="https://unpkg.com/@idesign/vue@latest/dist/idesign.css">
+
+<!-- 2. Component HTML Markup -->
+${rawHtml}`
   }
 })
 
 const copyCode = () => {
   navigator.clipboard.writeText(displayedCode.value)
   codeCopied.value = true
-  emit('toast', `Copied ${props.component.name} code snippet!`)
+  emit('toast', `Copied ${props.component.name} code to clipboard`)
   setTimeout(() => {
     codeCopied.value = false
   }, 2000)
+}
+
+const showInstallModal = ref(false)
+const cliCopied = ref(false)
+
+const cliTargetName = computed(() => {
+  if (!props.component) return 'button'
+  return props.component.id || props.component.name?.toLowerCase().replace(/^id/, '') || 'button'
+})
+
+const componentTag = computed(() => {
+  if (!props.component) return 'IdButton'
+  const id = props.component.id
+  if (componentTagMap[id]) return componentTagMap[id]
+  const cleanName = props.component.name ? props.component.name.replace(/[^a-zA-Z0-9]/g, '') : 'Component'
+  return cleanName.startsWith('Id') ? cleanName : 'Id' + cleanName
+})
+
+const copyCliCommand = () => {
+  const cmd = `npx idesign add ${cliTargetName.value}`
+  navigator.clipboard.writeText(cmd)
+  cliCopied.value = true
+  emit('toast', `Copied "${cmd}" to clipboard`)
+  setTimeout(() => {
+    cliCopied.value = false
+  }, 2000)
+}
+
+const copySnippetText = (text, label) => {
+  navigator.clipboard.writeText(text)
+  emit('toast', `Copied ${label} to clipboard`)
 }
 
 const activeCustomTab = ref('slots')
@@ -1312,7 +1574,7 @@ const copyCustomizationCode = () => {
   if (!currentCustomizationSnippet.value) return
   navigator.clipboard.writeText(currentCustomizationSnippet.value)
   custCopied.value = true
-  emit('toast', `Copied ${activeCustomTab.value} customization code!`)
+  emit('toast', `Copied ${activeCustomTab.value} customization to clipboard`)
   setTimeout(() => {
     custCopied.value = false
   }, 2000)
@@ -1337,6 +1599,7 @@ const componentTagMap = {
   'tabs': 'IdTabs',
   'accordion': 'IdAccordion',
   'segmented-control': 'IdSegmentedControl',
+  'mobile-navbar': 'IdMobileNavbar',
   'table': 'IdTable',
   'tag': 'IdTag',
   'badge': 'IdBadge',
@@ -1650,19 +1913,19 @@ const modelValue = ref(null)
 </template>`,
       table: `<template>
   <IdTable :columns="columns" :data="users">
-    <!-- 🎨 Custom Column Cell Render (#col-{key}) -->
+    <!-- Custom Column Cell Render (#col-{key}) -->
     <template #col-status="{ value }">
       <IdTag :variant="value === 'Active' ? 'success' : 'warning'">
         {{ value }}
       </IdTag>
     </template>
 
-    <!-- ⚙️ Row Actions Column Override -->
+    <!-- Row Actions Column Override -->
     <template #actions="{ row }">
       <IdButton size="xs" variant="ghost">Edit</IdButton>
     </template>
 
-    <!-- 🔍 Custom Empty State Slot Override -->
+    <!-- Custom Empty State Slot Override -->
     <template #empty>
       <div class="text-center py-8">No results match your search query.</div>
     </template>
@@ -1749,6 +2012,7 @@ const modelValue = ref(null)
     const componentUiKeysMap = {
       button: ['base', 'label', 'iconLeft', 'iconRight', 'spinner'],
       'segmented-control': ['base', 'list', 'item', 'active'],
+      'mobile-navbar': ['base', 'item', 'active', 'icon', 'label', 'badge'],
       input: ['base', 'label', 'input', 'prefix', 'suffix', 'hint', 'error'],
       textarea: ['base', 'label', 'input', 'hint'],
       select: ['base', 'label', 'select', 'hint', 'arrow'],
@@ -1781,7 +2045,7 @@ const modelValue = ref(null)
       pagination: ['base', 'button', 'active'],
       banner: ['base', 'inner', 'message', 'action', 'closeButton'],
       popover: ['base', 'trigger', 'card', 'content', 'title', 'subtitle', 'body'],
-      'confirm-dialog': ['base', 'iconBox', 'title', 'message', 'actions', 'footer'],
+      'confirm-dialog': ['base', 'surface', 'header', 'title', 'description', 'content', 'actions', 'cancel', 'confirm'],
       form: ['base'],
       'form-field': ['base', 'label', 'description', 'control', 'fieldControl', 'message'],
       'form-group': ['base'],
@@ -1861,6 +2125,165 @@ app.mount('#app')
   font-size: 14px;
   color: var(--text-2);
   line-height: 1.5;
+}
+
+.quick-install-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid var(--hairline);
+  flex-wrap: wrap;
+}
+
+.install-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  background: var(--hover, #fbfbfd);
+  border: 1px solid var(--hairline, rgba(0, 0, 0, 0.07));
+  border-radius: var(--r-pill, 999px);
+  padding: 3px 4px 3px 12px;
+  font-family: var(--mono);
+  cursor: pointer;
+  transition: all 0.2s var(--ease-spring);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+  user-select: none;
+  max-width: 100%;
+}
+
+.install-pill:hover {
+  background: var(--surface, #ffffff);
+  border-color: rgba(0, 113, 227, 0.35);
+  box-shadow: 0 2px 8px rgba(0, 113, 227, 0.08);
+  transform: translateY(-1px);
+}
+
+.install-pill:active {
+  transform: scale(0.98);
+}
+
+.install-pill.is-copied {
+  border-color: rgba(48, 209, 88, 0.4);
+  background: rgba(48, 209, 88, 0.06);
+}
+
+.pill-leading {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.cli-prompt {
+  color: var(--accent, #0071e3);
+  font-weight: 700;
+  font-size: 12px;
+  user-select: none;
+}
+
+.cli-cmd {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--text, #1d1d1f);
+  font-weight: 550;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mini-copy-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--surface, #ffffff);
+  border: 1px solid var(--hairline, rgba(0, 0, 0, 0.07));
+  color: var(--text-2, #6e6e73);
+  padding: 3px 8px;
+  border-radius: var(--r-pill, 999px);
+  font-size: 11px;
+  font-family: var(--font);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  flex-shrink: 0;
+}
+
+.install-pill:hover .mini-copy-btn {
+  color: var(--text, #1d1d1f);
+  background: #ffffff;
+  border-color: var(--faint, #d2d2d7);
+}
+
+.install-pill.is-copied .mini-copy-btn {
+  background: var(--live, #30d158);
+  color: #ffffff;
+  border-color: transparent;
+}
+
+.copy-icon {
+  flex-shrink: 0;
+}
+
+.copy-label {
+  line-height: 1;
+}
+
+.install-guide-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--accent-link, #0066cc);
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 5px 10px;
+  border-radius: var(--r-pill, 999px);
+  transition: all 0.2s var(--ease-spring);
+  user-select: none;
+  white-space: nowrap;
+}
+
+.install-guide-btn:hover {
+  background: rgba(0, 113, 227, 0.07);
+  color: var(--accent, #0071e3);
+  border-color: rgba(0, 113, 227, 0.15);
+}
+
+.install-guide-btn:active {
+  transform: scale(0.97);
+}
+
+.guide-arrow-icon {
+  transition: transform 0.2s var(--ease-spring);
+}
+
+.install-guide-btn:hover .guide-arrow-icon {
+  transform: translateX(3px);
+}
+
+:root.dark .install-pill {
+  background: #1c1c1e;
+  border-color: rgba(255, 255, 255, 0.10);
+}
+:root.dark .install-pill:hover {
+  background: #2c2c2e;
+  border-color: var(--accent);
+}
+:root.dark .cli-cmd {
+  color: #f5f5f7;
+}
+:root.dark .mini-copy-btn {
+  background: #2c2c2e;
+  border-color: rgba(255, 255, 255, 0.12);
+  color: #d1d1d6;
 }
 
 .preview-stage {
@@ -2021,6 +2444,108 @@ app.mount('#app')
   line-height: 1.5;
   color: #e3e3e3;
   max-height: 300px;
+}
+
+.install-tab-btn {
+  color: #ff9f0a;
+}
+.install-tab-btn.active {
+  background: rgba(255, 159, 10, 0.18);
+  color: #ffb340;
+}
+.install-guide-tab {
+  padding: 16px;
+  background: #18181a;
+  max-height: 360px;
+  overflow-y: auto;
+}
+.install-modal-content {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.install-modal-desc {
+  font-size: 13.5px;
+  color: var(--text-2);
+  line-height: 1.5;
+  margin: 0;
+}
+.guide-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.guide-card {
+  background: #232326;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 12px 14px;
+}
+.guide-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+.guide-chip {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 2px 8px;
+  border-radius: var(--r-pill);
+}
+.cli-chip {
+  background: rgba(48, 209, 88, 0.15);
+  color: #30d158;
+}
+.npm-chip {
+  background: rgba(10, 132, 255, 0.15);
+  color: #0a84ff;
+}
+.nuxt-chip {
+  background: rgba(0, 220, 130, 0.15);
+  color: #00dc82;
+}
+.guide-mini-copy {
+  background: rgba(255, 255, 255, 0.12);
+  border: none;
+  color: #ffffff;
+  font-size: 11px;
+  font-family: var(--font);
+  font-weight: 600;
+  padding: 3px 9px;
+  border-radius: var(--r-pill);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.guide-mini-copy:hover {
+  background: var(--accent);
+}
+.guide-desc {
+  font-size: 12.5px;
+  color: rgba(255, 255, 255, 0.7);
+  margin: 0 0 8px;
+  line-height: 1.45;
+}
+.guide-desc code {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-family: var(--mono);
+}
+.guide-cmd {
+  margin: 0;
+  background: #161618;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: #f5f5f7;
+  overflow-x: auto;
+  line-height: 1.5;
 }
 
 @media (max-width: 600px) {

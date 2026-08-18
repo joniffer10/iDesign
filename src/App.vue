@@ -136,7 +136,7 @@ const showToast = (msg) => {
 const quickCopyVueSfc = (comp) => {
   const code = comp.vueCode({})
   navigator.clipboard.writeText(code)
-  showToast(`Copied ${comp.name} .vue SFC to clipboard!`)
+  showToast(`Copied ${comp.name} code to clipboard`)
 }
 
 const triggerSearch = () => {

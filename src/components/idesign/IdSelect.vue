@@ -43,25 +43,57 @@
       <div
         v-if="isOpen"
         :id="listboxId"
-        :class="['select-dropdown', `variant-${currentVariant}`, config.mergedUi.value.dropdown]"
+        :class="['select-dropdown', `variant-${currentVariant}`, { 'has-search': searchable }, config.mergedUi.value.dropdown]"
         role="listbox"
         :aria-labelledby="label ? labelId : undefined"
         tabindex="-1"
       >
-        <div
-          v-for="(opt, idx) in normalizedOptions"
-          :id="`${optionIdPrefix}-${idx}`"
-          :key="opt.value"
-          :class="['select-option', { 'is-selected': modelValue === opt.value, 'is-focused': focusedIndex === idx }, config.mergedUi.value.option]"
-          role="option"
-          :aria-selected="modelValue === opt.value"
-          @click.stop="selectOption(opt.value)"
-          @mouseenter="focusedIndex = idx"
-        >
-          <span>{{ opt.label }}</span>
-          <svg v-if="modelValue === opt.value" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
-            <path d="M20 6L9 17l-5-5"/>
+        <!-- Search Input Header when searchable -->
+        <div v-if="searchable" class="select-search-box" @click.stop>
+          <svg class="select-search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+            <circle cx="11" cy="11" r="8"/>
+            <path d="m21 21-4.35-4.35"/>
           </svg>
+          <input
+            ref="searchInputRef"
+            v-model="searchQuery"
+            type="text"
+            class="select-search-input"
+            :placeholder="searchPlaceholder"
+            aria-label="Filter options"
+            @keydown="handleSearchKeydown"
+          />
+          <button
+            v-if="searchQuery"
+            type="button"
+            class="select-search-clear"
+            aria-label="Clear search"
+            @click.stop="searchQuery = ''; searchInputRef?.focus()"
+          >
+            ✕
+          </button>
+        </div>
+
+        <div class="select-options-list">
+          <div
+            v-for="(opt, idx) in filteredOptions"
+            :id="`${optionIdPrefix}-${idx}`"
+            :key="opt.value"
+            :class="['select-option', { 'is-selected': modelValue === opt.value, 'is-focused': focusedIndex === idx }, config.mergedUi.value.option]"
+            role="option"
+            :aria-selected="modelValue === opt.value"
+            @click.stop="selectOption(opt.value)"
+            @mouseenter="focusedIndex = idx"
+          >
+            <span>{{ opt.label }}</span>
+            <svg v-if="modelValue === opt.value" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+              <path d="M20 6L9 17l-5-5"/>
+            </svg>
+          </div>
+
+          <div v-if="filteredOptions.length === 0" class="select-no-results">
+            {{ emptyText || 'No options found' }}
+          </div>
         </div>
       </div>
     </Transition>
@@ -71,7 +103,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
+import { ref, computed, nextTick, onMounted, onBeforeUnmount, watch } from 'vue'
 import { useIdesignConfig } from '../../composables/useIdesignConfig'
 
 const props = defineProps({
@@ -82,13 +114,16 @@ const props = defineProps({
   hint: String,
   disabled: Boolean,
   clearable: Boolean,
+  searchable: Boolean,
+  searchPlaceholder: { type: String, default: 'Search options...' },
+  emptyText: { type: String, default: 'No matching options' },
   size: { type: String, default: undefined },
   variant: { type: String, default: undefined },
   radius: { type: String, default: undefined },
   ui: { type: Object, default: () => ({}) }
 })
 
-const emit = defineEmits(['update:modelValue', 'change'])
+const emit = defineEmits(['update:modelValue', 'change', 'search'])
 
 const config = useIdesignConfig('Select', props)
 const currentSize = computed(() => config.resolvedSize.value || 'md')
@@ -96,8 +131,10 @@ const currentRadius = computed(() => config.resolvedRadius.value || 'md')
 const currentVariant = computed(() => config.resolvedVariant.value || 'default')
 
 const selectRef = ref(null)
+const searchInputRef = ref(null)
 const isOpen = ref(false)
 const focusedIndex = ref(-1)
+const searchQuery = ref('')
 
 const uid = Math.random().toString(36).substring(2, 8)
 const labelId = `id-select-label-${uid}`
@@ -111,6 +148,19 @@ const normalizedOptions = computed(() => {
   )
 })
 
+const filteredOptions = computed(() => {
+  if (!props.searchable || !searchQuery.value.trim()) {
+    return normalizedOptions.value
+  }
+  const q = searchQuery.value.toLowerCase().trim()
+  return normalizedOptions.value.filter(o => o.label.toLowerCase().includes(q))
+})
+
+watch(searchQuery, (val) => {
+  emit('search', val)
+  focusedIndex.value = 0
+})
+
 const displayLabel = computed(() => {
   const found = normalizedOptions.value.find(o => o.value === props.modelValue)
   return found ? found.label : props.placeholder
@@ -120,8 +170,12 @@ const toggle = () => {
   if (props.disabled) return
   isOpen.value = !isOpen.value
   if (isOpen.value) {
-    const curIdx = normalizedOptions.value.findIndex(o => o.value === props.modelValue)
+    searchQuery.value = ''
+    const curIdx = filteredOptions.value.findIndex(o => o.value === props.modelValue)
     focusedIndex.value = curIdx >= 0 ? curIdx : 0
+    if (props.searchable) {
+      nextTick(() => searchInputRef.value?.focus())
+    }
   }
 }
 
@@ -129,6 +183,7 @@ const selectOption = (val) => {
   emit('update:modelValue', val)
   emit('change', val)
   isOpen.value = false
+  searchQuery.value = ''
   if (selectRef.value) selectRef.value.focus()
 }
 
@@ -136,7 +191,27 @@ const clearSelection = () => {
   emit('update:modelValue', null)
   emit('change', null)
   isOpen.value = false
+  searchQuery.value = ''
   if (selectRef.value) selectRef.value.focus()
+}
+
+const handleSearchKeydown = (e) => {
+  const count = filteredOptions.value.length
+  if (e.key === 'ArrowDown') {
+    e.preventDefault()
+    focusedIndex.value = Math.min(focusedIndex.value + 1, count - 1)
+  } else if (e.key === 'ArrowUp') {
+    e.preventDefault()
+    focusedIndex.value = Math.max(focusedIndex.value - 1, 0)
+  } else if (e.key === 'Enter') {
+    e.preventDefault()
+    if (count > 0 && focusedIndex.value >= 0 && focusedIndex.value < count) {
+      selectOption(filteredOptions.value[focusedIndex.value].value)
+    }
+  } else if (e.key === 'Escape') {
+    isOpen.value = false
+    selectRef.value?.focus()
+  }
 }
 
 const handleKeydown = (e) => {
@@ -259,8 +334,58 @@ onBeforeUnmount(() => document.removeEventListener('click', handleOutside))
 .select-dropdown {
   position: absolute; top: calc(100% + 4px); left: 0; right: 0; z-index: 60;
   background: var(--surface); border: 1px solid var(--hairline); border-radius: 12px;
-  box-shadow: var(--sh-overlay); overflow: hidden; max-height: 240px; overflow-y: auto;
+  box-shadow: var(--sh-overlay); overflow: hidden;
   outline: none;
+  display: flex;
+  flex-direction: column;
+}
+
+.select-search-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--hairline);
+  background: var(--bg);
+}
+
+.select-search-icon {
+  color: var(--text-3);
+  flex-shrink: 0;
+}
+
+.select-search-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-family: var(--font);
+  font-size: 13px;
+  color: var(--text);
+  padding: 2px 0;
+}
+.select-search-input::placeholder {
+  color: var(--text-4);
+}
+
+.select-search-clear {
+  border: none;
+  background: transparent;
+  color: var(--text-3);
+  font-size: 11px;
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: 4px;
+}
+.select-search-clear:hover {
+  color: var(--text);
+  background: var(--hover);
+}
+
+.select-options-list {
+  max-height: 200px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
 .select-option {
@@ -274,6 +399,11 @@ onBeforeUnmount(() => document.removeEventListener('click', handleOutside))
   padding: 4px;
   border-radius: 14px;
 }
+.select-dropdown.variant-no-divider .select-search-box {
+  border-radius: 10px;
+  margin-bottom: 4px;
+  border-bottom: none;
+}
 .select-dropdown.variant-no-divider .select-option {
   border-radius: 10px;
   margin: 1px 0;
@@ -283,6 +413,14 @@ onBeforeUnmount(() => document.removeEventListener('click', handleOutside))
 
 .select-option.is-focused, .select-option:hover { background: var(--hover); }
 .select-option.is-selected { color: var(--accent); font-weight: 600; }
+
+.select-no-results {
+  padding: 18px 14px;
+  font-size: 13px;
+  color: var(--text-3);
+  text-align: center;
+  font-style: italic;
+}
 
 .select-hint { font-size: 12px; color: var(--text-3); }
 .is-disabled { opacity: .5; pointer-events: none; }

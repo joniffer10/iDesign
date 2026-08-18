@@ -61,6 +61,9 @@ export { default as IdTimeline } from './components/idesign/IdTimeline.vue'
 export { default as IdGrid } from './components/idesign/IdGrid.vue'
 export { default as IdBarChart } from './components/idesign/IdBarChart.vue'
 export { default as IdPieChart } from './components/idesign/IdPieChart.vue'
+export { default as IdDonutChart } from './components/idesign/IdDonutChart.vue'
+export { default as IdMobileNavbar } from './components/idesign/IdMobileNavbar.vue'
+export { default as MobileNavbar } from './components/idesign/IdMobileNavbar.vue'
 export { default as IdTour } from './components/idesign/IdTour.vue'
 
 // ── Compound Form System ──
@@ -104,6 +107,7 @@ export { default as IdTimePicker } from './components/idesign/IdTimePicker.vue'
 export { default as IdTagInput } from './components/idesign/IdTagInput.vue'
 export { default as IdRating } from './components/idesign/IdRating.vue'
 export { default as IdNumberInput } from './components/idesign/IdNumberInput.vue'
+export { default as IdNumericStepper } from './components/idesign/IdNumberInput.vue'
 export { default as IdColorPicker } from './components/idesign/IdColorPicker.vue'
 
 
@@ -184,6 +188,8 @@ import IdTimeline from './components/idesign/IdTimeline.vue'
 import IdGrid from './components/idesign/IdGrid.vue'
 import IdBarChart from './components/idesign/IdBarChart.vue'
 import IdPieChart from './components/idesign/IdPieChart.vue'
+import IdDonutChart from './components/idesign/IdDonutChart.vue'
+import IdMobileNavbar from './components/idesign/IdMobileNavbar.vue'
 import IdTour from './components/idesign/IdTour.vue'
 
 // Compound Components
@@ -230,7 +236,8 @@ const allComponents = {
   IdConfirmDialog, IdStack, IdCommandPalette, IdDatePicker, IdCarousel,
   IdMacOsBanner, IdFileTree, IdPopover, IdDock, IdAvatarGroup, IdSparkline,
   IdStat, IdEmpty, IdIphoneFrame, IdToast, IdProjectSection, IdProjectCard,
-  IdImageFrame, IdStepper, IdTimeline, IdGrid, IdBarChart, IdPieChart, IdTour,
+  IdImageFrame, IdStepper, IdTimeline, IdGrid, IdBarChart, IdPieChart, IdDonutChart,
+  IdMobileNavbar, MobileNavbar: IdMobileNavbar, IdTour,
   // Compound Form System
   IdForm, IdFormField, IdFormLabel, IdFormDescription, IdFormMessage, IdFormGroup, IdFormSection, IdFormActions,
   // Compound Card System
@@ -240,7 +247,7 @@ const allComponents = {
   // Hardware & Layout Components
   IdMacbookFrame, IdIpadFrame, IdSidebar, IdHeader, IdFooter, IdBanner, IdSeparator, IdKbd,
   // Advanced Form Inputs
-  IdPinInput, IdTimePicker, IdTagInput, IdRating, IdNumberInput, IdColorPicker
+  IdPinInput, IdTimePicker, IdTagInput, IdRating, IdNumberInput, IdNumericStepper: IdNumberInput, IdColorPicker
 }
 
 export default {

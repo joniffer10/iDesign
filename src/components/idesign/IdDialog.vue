@@ -3,12 +3,19 @@
     :model-value="isOpen"
     :title="title"
     :subtitle="subtitle"
+    :description="description"
     :max-width="maxWidth"
     :size="size"
     :variant="variant"
     :close-on-backdrop="closeOnBackdrop"
+    :close-on-outside-click="closeOnOutsideClick"
+    :close-on-escape="closeOnEscape"
+    :show-close="showClose"
     :teleport="teleport"
+    :ui="ui"
     @update:model-value="handleUpdate"
+    @open="emit('open')"
+    @close="emit('close')"
   >
     <template v-if="$slots.header" #header>
       <slot name="header" />
@@ -16,8 +23,13 @@
     <template v-if="$slots.title" #title>
       <slot name="title" />
     </template>
-    <template v-if="$slots.subtitle" #subtitle>
-      <slot name="subtitle" />
+    <template v-if="$slots.description || $slots.subtitle" #description>
+      <slot name="description">
+        <slot name="subtitle" />
+      </slot>
+    </template>
+    <template v-if="$slots.close" #close>
+      <slot name="close" />
     </template>
 
     <slot />
@@ -39,11 +51,16 @@ const props = defineProps({
   open: { type: Boolean, default: undefined },
   title: String,
   subtitle: String,
+  description: String,
   maxWidth: String,
   size: String,
   variant: { type: String, default: 'default' },
   closeOnBackdrop: { type: Boolean, default: true },
-  teleport: { type: Boolean, default: true }
+  closeOnOutsideClick: { type: Boolean, default: undefined },
+  closeOnEscape: { type: Boolean, default: true },
+  showClose: { type: Boolean, default: true },
+  teleport: { type: Boolean, default: true },
+  ui: { type: Object, default: () => ({}) }
 })
 
 const emit = defineEmits(['update:modelValue', 'update:open', 'open', 'close'])
@@ -61,3 +78,4 @@ const handleUpdate = (val) => {
   else emit('close')
 }
 </script>
+
