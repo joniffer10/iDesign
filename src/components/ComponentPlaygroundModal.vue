@@ -6,48 +6,13 @@
     @update:model-value="$emit('close')"
   >
     <div v-if="component" class="playground-layout">
-      <!-- Description & Category -->
+      <!-- 1. playground-header -->
       <div class="playground-header">
         <div class="header-meta">
           <span class="category-tag">{{ component.category }}</span>
           <span class="vue-tag">Vue 3 / Nuxt 3 Component</span>
         </div>
         <p class="component-desc">{{ component.description }}</p>
-
-        <!-- Quick CLI Install & Guide Action Bar -->
-        <div class="quick-install-bar">
-          <div
-            class="install-pill"
-            :class="{ 'is-copied': cliCopied }"
-            :title="'Click to copy: npx idesign add ' + cliTargetName"
-            role="button"
-            tabindex="0"
-            @click="copyCliCommand"
-            @keydown.enter="copyCliCommand"
-          >
-            <div class="pill-leading">
-              <span class="cli-prompt">$</span>
-              <code class="cli-cmd">npx idesign add {{ cliTargetName }}</code>
-            </div>
-            <div class="mini-copy-btn" :aria-label="cliCopied ? 'Command copied' : 'Copy command'">
-              <svg v-if="cliCopied" class="copy-icon check-icon" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                <path d="M20 6L9 17l-5-5"/>
-              </svg>
-              <svg v-else class="copy-icon" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
-                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
-              </svg>
-              <span class="copy-label">{{ cliCopied ? 'Copied' : 'Copy' }}</span>
-            </div>
-          </div>
-
-          <button type="button" class="install-guide-btn" @click="showInstallModal = true">
-            <span class="guide-btn-text">Installation Guide</span>
-            <svg class="guide-arrow-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M5 12h14M12 5l7 7-7 7"/>
-            </svg>
-          </button>
-        </div>
       </div>
 
       <!-- Live Preview Box with Controls -->
@@ -67,7 +32,7 @@
         </div>
 
         <!-- Render Target Canvas -->
-        <div :class="['canvas-area', `bg-${bgMode}`, { dark: bgMode === 'dark' }]">
+        <div :class="['canvas-area', `bg-${bgMode}`, { dark: bgMode === 'dark', light: bgMode === 'light' }]" :data-theme="bgMode">
           <div :key="`${component?.id}-${JSON.stringify(propState)}`" style="width: 100%; display: flex; justify-content: center; align-items: center; min-height: 100%;">
           <template v-if="component.id === 'glass-nav'">
             <div style="width: 100%;">
@@ -1128,177 +1093,458 @@
         </div>
       </div>
 
-      <!-- Code Inspector & Copy Section -->
-      <div class="code-inspector">
-        <div class="code-header">
-          <div class="code-tabs">
-            <button
-              :class="['code-tab', { active: codeTab === 'vue' }]"
-              @click="codeTab = 'vue'"
-            >Vue 3 SFC (.vue)</button>
-
-            <button
-              :class="['code-tab', { active: codeTab === 'nuxt' }]"
-              @click="codeTab = 'nuxt'"
-            >Nuxt 3</button>
-
-            <button
-              :class="['code-tab', { active: codeTab === 'html' }]"
-              @click="codeTab = 'html'"
-            >HTML + CSS</button>
+      <!-- 3. Installation Section -->
+      <div class="playground-section install-section">
+        <div class="playground-section-heading">
+          <div class="heading-left">
+            <h3 class="section-title">Installation</h3>
           </div>
-
-          <button type="button" class="copy-code-btn" @click="copyCode">
-            <svg v-if="codeCopied" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#30d158" stroke-width="2.5">
-              <path d="M20 6L9 17l-5-5"/>
-            </svg>
-            <svg v-else width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
-              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
-            </svg>
-            {{ codeCopied ? 'Copied Code!' : 'Copy Code' }}
-          </button>
+          <div class="view-mode-toggles">
+            <button
+              :class="['mode-btn', { active: installPkgTab === 'cli' }]"
+              @click="installPkgTab = 'cli'"
+            >CLI Add</button>
+            <button
+              :class="['mode-btn', { active: installPkgTab === 'npm' }]"
+              @click="installPkgTab = 'npm'"
+            >npm</button>
+            <button
+              :class="['mode-btn', { active: installPkgTab === 'pnpm' }]"
+              @click="installPkgTab = 'pnpm'"
+            >pnpm</button>
+            <button
+              :class="['mode-btn', { active: installPkgTab === 'yarn' }]"
+              @click="installPkgTab = 'yarn'"
+            >yarn</button>
+            <button
+              :class="['mode-btn', { active: installPkgTab === 'nuxt' }]"
+              @click="installPkgTab = 'nuxt'"
+            >Nuxt 3</button>
+          </div>
         </div>
 
-        <div class="code-display">
-          <pre><code>{{ displayedCode }}</code></pre>
+        <div class="install-panel">
+          <!-- Terminal Command Block -->
+          <div class="terminal-block">
+            <div class="code-line">
+              <span class="prompt-sym">$</span>
+              <code>{{ activeInstallCommand }}</code>
+            </div>
+            <button
+              type="button"
+              class="terminal-copy-btn"
+              @click="copySnippetText(activeInstallCommand, 'Install command')"
+            >
+              <svg v-if="installCopied" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#30d158" stroke-width="2.5">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+              <svg v-else width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+              </svg>
+              <span>{{ installCopied ? 'Copied' : 'Copy' }}</span>
+            </button>
+          </div>
+
+          <!-- Setup / Import Context when applicable -->
+          <div v-if="installPkgTab !== 'cli'" class="install-sub-snippet">
+            <div class="sub-snippet-header">
+              <span class="sub-snippet-label">{{ installPkgTab === 'nuxt' ? 'nuxt.config.ts' : 'Component Import (SFC / Script)' }}</span>
+              <button
+                type="button"
+                class="sub-copy-btn"
+                @click="copySnippetText(activeImportSnippet, 'Import statement')"
+              >
+                Copy Import
+              </button>
+            </div>
+            <pre class="sub-snippet-code"><code>{{ activeImportSnippet }}</code></pre>
+          </div>
+          <div v-else class="cli-info-note">
+            <span class="cli-note-icon">✨</span>
+            <span class="cli-note-text">
+              Directly generates <code>{{ componentTag }}.vue</code> into your <code>components/idesign/</code> folder with zero runtime lock-in.
+            </span>
+          </div>
         </div>
       </div>
 
-      <!-- Component API Documentation Tables -->
-      <div class="api-docs-section">
-        <h4 class="api-docs-title">Component API Specification</h4>
+      <!-- 4. Usage Section -->
+      <div class="playground-section usage-section">
+        <div class="playground-section-heading">
+          <div class="heading-left">
+            <h3 class="section-title">Usage</h3>
+          </div>
+          <div class="view-mode-toggles">
+            <button
+              :class="['mode-btn', { active: codeTab === 'vue' }]"
+              @click="codeTab = 'vue'"
+            >Vue 3 SFC</button>
+            <button
+              :class="['mode-btn', { active: codeTab === 'nuxt' }]"
+              @click="codeTab = 'nuxt'"
+            >Nuxt 3</button>
+            <button
+              :class="['mode-btn', { active: codeTab === 'html' }]"
+              @click="codeTab = 'html'"
+            >HTML + CSS</button>
+          </div>
+        </div>
+
+        <div class="code-inspector">
+          <div class="code-header">
+            <span class="code-file-label">{{ codeTab === 'vue' ? `${componentTag}.vue` : (codeTab === 'nuxt' ? 'Nuxt Auto-Import Template' : 'index.html') }}</span>
+            <button type="button" class="copy-code-btn" @click="copyCode">
+              <svg v-if="codeCopied" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#30d158" stroke-width="2.5">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+              <svg v-else width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+              </svg>
+              {{ codeCopied ? 'Copied Code!' : 'Copy Code' }}
+            </button>
+          </div>
+
+          <div class="code-display">
+            <pre><code>{{ displayedCode }}</code></pre>
+          </div>
+        </div>
+      </div>
+
+      <!-- 5. Component Spec API (Props) -->
+      <div class="playground-section api-docs-section">
+        <div class="playground-section-heading">
+          <div class="heading-left">
+            <h3 class="section-title">Component API Specification</h3>
+          </div>
+          <span class="spec-badge-count">{{ activeComponentPropsList.length }} Props Defined</span>
+        </div>
+
         <div class="api-table-wrapper">
           <table class="api-table">
             <thead>
               <tr>
-                <th>Prop</th>
-                <th>Type</th>
-                <th>Default</th>
-                <th>Description</th>
+                <th style="width: 18%;">Prop</th>
+                <th style="width: 14%;">Type</th>
+                <th style="width: 12%;">Required</th>
+                <th style="width: 14%;">Default</th>
+                <th style="width: 20%;">Allowed Values</th>
+                <th style="width: 22%;">Description</th>
               </tr>
             </thead>
             <tbody>
-              <tr v-for="(spec, key) in component.props" :key="key">
-                <td class="prop-name"><code>{{ key }}</code></td>
-                <td class="type-name"><code>{{ spec.type }}</code></td>
-                <td class="default-val"><code>{{ spec.default !== undefined ? spec.default : '—' }}</code></td>
-                <td class="prop-desc">
-                  {{ spec.description || (spec.type === 'select' ? `Options: ${spec.options.join(' | ')}` : 'Configurable property.') }}
-                  <span v-if="spec.type === 'select' && spec.description" style="display: block; font-size: 11px; opacity: 0.75; margin-top: 2px;">
-                    Options: <code>{{ spec.options.join(' | ') }}</code>
+              <tr v-for="propItem in activeComponentPropsList" :key="propItem.name">
+                <td class="prop-name">
+                  <code>{{ propItem.name }}</code>
+                </td>
+                <td class="type-name">
+                  <code>{{ propItem.type }}</code>
+                </td>
+                <td>
+                  <span :class="['req-chip', { required: propItem.required }]">
+                    {{ propItem.required ? 'Required' : 'Optional' }}
                   </span>
                 </td>
+                <td class="default-val">
+                  <code>{{ propItem.default !== undefined ? (typeof propItem.default === 'object' ? JSON.stringify(propItem.default) : propItem.default) : '—' }}</code>
+                </td>
+                <td class="options-cell">
+                  <span v-if="propItem.options && propItem.options.length" class="options-list">
+                    <code v-for="opt in propItem.options" :key="opt" class="opt-pill">{{ opt }}</code>
+                  </span>
+                  <span v-else class="text-muted">—</span>
+                </td>
+                <td class="prop-desc">
+                  <div class="desc-text">{{ propItem.description }}</div>
+                  <div v-if="propItem.example" class="prop-example">
+                    <span class="example-label">Example:</span> <code>{{ propItem.example }}</code>
+                  </div>
+                </td>
               </tr>
-              <tr v-if="!hasProps">
-                <td colspan="4" class="no-props">No props required — plug-and-play component.</td>
+              <tr v-if="!activeComponentPropsList.length">
+                <td colspan="6" class="no-props">No props required — plug-and-play component.</td>
               </tr>
             </tbody>
           </table>
         </div>
       </div>
 
-      <!-- How to Modify & Customize Component Section -->
-      <div class="customization-docs-section">
-        <div class="customization-header-row">
-          <h4 class="customization-docs-title">Component Customization & Theming Guide</h4>
-          <div class="customization-tabs">
+      <!-- 6. Events Section -->
+      <div class="playground-section events-docs-section">
+        <div class="playground-section-heading">
+          <div class="heading-left">
+            <h3 class="section-title">Events</h3>
+          </div>
+          <span v-if="activeComponentEvents.length" class="spec-badge-count">{{ activeComponentEvents.length }} Emitted</span>
+        </div>
+
+        <div v-if="activeComponentEvents.length" class="api-table-wrapper">
+          <table class="api-table">
+            <thead>
+              <tr>
+                <th style="width: 22%;">Event Name</th>
+                <th style="width: 18%;">Payload Type</th>
+                <th style="width: 32%;">Description & Trigger</th>
+                <th style="width: 28%;">Usage Example</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="evt in activeComponentEvents" :key="evt.name">
+                <td class="event-name">
+                  <code>{{ evt.name }}</code>
+                </td>
+                <td class="type-name">
+                  <code>{{ evt.payload }}</code>
+                </td>
+                <td class="prop-desc">
+                  <div class="desc-text font-medium">{{ evt.description }}</div>
+                  <div v-if="evt.trigger" class="trigger-meta">
+                    <span class="meta-label">Triggered:</span> {{ evt.trigger }}
+                  </div>
+                </td>
+                <td class="event-example-cell">
+                  <pre class="mini-example-code"><code>{{ evt.example }}</code></pre>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div v-else class="empty-spec-card">
+          <span class="empty-spec-icon">🛡️</span>
+          <div class="empty-spec-info">
+            <div class="empty-spec-title">No custom events emitted</div>
+            <div class="empty-spec-desc">This component operates statelessly or passes native DOM events directly to the container.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 7. Component Customization & Theming Guide -->
+      <div class="playground-section customization-docs-section">
+        <div class="playground-section-heading">
+          <div class="heading-left">
+            <h3 class="section-title">Component Customization & Theming Guide</h3>
+          </div>
+          <div class="view-mode-toggles">
             <button
-              :class="['cust-tab-btn', { active: activeCustomTab === 'slots' }]"
+              :class="['mode-btn', { active: activeCustomTab === 'slots' }]"
               @click="activeCustomTab = 'slots'"
-            >
-              Slots
-            </button>
+            >Slots</button>
             <button
-              :class="['cust-tab-btn', { active: activeCustomTab === 'theme' }]"
+              :class="['mode-btn', { active: activeCustomTab === 'ui-keys' }]"
+              @click="activeCustomTab = 'ui-keys'"
+            >UI Slots & Inline :ui</button>
+            <button
+              :class="['mode-btn', { active: activeCustomTab === 'theme' }]"
               @click="activeCustomTab = 'theme'"
-            >
-              Theme
-            </button>
+            >Global App Config</button>
+            <button
+              :class="['mode-btn', { active: activeCustomTab === 'priority' }]"
+              @click="activeCustomTab = 'priority'"
+            >Priority</button>
           </div>
         </div>
 
-        <div class="customization-panel">
-          <!-- Active Tab Content -->
-          <div class="customization-tab-content">
+        <!-- 7a. Slots Tab -->
+        <div v-if="activeCustomTab === 'slots'" class="customization-card-panel">
+          <div v-if="activeComponentSlots.length" class="slots-table-wrapper">
+            <table class="api-table">
+              <thead>
+                <tr>
+                  <th style="width: 22%;">Slot Name</th>
+                  <th style="width: 38%;">Purpose</th>
+                  <th style="width: 18%;">Available Props</th>
+                  <th style="width: 22%;">Template Usage</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="slotItem in activeComponentSlots" :key="slotItem.name">
+                  <td class="slot-name">
+                    <code>#{{ slotItem.name }}</code>
+                  </td>
+                  <td class="prop-desc">{{ slotItem.purpose }}</td>
+                  <td class="type-name">
+                    <code>{{ slotItem.props || '—' }}</code>
+                  </td>
+                  <td class="event-example-cell">
+                    <pre class="mini-example-code"><code>{{ slotItem.example }}</code></pre>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div v-else class="empty-spec-card">
+            <span class="empty-spec-icon">🧩</span>
+            <div class="empty-spec-info">
+              <div class="empty-spec-title">Standard Default Slot</div>
+              <div class="empty-spec-desc">Accepts standard children via <code>&lt;template #default&gt;</code> or direct nested template markup.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 7b. UI Slots / Class Customization & Inline :ui -->
+        <div v-else-if="activeCustomTab === 'ui-keys'" class="customization-card-panel">
+          <div class="ui-slots-intro">
+            <p class="ui-guide-p">
+              Idesign components expose semantic <code>ui</code> slot keys for granular styling control without breaking default design system tokens.
+            </p>
+          </div>
+
+          <div class="ui-keys-grid">
+            <div v-for="(desc, keyName) in activeComponentUiKeys" :key="keyName" class="ui-key-card">
+              <div class="ui-key-name"><code>{{ keyName }}</code></div>
+              <div class="ui-key-desc">{{ desc }}</div>
+            </div>
+          </div>
+
+          <div class="inline-ui-example-block">
             <div class="code-box-header">
-              <span class="code-box-badge">
-                {{ activeCustomTab === 'props' ? 'Vue 3 Composition API & Props Usage' : (activeCustomTab === 'slots' ? 'Template Slots & Composition' : 'Complete Global UI Config & Runtime Theming') }}
-              </span>
-              <button type="button" class="copy-cust-btn" @click="copyCustomizationCode">
-                <svg v-if="custCopied" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#30d158" stroke-width="2.5">
-                  <path d="M20 6L9 17l-5-5"/>
-                </svg>
-                <svg v-else width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
-                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
-                </svg>
-                {{ custCopied ? 'Copied!' : 'Copy Code' }}
+              <span class="code-box-badge">Inline Instance :ui Customization</span>
+              <button type="button" class="copy-cust-btn" @click="copySnippetText(inlineUiExampleSnippet, 'Inline :ui snippet')">
+                Copy Code
               </button>
             </div>
-            <pre class="recipe-pre"><code>{{ currentCustomizationSnippet }}</code></pre>
+            <pre class="recipe-pre"><code>{{ inlineUiExampleSnippet }}</code></pre>
+          </div>
+        </div>
+
+        <!-- 7c. Global Theme Configuration -->
+        <div v-else-if="activeCustomTab === 'theme'" class="customization-card-panel">
+          <div class="ui-slots-intro">
+            <p class="ui-guide-p">
+              Configure component defaults globally across your entire app via Nuxt <code>app.config.ts</code> or Vue <code>createIdesign</code> plugin configuration.
+            </p>
+          </div>
+
+          <div class="code-box-header">
+            <span class="code-box-badge">app.config.ts / createIdesign() Global Theme</span>
+            <button type="button" class="copy-cust-btn" @click="copySnippetText(globalThemeConfigSnippet, 'Global theme snippet')">
+              Copy Config
+            </button>
+          </div>
+          <pre class="recipe-pre"><code>{{ globalThemeConfigSnippet }}</code></pre>
+        </div>
+
+        <!-- 7d. Customization Priority -->
+        <div v-else-if="activeCustomTab === 'priority'" class="customization-card-panel priority-panel">
+          <div class="priority-steps">
+            <div class="priority-step-item">
+              <div class="step-badge num-1">1. Global Theme</div>
+              <div class="step-content">
+                <div class="step-title"><code>defineAppConfig({ ui: { Component: { ... } } })</code></div>
+                <div class="step-desc">Establishes application-wide design defaults, base classes, and variants.</div>
+              </div>
+            </div>
+
+            <div class="priority-divider-arrow">↓</div>
+
+            <div class="priority-step-item">
+              <div class="step-badge num-2">2. Component Defaults</div>
+              <div class="step-content">
+                <div class="step-title">Library Built-in Props & Tokens</div>
+                <div class="step-desc">Standard Liquid Glass token defaults (radius, shadow, transitions).</div>
+              </div>
+            </div>
+
+            <div class="priority-divider-arrow">↓</div>
+
+            <div class="priority-step-item">
+              <div class="step-badge num-3">3. Component Props</div>
+              <div class="step-content">
+                <div class="step-title"><code>&lt;IdComponent variant="glass" size="lg" /&gt;</code></div>
+                <div class="step-desc">Explicit props passed to the specific component instance.</div>
+              </div>
+            </div>
+
+            <div class="priority-divider-arrow">↓</div>
+
+            <div class="priority-step-item is-highest">
+              <div class="step-badge num-4">4. Instance :ui (Highest Precedence)</div>
+              <div class="step-content">
+                <div class="step-title"><code>&lt;IdComponent :ui="{ base: 'custom-class' }" /&gt;</code></div>
+                <div class="step-desc">Overrides any global or prop styles specifically for this exact node.</div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
-    </div>
-  </IdModal>
-
-  <!-- Dedicated Component Installation Guide Modal -->
-  <IdModal
-    v-model="showInstallModal"
-    :title="'Install ' + componentTag"
-    max-width="640px"
-  >
-    <div class="install-modal-content">
-      <p class="install-modal-desc">
-        Add <strong>{{ componentTag }}</strong> to your Vue 3 or Nuxt 3 project using your preferred workflow.
-      </p>
-
-      <div class="guide-grid">
-        <!-- Option 1: CLI Add (Single Component) -->
-        <div class="guide-card">
-          <div class="guide-card-head">
-            <span class="guide-chip cli-chip">Option 1 • CLI Add (Recommended — Zero Bloat)</span>
-            <button type="button" class="guide-mini-copy" @click="copySnippetText(`npx idesign add ${cliTargetName}`, 'CLI command')">
-              Copy
-            </button>
+      <!-- 8. Accessibility Section -->
+      <!-- <div class="playground-section a11y-section">
+        <div class="playground-section-heading">
+          <div class="heading-left">
+            <span class="section-num">08</span>
+            <h3 class="section-title">Accessibility & Keyboard Navigation</h3>
           </div>
-          <p class="guide-desc">
-            Copies <code>{{ componentTag }}.vue</code> directly into your <code>src/components/idesign/</code> folder:
-          </p>
-          <pre class="guide-cmd"><code>npx idesign init
-npx idesign add {{ cliTargetName }}</code></pre>
+          <span class="a11y-badge">WCAG 2.1 AA Compliant</span>
         </div>
 
-        <!-- Option 2: Full Package Import -->
-        <div class="guide-card">
-          <div class="guide-card-head">
-            <span class="guide-chip npm-chip">Option 2 • NPM Package Tree-Shaked Import</span>
-            <button type="button" class="guide-mini-copy" @click="copySnippetText(`import { ${componentTag} } from '@idesign/vue'\nimport '@idesign/vue/tokens'`, 'Import statement')">
-              Copy
-            </button>
-          </div>
-          <p class="guide-desc">
-            Install <code>@idesign/vue</code> and import with automatic tree-shaking:
-          </p>
-          <pre class="guide-cmd"><code>npm install @idesign/vue
+        <div class="a11y-panel">
+          <div class="a11y-grid">
+            <div class="a11y-card">
+              <div class="a11y-card-header">
+                <span class="a11y-icon">⌨️</span>
+                <span class="a11y-title">Keyboard Navigation</span>
+              </div>
+              <p class="a11y-desc">{{ activeComponentA11y.keyboard }}</p>
+            </div>
 
-// In your script:
-import { {{ componentTag }} } from '@idesign/vue'
-import '@idesign/vue/tokens'</code></pre>
+            <div class="a11y-card">
+              <div class="a11y-card-header">
+                <span class="a11y-icon">🏷️</span>
+                <span class="a11y-title">ARIA Attributes & Roles</span>
+              </div>
+              <p class="a11y-desc">{{ activeComponentA11y.aria }}</p>
+            </div>
+
+            <div class="a11y-card">
+              <div class="a11y-card-header">
+                <span class="a11y-icon">🎯</span>
+                <span class="a11y-title">Focus Management</span>
+              </div>
+              <p class="a11y-desc">{{ activeComponentA11y.focus }}</p>
+            </div>
+
+            <div class="a11y-card">
+              <div class="a11y-card-header">
+                <span class="a11y-icon">🔊</span>
+                <span class="a11y-title">Screen Reader Semantics</span>
+              </div>
+              <p class="a11y-desc">{{ activeComponentA11y.screenReader }}</p>
+            </div>
+          </div>
+
+          <div class="a11y-footer-note">
+            <span class="a11y-check-icon">✓</span>
+            <span><strong>Touch Target Compliance:</strong> Interactive hit targets are strictly sized ≥ 44×44px per Apple Human Interface Guidelines and WCAG 2.5.5.</span>
+          </div>
+        </div>
+      </div> -->
+
+      <!-- 9. Related Components Section -->
+      <!-- <div v-if="activeRelatedComponents.length" class="playground-section related-section">
+        <div class="playground-section-heading">
+          <div class="heading-left">
+            <span class="section-num">09</span>
+            <h3 class="section-title">Related Components</h3>
+          </div>
         </div>
 
-        <!-- Option 3: Nuxt 3 Zero-Config Auto-Import -->
-        <div class="guide-card">
-          <div class="guide-card-head">
-            <span class="guide-chip nuxt-chip">Option 3 • Nuxt 3 Auto-Import</span>
+        <div class="related-grid">
+          <div
+            v-for="rel in activeRelatedComponents"
+            :key="rel.id"
+            class="related-card"
+          >
+            <div class="rel-info">
+              <div class="rel-name">{{ rel.name }}</div>
+              <div class="rel-cat">{{ rel.category }}</div>
+            </div>
+            <code class="rel-tag">{{ rel.tag }}</code>
           </div>
-          <p class="guide-desc">
-            When placed in your Nuxt <code>components/idesign/</code> directory, simply write <code>&lt;{{ componentTag }} /&gt;</code> in templates with zero manual imports.
-          </p>
         </div>
-      </div>
+      </div> -->
+
     </div>
   </IdModal>
 </template>
@@ -1422,34 +1668,19 @@ const activeSidebarItem = ref('dashboard')
 
 const setMode = (mode) => {
   bgMode.value = mode
-  if (mode === 'dark') {
-    document.documentElement.classList.add('dark')
-    document.documentElement.classList.remove('light')
-  } else {
-    document.documentElement.classList.remove('dark')
-    document.documentElement.classList.add('light')
-  }
 }
 
-let themeObserver = null
-
 onMounted(() => {
-  const isDarkGlobal = document.documentElement.classList.contains('dark')
+  const isDarkGlobal = document.documentElement.classList.contains('dark') || document.documentElement.getAttribute('data-theme') === 'dark'
   bgMode.value = isDarkGlobal ? 'dark' : 'light'
-
-  themeObserver = new MutationObserver(() => {
-    const isDarkNow = document.documentElement.classList.contains('dark')
-    bgMode.value = isDarkNow ? 'dark' : 'light'
-  })
-  themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] })
-})
-
-onUnmounted(() => {
-  if (themeObserver) themeObserver.disconnect()
 })
 
 const codeTab = ref('vue')
 const codeCopied = ref(false)
+const installCopied = ref(false)
+const installPkgTab = ref('cli')
+const activeCustomTab = ref('slots')
+
 const demoModalOpen = ref(false)
 const demoTreeSelected = ref('2')
 const demoTreeExpanded = ref(['1', '3'])
@@ -1479,13 +1710,6 @@ const demoDate = ref('2026-08-15')
 const demoCommandOpen = ref(false)
 const demoTourOpen = ref(false)
 
-const openConfirmModalDemo = () => {
-  propState.variant = 'alert'
-  propState.title = 'Delete Workspace?'
-  propState.content = 'Are you sure you want to delete this workspace? This action cannot be undone.'
-  demoModalOpen.value = true
-}
-
 const propState = reactive({})
 
 watch(() => props.component, (newComp) => {
@@ -1505,6 +1729,128 @@ watch(() => props.component, (newComp) => {
 
 const hasProps = computed(() => {
   return props.component && props.component.props && Object.keys(props.component.props).length > 0
+})
+
+const componentTagMap = {
+  'button': 'IdButton',
+  'liquid-button': 'IdButton',
+  'input': 'IdInput',
+  'textarea': 'IdTextarea',
+  'select': 'IdSelect',
+  'checkbox': 'IdCheckbox',
+  'radio-group': 'IdRadioGroup',
+  'radio': 'IdRadioGroup',
+  'slider': 'IdSlider',
+  'toggle': 'IdToggle',
+  'ios-switch': 'IdToggle',
+  'modal': 'IdModal',
+  'liquid-modal': 'IdModal',
+  'dialog': 'IdDialog',
+  'bottom-sheet': 'IdBottomSheet',
+  'drawer': 'IdDrawer',
+  'dropdown-menu': 'IdDropdownMenu',
+  'popover': 'IdPopover',
+  'tooltip': 'IdTooltip',
+  'tabs': 'IdTabs',
+  'accordion': 'IdAccordion',
+  'segmented-control': 'IdSegmentedControl',
+  'mobile-navbar': 'IdMobileNavbar',
+  'table': 'IdTable',
+  'tag': 'IdTag',
+  'badge': 'IdBadge',
+  'avatar': 'IdAvatar',
+  'avatar-group': 'IdAvatarGroup',
+  'progress': 'IdProgress',
+  'alert': 'IdAlert',
+  'toast': 'IdToast',
+  'card': 'IdCard',
+  'panel': 'IdPanel',
+  'unified-panel': 'IdPanel',
+  'panel-row': 'IdPanelRow',
+  'hero-cta': 'IdHeroCta',
+  'glass-nav': 'IdGlassNav',
+  'live-indicator': 'IdLiveDot',
+  'confirm-dialog': 'IdConfirmDialog',
+  'command-palette': 'IdCommandPalette',
+  'date-picker': 'IdDatePicker',
+  'time-picker': 'IdTimePicker',
+  'tag-input': 'IdTagInput',
+  'rating': 'IdRating',
+  'number-input': 'IdNumberInput',
+  'color-picker': 'IdColorPicker',
+  'pin-input': 'IdPinInput',
+  'file-upload': 'IdFileUpload',
+  'file-tree': 'IdFileTree',
+  'carousel': 'IdCarousel',
+  'dock': 'IdDock',
+  'stat': 'IdStat',
+  'sparkline': 'IdSparkline',
+  'spinner': 'IdSpinner',
+  'skeleton': 'IdSkeleton',
+  'divider': 'IdDivider',
+  'stack': 'IdStack',
+  'stepper': 'IdStepper',
+  'timeline': 'IdTimeline',
+  'grid': 'IdGrid',
+  'bar-chart': 'IdBarChart',
+  'pie-chart': 'IdPieChart',
+  'tour': 'IdTour',
+  'header': 'IdHeader',
+  'footer': 'IdFooter',
+  'banner': 'IdBanner',
+  'separator': 'IdSeparator',
+  'kbd': 'IdKbd',
+  'empty-state': 'IdEmpty'
+}
+
+const cliTargetName = computed(() => {
+  if (!props.component) return 'button'
+  const id = props.component.id
+  if (id === 'liquid-button') return 'button'
+  if (id === 'ios-switch') return 'toggle'
+  if (id === 'liquid-modal') return 'modal'
+  if (id === 'unified-panel') return 'panel'
+  return id || props.component.name?.toLowerCase().replace(/^id/, '') || 'button'
+})
+
+const componentTag = computed(() => {
+  if (!props.component) return 'IdButton'
+  const id = props.component.id
+  if (componentTagMap[id]) return componentTagMap[id]
+  const cleanName = props.component.name ? props.component.name.replace(/[^a-zA-Z0-9]/g, '') : 'Component'
+  return cleanName.startsWith('Id') ? cleanName : 'Id' + cleanName
+})
+
+const activeInstallCommand = computed(() => {
+  const target = cliTargetName.value
+  if (installPkgTab.value === 'cli') {
+    return `npx idesign add ${target}`
+  } else if (installPkgTab.value === 'npm') {
+    return 'npm install @idesign/vue'
+  } else if (installPkgTab.value === 'pnpm') {
+    return 'pnpm add @idesign/vue'
+  } else if (installPkgTab.value === 'yarn') {
+    return 'yarn add @idesign/vue'
+  } else {
+    return 'npx nuxi module add @idesign/vue'
+  }
+})
+
+const activeImportSnippet = computed(() => {
+  const tag = componentTag.value
+  if (installPkgTab.value === 'nuxt') {
+    return `// nuxt.config.ts
+export default defineNuxtConfig({
+  modules: ['@idesign/vue/nuxt']
+})
+
+// In templates, components auto-import with zero manual imports:
+<template>
+  <${tag} />
+</template>`
+  }
+  return `import { ${tag} } from '@idesign/vue'
+import '@idesign/vue/tokens'`
 })
 
 const displayedCode = computed(() => {
@@ -1536,561 +1882,386 @@ const copyCode = () => {
   }, 2000)
 }
 
-const showInstallModal = ref(false)
-const cliCopied = ref(false)
-
-const cliTargetName = computed(() => {
-  if (!props.component) return 'button'
-  return props.component.id || props.component.name?.toLowerCase().replace(/^id/, '') || 'button'
-})
-
-const componentTag = computed(() => {
-  if (!props.component) return 'IdButton'
-  const id = props.component.id
-  if (componentTagMap[id]) return componentTagMap[id]
-  const cleanName = props.component.name ? props.component.name.replace(/[^a-zA-Z0-9]/g, '') : 'Component'
-  return cleanName.startsWith('Id') ? cleanName : 'Id' + cleanName
-})
-
-const copyCliCommand = () => {
-  const cmd = `npx idesign add ${cliTargetName.value}`
-  navigator.clipboard.writeText(cmd)
-  cliCopied.value = true
-  emit('toast', `Copied "${cmd}" to clipboard`)
-  setTimeout(() => {
-    cliCopied.value = false
-  }, 2000)
-}
-
 const copySnippetText = (text, label) => {
   navigator.clipboard.writeText(text)
+  installCopied.value = true
   emit('toast', `Copied ${label} to clipboard`)
-}
-
-const activeCustomTab = ref('slots')
-const custCopied = ref(false)
-
-const copyCustomizationCode = () => {
-  if (!currentCustomizationSnippet.value) return
-  navigator.clipboard.writeText(currentCustomizationSnippet.value)
-  custCopied.value = true
-  emit('toast', `Copied ${activeCustomTab.value} customization to clipboard`)
   setTimeout(() => {
-    custCopied.value = false
+    installCopied.value = false
   }, 2000)
 }
 
-const componentTagMap = {
-  'button': 'IdButton',
-  'input': 'IdInput',
-  'textarea': 'IdTextarea',
-  'select': 'IdSelect',
-  'checkbox': 'IdCheckbox',
-  'radio': 'IdRadioGroup',
-  'slider': 'IdSlider',
-  'toggle': 'IdToggle',
-  'modal': 'IdModal',
-  'dialog': 'IdDialog',
-  'bottom-sheet': 'IdBottomSheet',
-  'drawer': 'IdDrawer',
-  'dropdown-menu': 'IdDropdownMenu',
-  'popover': 'IdPopover',
-  'tooltip': 'IdTooltip',
-  'tabs': 'IdTabs',
-  'accordion': 'IdAccordion',
-  'segmented-control': 'IdSegmentedControl',
-  'mobile-navbar': 'IdMobileNavbar',
-  'table': 'IdTable',
-  'tag': 'IdTag',
-  'badge': 'IdBadge',
-  'avatar': 'IdAvatar',
-  'progress': 'IdProgress',
-  'alert': 'IdAlert',
-  'toast': 'IdToast',
-  'card': 'IdCard',
-  'panel': 'IdPanel',
-  'panel-row': 'IdPanelRow',
-  'hero-cta': 'IdHeroCta',
-  'glass-nav': 'IdGlassNav',
-  'live-indicator': 'IdLiveDot',
-  'confirm-dialog': 'IdConfirmDialog',
-  'command-palette': 'IdCommandPalette',
-  'date-picker': 'IdDatePicker',
-  'file-upload': 'IdFileUpload',
-  'carousel': 'IdCarousel',
-  'dock': 'IdDock',
-  'stat': 'IdStat',
-  'sparkline': 'IdSparkline',
-  'spinner': 'IdSpinner',
-  'skeleton': 'IdSkeleton'
-}
+// ─── 5. Component Props List Aggregator ───
+const activeComponentPropsList = computed(() => {
+  if (!props.component) return []
+  const list = []
+  const compProps = props.component.props || {}
 
-const currentCustomizationSnippet = computed(() => {
-  if (!props.component) return ''
-  const id = props.component.id
-  const tag = componentTagMap[id] || 'Id' + (props.component.name ? props.component.name.replace(/[^a-zA-Z]/g, '') : 'Component')
-  const baseName = tag.replace(/^Id/, '')
+  Object.keys(compProps).forEach(key => {
+    const spec = compProps[key]
+    list.push({
+      name: key,
+      type: spec.type === 'select' ? 'string' : (spec.type || 'any'),
+      required: !!spec.required,
+      default: spec.default,
+      options: spec.options || null,
+      description: spec.description || 'Configurable component property.',
+      example: spec.type === 'boolean' ? `:${key}="true"` : (spec.default ? `${key}="${spec.default}"` : null)
+    })
+  })
 
-  if (activeCustomTab.value === 'props') {
-    // 1. Composition API (Props)
-    if (id === 'input') {
-      return `<script setup>
-import { ref } from 'vue'
-import { IdInput, IdFormField } from '@idesign/vue'
-
-const email = ref('')
-const isInvalid = ref(false)
-const inputRef = ref(null)
-
-const handleFocus = () => {
-  inputRef.value?.focus()
-}
-<\/script>
-
-<template>
-  <IdFormField label="Email Address" required :error="isInvalid ? 'Please enter a valid email' : ''">
-    <IdInput
-      ref="inputRef"
-      v-model="email"
-      size="md"
-      variant="default"
-      placeholder="alex@company.com"
-      clearable
-      @change="isInvalid = !email.includes('@')"
-    />
-  </IdFormField>
-</template>`
-    } else if (id === 'button') {
-      return `<script setup>
-import { ref } from 'vue'
-import { IdButton } from '@idesign/vue'
-
-const isLoading = ref(false)
-
-const handleClick = async () => {
-  isLoading.value = true
-  try {
-    await performAction()
-  } finally {
-    isLoading.value = false
+  // Add standard 'ui' prop if not already defined
+  if (!compProps.ui) {
+    list.push({
+      name: 'ui',
+      type: 'Record<string, string>',
+      required: false,
+      default: '{}',
+      options: null,
+      description: 'Granular slot class overrides for internal component DOM elements.',
+      example: `:ui="{ base: 'custom-class' }"`
+    })
   }
+
+  return list
+})
+
+// ─── 6. Events Documentation Map ───
+const componentEventsMap = {
+  'liquid-button': [
+    { name: 'click', payload: 'MouseEvent', description: 'Emitted when the button is clicked by cursor or keyboard interaction.', trigger: 'User clicks or presses Enter/Space', example: '<IdButton @click="handleClick" />' }
+  ],
+  'button': [
+    { name: 'click', payload: 'MouseEvent', description: 'Emitted when the button is clicked by cursor or keyboard interaction.', trigger: 'User clicks or presses Enter/Space', example: '<IdButton @click="handleClick" />' }
+  ],
+  'input': [
+    { name: 'update:modelValue', payload: 'string | number', description: 'Primary v-model update event emitted on input modification.', trigger: 'Keystroke in input element', example: '<IdInput v-model="searchText" />' },
+    { name: 'change', payload: 'Event', description: 'Emitted when the input commits a change (e.g. on blur).', trigger: 'Input field blur or commit', example: '<IdInput @change="handleChange" />' },
+    { name: 'clear', payload: 'void', description: 'Emitted when the trailing clear icon is clicked.', trigger: 'Clicking clear button', example: '<IdInput clearable @clear="handleClear" />' }
+  ],
+  'textarea': [
+    { name: 'update:modelValue', payload: 'string', description: 'Fired as user inputs text into the textarea.', trigger: 'User typing in textarea', example: '<IdTextarea v-model="notes" />' },
+    { name: 'change', payload: 'Event', description: 'Emitted when textarea commits change on blur.', trigger: 'Textarea blur', example: '<IdTextarea @change="saveDraft" />' }
+  ],
+  'select': [
+    { name: 'update:modelValue', payload: 'string | number | object', description: 'Emitted when a new option is chosen.', trigger: 'Option click or Enter selection', example: '<IdSelect v-model="selected" />' },
+    { name: 'change', payload: 'any', description: 'Emitted on selection change.', trigger: 'Selection committed', example: '<IdSelect @change="onSelectChange" />' },
+    { name: 'clear', payload: 'void', description: 'Emitted when cleared.', trigger: 'Clear icon click', example: '<IdSelect @clear="onClear" />' }
+  ],
+  'checkbox': [
+    { name: 'update:modelValue', payload: 'boolean', description: 'Emitted when the checkbox state toggles.', trigger: 'Checkbox click or Space key', example: '<IdCheckbox v-model="accepted" />' },
+    { name: 'change', payload: 'boolean', description: 'Fired on state change.', trigger: 'State committed', example: '<IdCheckbox @change="onToggle" />' }
+  ],
+  'radio-group': [
+    { name: 'update:modelValue', payload: 'string | number', description: 'Emitted when a new radio option is selected.', trigger: 'Option click or arrow navigation', example: '<IdRadioGroup v-model="plan" />' }
+  ],
+  'slider': [
+    { name: 'update:modelValue', payload: 'number', description: 'Emitted continuously as the slider thumb moves.', trigger: 'Thumb drag or arrow keys', example: '<IdSlider v-model="volume" />' },
+    { name: 'change', payload: 'number', description: 'Emitted when the thumb release commits value.', trigger: 'Mouseup or touchend', example: '<IdSlider @change="onSliderCommit" />' }
+  ],
+  'ios-switch': [
+    { name: 'update:modelValue', payload: 'boolean', description: 'Emitted when the toggle switch state flips.', trigger: 'Switch click or keyboard Space', example: '<IdToggle v-model="notifications" />' }
+  ],
+  'toggle': [
+    { name: 'update:modelValue', payload: 'boolean', description: 'Emitted when the toggle switch state flips.', trigger: 'Switch click or keyboard Space', example: '<IdToggle v-model="notifications" />' }
+  ],
+  'liquid-modal': [
+    { name: 'update:modelValue', payload: 'boolean', description: 'Controls modal open/closed state for v-model.', trigger: 'Close button, backdrop click, or Esc key', example: '<IdModal v-model="isOpen" />' },
+    { name: 'close', payload: 'void', description: 'Emitted when dismissal is requested.', trigger: 'Escape key or Close button', example: '<IdModal @close="handleClose" />' }
+  ],
+  'modal': [
+    { name: 'update:modelValue', payload: 'boolean', description: 'Controls modal open/closed state for v-model.', trigger: 'Close button, backdrop click, or Esc key', example: '<IdModal v-model="isOpen" />' },
+    { name: 'close', payload: 'void', description: 'Emitted when dismissal is requested.', trigger: 'Escape key or Close button', example: '<IdModal @close="handleClose" />' }
+  ],
+  'bottom-sheet': [
+    { name: 'update:modelValue', payload: 'boolean', description: 'Controls sheet visibility state.', trigger: 'Drag dismissal, backdrop click, or Esc', example: '<IdBottomSheet v-model="isSheetOpen" />' }
+  ],
+  'drawer': [
+    { name: 'update:modelValue', payload: 'boolean', description: 'Controls drawer visibility.', trigger: 'Backdrop click or Close trigger', example: '<IdDrawer v-model="isDrawerOpen" />' }
+  ],
+  'tabs': [
+    { name: 'update:modelValue', payload: 'string | number', description: 'Emitted when user navigates to a new tab.', trigger: 'Tab header clicked', example: '<IdTabs v-model="activeTab" />' },
+    { name: 'change', payload: 'string | number', description: 'Emitted on active tab switch.', trigger: 'Tab switch', example: '<IdTabs @change="onTabChange" />' }
+  ],
+  'table': [
+    { name: 'update:selectedRows', payload: 'Array<any>', description: 'Emitted when row selection changes (when selectable is true).', trigger: 'Row checkbox toggle', example: '<IdTable @update:selectedRows="rows => selected = rows" />' },
+    { name: 'sort', payload: '{ column: string, direction: "asc" | "desc" }', description: 'Emitted when sortable header is clicked.', trigger: 'Column header click', example: '<IdTable @sort="handleSort" />' }
+  ],
+  'date-picker': [
+    { name: 'update:modelValue', payload: 'string | Date', description: 'Emitted when date selection is confirmed.', trigger: 'Calendar cell click', example: '<IdDatePicker v-model="date" />' }
+  ],
+  'time-picker': [
+    { name: 'update:modelValue', payload: 'string | Date', description: 'Emitted when time is updated.', trigger: 'Time unit increment or direct input', example: '<IdTimePicker v-model="time" />' }
+  ],
+  'tag-input': [
+    { name: 'update:modelValue', payload: 'string[]', description: 'Emitted when tags are added or removed.', trigger: 'Enter key on valid tag or remove button', example: '<IdTagInput v-model="tags" />' }
+  ],
+  'rating': [
+    { name: 'update:modelValue', payload: 'number', description: 'Emitted when star score is selected.', trigger: 'Star click or key navigation', example: '<IdRating v-model="score" />' }
+  ],
+  'stepper': [
+    { name: 'update:modelValue', payload: 'number', description: 'Emitted when active step changes.', trigger: 'Step item click when clickable=true', example: '<IdStepper v-model="currentStep" />' }
+  ],
+  'pagination': [
+    { name: 'update:modelValue', payload: 'number', description: 'Emitted on page number transition.', trigger: 'Page pill click', example: '<IdPagination v-model="currentPage" :total-pages="10" />' }
+  ],
+  'file-upload': [
+    { name: 'update:modelValue', payload: 'File | File[] | string', description: 'Emitted when valid files are dropped or selected.', trigger: 'File selection or drop', example: '<IdFileUpload v-model="files" />' }
+  ]
 }
-<\/script>
 
-<template>
-  <IdButton
-    variant="primary"
-    size="md"
-    color="blue"
-    :loading="isLoading"
-    @click="handleClick"
-  >
-    Confirm & Save
-  </IdButton>
-</template>`
-    } else if (id === 'modal' || id === 'dialog') {
-      return `<script setup>
-import { ref } from 'vue'
-import { IdDialog, IdButton } from '@idesign/vue'
+const activeComponentEvents = computed(() => {
+  if (!props.component) return []
+  const id = props.component.id
+  return componentEventsMap[id] || []
+})
 
-const isOpen = ref(false)
-<\/script>
+// ─── 7. Component Slots Map ───
+const componentSlotsMap = {
+  'liquid-button': [
+    { name: 'default', purpose: 'Button label text or main inline content.', props: '—', example: '<IdButton>Save Changes</IdButton>' },
+    { name: 'iconLeft', purpose: 'Custom leading icon or graphic element.', props: '—', example: '<template #iconLeft><Zap /></template>' },
+    { name: 'iconRight', purpose: 'Custom trailing icon or indicator.', props: '—', example: '<template #iconRight>→</template>' }
+  ],
+  'button': [
+    { name: 'default', purpose: 'Button label text or main inline content.', props: '—', example: '<IdButton>Save Changes</IdButton>' },
+    { name: 'iconLeft', purpose: 'Custom leading icon or graphic element.', props: '—', example: '<template #iconLeft><Zap /></template>' },
+    { name: 'iconRight', purpose: 'Custom trailing icon or indicator.', props: '—', example: '<template #iconRight>→</template>' }
+  ],
+  'input': [
+    { name: 'prefix', purpose: 'Leading visual icon or search symbol.', props: '—', example: '<template #prefix>🔍</template>' },
+    { name: 'suffix', purpose: 'Trailing action button or keyboard shortcut tag.', props: '—', example: '<template #suffix><kbd>⌘K</kbd></template>' }
+  ],
+  'select': [
+    { name: 'prefix', purpose: 'Leading visual icon in select trigger.', props: '—', example: '<template #prefix>🌐</template>' },
+    { name: 'suffix', purpose: 'Trailing accessory badge or indicator.', props: '—', example: '<template #suffix>▾</template>' }
+  ],
+  'card': [
+    { name: 'header', purpose: 'Card header container override.', props: '—', example: '<template #header><h3>Custom Header</h3></template>' },
+    { name: 'default', purpose: 'Main card body content.', props: '—', example: '<p>Card unified panel body.</p>' },
+    { name: 'actions', purpose: 'Bottom action buttons row.', props: '—', example: '<template #actions><IdButton size="sm">Details</IdButton></template>' },
+    { name: 'footer', purpose: 'Bottom card footer area.', props: '—', example: '<template #footer><span>Updated 2m ago</span></template>' }
+  ],
+  'liquid-modal': [
+    { name: 'title', purpose: 'Custom title heading override.', props: '—', example: '<template #title><h3>Security Settings</h3></template>' },
+    { name: 'subtitle', purpose: 'Custom subtitle paragraph override.', props: '—', example: '<template #subtitle><p>Manage your keys.</p></template>' },
+    { name: 'default', purpose: 'Modal body content and form fields.', props: '—', example: '<p>Modal inner content.</p>' },
+    { name: 'actions', purpose: 'Modal footer action buttons.', props: '—', example: '<template #actions><IdButton variant="primary">Confirm</IdButton></template>' }
+  ],
+  'modal': [
+    { name: 'title', purpose: 'Custom title heading override.', props: '—', example: '<template #title><h3>Security Settings</h3></template>' },
+    { name: 'subtitle', purpose: 'Custom subtitle paragraph override.', props: '—', example: '<template #subtitle><p>Manage your keys.</p></template>' },
+    { name: 'default', purpose: 'Modal body content and form fields.', props: '—', example: '<p>Modal inner content.</p>' },
+    { name: 'actions', purpose: 'Modal footer action buttons.', props: '—', example: '<template #actions><IdButton variant="primary">Confirm</IdButton></template>' }
+  ],
+  'table': [
+    { name: 'col-{key}', purpose: 'Custom cell renderer for specific column key.', props: '{ value, row, index }', example: '<template #col-status="{ value }"><IdTag>{{ value }}</IdTag></template>' },
+    { name: 'actions', purpose: 'Row action button slot.', props: '{ row }', example: '<template #actions="{ row }"><IdButton size="sm">Edit</IdButton></template>' },
+    { name: 'empty', purpose: 'Custom empty search result state.', props: '—', example: '<template #empty><div>No results found.</div></template>' }
+  ],
+  'tabs': [
+    { name: '{tabValue}', purpose: 'Dynamic slot matching tab value for panel content.', props: '—', example: '<template #overview><OverviewPanel /></template>' }
+  ],
+  'dropdown-menu': [
+    { name: 'trigger', purpose: 'Interactive element that summons the dropdown.', props: '—', example: '<template #trigger><IdButton>Actions ▾</IdButton></template>' }
+  ],
+  'popover': [
+    { name: 'trigger', purpose: 'Anchor element that triggers popover bubble.', props: '—', example: '<template #trigger><span>ℹ️</span></template>' },
+    { name: 'default', purpose: 'Popover card body content.', props: '—', example: '<p>Helpful context.</p>' }
+  ]
+}
 
-<template>
-  <IdButton variant="primary" @click="isOpen = true">Open Dialog</IdButton>
+const activeComponentSlots = computed(() => {
+  if (!props.component) return []
+  const id = props.component.id
+  return componentSlotsMap[id] || [
+    { name: 'default', purpose: 'Default slot for nested markup and children.', props: '—', example: `<${componentTag.value}>Slotted content</${componentTag.value}>` }
+  ]
+})
 
-  <IdDialog
-    v-model="isOpen"
-    title="Edit Workspace"
-    subtitle="Configure workspace visibility and members."
-    max-width="540px"
-    size="md"
-    variant="default"
-  >
-    <p>Dialog body content with automatic Escape key handling and focus trapping.</p>
-  </IdDialog>
-</template>`
-    } else if (id === 'tabs' || id === 'segmented-control') {
-      return `<script setup>
-import { ref } from 'vue'
-import { ${tag} } from '@idesign/vue'
+// ─── 7b. Component UI Keys Map ───
+const componentUiKeysMap = {
+  'liquid-button': { root: 'Outer button element', base: 'Interactive pill surface', label: 'Text label span', iconLeft: 'Leading icon container', iconRight: 'Trailing icon container', spinner: 'Loading spinner' },
+  'button': { root: 'Outer button element', base: 'Interactive pill surface', label: 'Text label span', iconLeft: 'Leading icon container', iconRight: 'Trailing icon container', spinner: 'Loading spinner' },
+  'input': { root: 'Outer wrapper container', base: 'Input shell surface', input: 'Native <input> element', prefix: 'Leading icon container', suffix: 'Trailing accessory container', label: 'Label typography', hint: 'Hint text' },
+  'textarea': { root: 'Outer wrapper', base: 'Textarea surface', input: 'Native <textarea> element', label: 'Label typography', hint: 'Counter / hint text' },
+  'select': { root: 'Outer container', base: 'Trigger surface', select: 'Select trigger label', arrow: 'Dropdown chevron', menu: 'Popout option list' },
+  'checkbox': { root: 'Outer wrapper', checkbox: 'Square check box element', label: 'Check label text' },
+  'radio-group': { root: 'Outer fieldset', label: 'Group legend label', option: 'Individual radio item', radio: 'Circular indicator' },
+  'slider': { root: 'Outer wrapper', label: 'Slider label', track: 'Background rail track', fill: 'Filled progress bar', thumb: 'Draggable thumb pill' },
+  'ios-switch': { root: 'Outer wrapper', switch: 'Pill track container', handle: 'Sliding circular handle', label: 'Toggle label text' },
+  'toggle': { root: 'Outer wrapper', switch: 'Pill track container', handle: 'Sliding circular handle', label: 'Toggle label text' },
+  'liquid-modal': { backdrop: 'Frosted blur overlay', surface: 'Modal dialog box', header: 'Title header row', title: 'H3 title text', subtitle: 'Subtitle caption', body: 'Content body', footer: 'Action buttons row', close: 'Close icon button' },
+  'modal': { backdrop: 'Frosted blur overlay', surface: 'Modal dialog box', header: 'Title header row', title: 'H3 title text', subtitle: 'Subtitle caption', body: 'Content body', footer: 'Action buttons row', close: 'Close icon button' },
+  'card': { root: 'Card outer panel', header: 'Header container', title: 'Title typography', body: 'Main card content', footer: 'Footer / actions container' },
+  'table': { root: 'Table wrapper panel', headerBar: 'Top search/title bar', table: 'Native table element', thead: 'Header row container', th: 'Header cell', tr: 'Body row', td: 'Data cell', actions: 'Action cell' },
+  'tabs': { root: 'Tab container', list: 'Pill navigation bar', tab: 'Tab button', active: 'Active indicator pill', panel: 'Active content container' },
+  'bottom-sheet': { backdrop: 'Dim/blur backdrop', surface: 'Sheet surface panel', grabber: 'Top handle bar', header: 'Header area', body: 'Scrollable sheet content' },
+  'tag': { root: 'Tag pill container', label: 'Tag text', iconLeft: 'Leading icon', closeButton: 'Dismiss button' }
+}
 
-const activeTab = ref('overview')
-const tabsList = [
-  { value: 'overview', label: 'Overview' },
-  { value: 'analytics', label: 'Analytics' },
-  { value: 'settings', label: 'Settings' }
-]
-<\/script>
+const activeComponentUiKeys = computed(() => {
+  if (!props.component) return { root: 'Root element', base: 'Surface container' }
+  const id = props.component.id
+  return componentUiKeysMap[id] || { root: 'Root component element', base: 'Primary surface container', body: 'Main content container' }
+})
 
-<template>
+const inlineUiExampleSnippet = computed(() => {
+  const tag = componentTag.value
+  const keys = Object.keys(activeComponentUiKeys.value).slice(0, 3)
+  const entries = keys.map(k => `    ${k}: 'custom-${k}-class'`).join(',\n')
+  return `<template>
   <${tag}
-    v-model="activeTab"
-    :tabs="tabsList"
-    size="md"
-    variant="pill"
-    @change="val => console.log('Tab changed:', val)"
+    :ui="{
+${entries}
+    }"
   />
 </template>`
-    } else if (id === 'table') {
-      return `<script setup>
-import { ref } from 'vue'
-import { IdTable } from '@idesign/vue'
+})
 
-const columns = [
-  { key: 'name', label: 'User Name', sortable: true },
-  { key: 'role', label: 'Role' },
-  { key: 'status', label: 'Status' }
-]
+const globalThemeConfigSnippet = computed(() => {
+  const baseName = componentTag.value.replace(/^Id/, '')
+  const id = props.component?.id || 'button'
+  const keys = Object.keys(activeComponentUiKeys.value)
+  const slotsConfig = keys.map(k => `        ${k}: 'id-${id}-${k}'`).join(',\n')
 
-const users = ref([
-  { name: 'Sarah Chen', role: 'Staff Engineer', status: 'Active' },
-  { name: 'Alex Rivera', role: 'Design Lead', status: 'Active' }
-])
-<\/script>
-
-<template>
-  <IdTable
-    :columns="columns"
-    :data="users"
-    variant="default"
-    searchable
-    selectable
-    hoverable
-  />
-</template>`
-    } else {
-      return `<script setup>
-import { ref } from 'vue'
-import { ${tag} } from '@idesign/vue'
-
-const modelValue = ref(null)
-<\/script>
-
-<template>
-  <${tag}
-    v-model="modelValue"
-    size="md"
-    variant="default"
-    @change="val => console.log('Value changed:', val)"
-  />
-</template>`
-    }
-  } else if (activeCustomTab.value === 'slots') {
-    // 2. Slots (Accurate dynamic slots mapping)
-    const componentSlotsTemplates = {
-      button: `<template>
-  <IdButton variant="primary">
-    <!-- ⚡ Leading Icon Slot -->
-    <template #iconLeft>
-      <span>🌟</span>
-    </template>
-
-    <!-- ✍️ Default Slot (Label text) -->
-    <span>Get Started</span>
-
-    <!-- ⚡ Trailing Icon Slot -->
-    <template #iconRight>
-      <span>→</span>
-    </template>
-  </IdButton>
-</template>`,
-      input: `<template>
-  <IdInput v-model="searchQuery" placeholder="Search components...">
-    <!-- 🔍 Leading Icon Slot -->
-    <template #prefix>
-      <span>🔍</span>
-    </template>
-
-    <!-- ⌨️ Trailing Action Slot -->
-    <template #suffix>
-      <kbd>⌘K</kbd>
-    </template>
-  </IdInput>
-</template>`,
-      select: `<template>
-  <IdSelect v-model="selectedValue" :options="['US', 'UK', 'CA']">
-    <!-- 🔍 Leading Icon Slot -->
-    <template #prefix>
-      <span>🌐</span>
-    </template>
-
-    <!-- ⌨️ Trailing Action Slot -->
-    <template #suffix>
-      <span>Value: {{ selectedValue }}</span>
-    </template>
-  </IdSelect>
-</template>`,
-      card: `<template>
-  <IdCard>
-    <!-- 📋 Card Header Override Slot -->
-    <template #header>
-      <h3>Dedicated Cluster</h3>
-      <p>Manage raw spatial server operations.</p>
-    </template>
-
-    <!-- ✍️ Default Slot (Body content) -->
-    <p>Unified card panel body text rendered dynamically.</p>
-
-    <!-- ⚙️ Card Footer/Actions Slot -->
-    <template #footer>
-      <IdButton variant="secondary" size="sm">Details</IdButton>
-      <IdButton variant="primary" size="sm">Launch Node</IdButton>
-    </template>
-  </IdCard>
-</template>`,
-      modal: `<template>
-  <IdModal v-model="isOpen" title="Save Changes">
-    <!-- 🔒 Custom Header Slot Override (Optional) -->
-    <!-- Or customize only #title and #subtitle below -->
-    <template #title>
-      <h3>Custom Modal Title</h3>
-    </template>
-    
-    <template #subtitle>
-      <p>Custom subtitle layout details.</p>
-    </template>
-
-    <!-- ✍️ Default Slot (Modal Body Content) -->
-    <p>Form fields or configuration details go here.</p>
-
-    <!-- ⚙️ Modal Actions/Footer Slot -->
-    <template #actions>
-      <IdButton variant="secondary" @click="isOpen = false">Cancel</IdButton>
-      <IdButton variant="primary" @click="save">Save Changes</IdButton>
-    </template>
-  </IdModal>
-</template>`,
-      dialog: `<template>
-  <IdDialog v-model="isOpen" title="Confirmation">
-    <!-- 🔒 Custom Header Slot Override (Optional) -->
-    <template #title>
-      <h3>Delete Account</h3>
-    </template>
-
-    <!-- ✍️ Default Slot (Dialog Body Content) -->
-    <p>Are you sure you want to delete this workspace? This action is irreversible.</p>
-
-    <!-- ⚙️ Dialog Actions/Footer Slot -->
-    <template #footer>
-      <IdButton variant="secondary" @click="isOpen = false">Cancel</IdButton>
-      <IdButton variant="danger" @click="deleteAccount">Delete</IdButton>
-    </template>
-  </IdDialog>
-</template>`,
-      drawer: `<template>
-  <IdDrawer v-model="isOpen" title="Drawer Menu">
-    <!-- 📋 Header Title Slot Override -->
-    <template #title>
-      <h3>Advanced Settings</h3>
-    </template>
-
-    <!-- 📋 Header Description Slot Override -->
-    <template #description>
-      <p>Configure hardware options and settings.</p>
-    </template>
-
-    <!-- ✍️ Default Slot (Drawer Body Content) -->
-    <div class="space-y-4">
-      <p>First settings configuration row.</p>
-      <p>Second settings configuration row.</p>
-    </div>
-  </IdDrawer>
-</template>`,
-      'bottom-sheet': `<template>
-  <IdBottomSheet v-model="isOpen" title="Choose Option">
-    <!-- 📋 Header Title Slot Override -->
-    <template #title>
-      <h3>Select Export Mode</h3>
-    </template>
-
-    <!-- ✍️ Default Slot (Sheet Body Content) -->
-    <div class="sheet-actions">
-      <button>Export as CSV</button>
-      <button>Export as PDF</button>
-    </div>
-  </IdBottomSheet>
-</template>`,
-      table: `<template>
-  <IdTable :columns="columns" :data="users">
-    <!-- Custom Column Cell Render (#col-{key}) -->
-    <template #col-status="{ value }">
-      <IdTag :variant="value === 'Active' ? 'success' : 'warning'">
-        {{ value }}
-      </IdTag>
-    </template>
-
-    <!-- Row Actions Column Override -->
-    <template #actions="{ row }">
-      <IdButton size="xs" variant="ghost">Edit</IdButton>
-    </template>
-
-    <!-- Custom Empty State Slot Override -->
-    <template #empty>
-      <div class="text-center py-8">No results match your search query.</div>
-    </template>
-  </IdTable>
-</template>`,
-      tabs: `<template>
-  <IdTabs v-model="activeTab" :tabs="tabOptions">
-    <!-- ✍️ Slotted content per tab value (using slot matching tab value) -->
-    <template #overview>
-      <p>Overview dashboard content panel.</p>
-    </template>
-    <template #settings>
-      <p>System settings configuration form.</p>
-    </template>
-  </IdTabs>
-</template>`,
-      accordion: `<template>
-  <IdAccordion :items="accordionItems">
-    <!-- ✍️ Custom Item Content Overrides by Index -->
-    <template #item-0>
-      <p>Custom HTML or media rendered inside the first accordion panel.</p>
-    </template>
-  </IdAccordion>
-</template>`,
-      'dropdown-menu': `<template>
-  <IdDropdownMenu :items="menuItems">
-    <!-- 🖱️ Trigger Slot (Element that toggles the dropdown) -->
-    <template #trigger>
-      <IdButton variant="secondary">Options ▾</IdButton>
-    </template>
-  </IdDropdownMenu>
-</template>`,
-      popover: `<template>
-  <IdPopover title="Info Bubble">
-    <!-- 🖱️ Trigger Slot (Anchor element) -->
-    <template #trigger>
-      <span class="info-icon">❓</span>
-    </template>
-
-    <!-- ✍️ Default Slot (Popover content) -->
-    <p>Provides additional context for the setting.</p>
-  </IdPopover>
-</template>`,
-      banner: `<template>
-  <IdBanner message="Maintenance window tomorrow.">
-    <!-- 🔔 Custom Leading Icon Slot -->
-    <template #icon>
-      <span>📢</span>
-    </template>
-
-    <!-- ⚡ Custom Action Slot -->
-    <template #action>
-      <IdButton size="sm" variant="outline">Learn More</IdButton>
-    </template>
-  </IdBanner>
-</template>`,
-      'empty-state': `<template>
-  <IdEmpty title="No Active Subscriptions" description="Subscribe to a plan to start analytics.">
-    <!-- 🔔 Custom Graphics/Icon Slot override -->
-    <template #icon>
-      <span>💎</span>
-    </template>
-
-    <!-- ⚡ Custom Action Button Slot override -->
-    <template #action>
-      <IdButton variant="primary">Choose Plan</IdButton>
-    </template>
-  </IdEmpty>
-</template>`
-    }
-
-    if (componentSlotsTemplates[id]) {
-      return componentSlotsTemplates[id]
-    }
-
-    return `<template>
-  <${tag}>
-    <!-- ✍️ Default Slot -->
-    <span>Slotted content inside ${tag}</span>
-  </${tag}>
-</template>`
-  } else {
-    // 3. Theme (Global UI Config - Dynamic component-specific customizable keys mapping)
-    const componentUiKeysMap = {
-      button: ['base', 'label', 'iconLeft', 'iconRight', 'spinner'],
-      'segmented-control': ['base', 'list', 'item', 'active'],
-      'mobile-navbar': ['base', 'item', 'active', 'icon', 'label', 'badge'],
-      input: ['base', 'label', 'input', 'prefix', 'suffix', 'hint', 'error'],
-      textarea: ['base', 'label', 'input', 'hint'],
-      select: ['base', 'label', 'select', 'hint', 'arrow'],
-      checkbox: ['base', 'checkbox', 'label'],
-      'radio-group': ['base', 'label', 'optionsContainer', 'option', 'radio', 'optionLabel'],
-      toggle: ['base', 'switch', 'handle', 'label'],
-      slider: ['base', 'label', 'track', 'fill', 'thumb', 'value'],
-      tag: ['base', 'label', 'iconLeft', 'iconRight', 'closeButton'],
-      badge: ['base', 'badge'],
-      alert: ['base', 'icon', 'title', 'description', 'closeButton'],
-      progress: ['base', 'label', 'value', 'track', 'fill'],
-      spinner: ['base', 'spinner', 'label'],
-      avatar: ['base', 'avatar', 'image', 'fallback', 'status'],
-      skeleton: ['base'],
-      panel: ['base'],
-      card: ['base', 'header', 'title', 'description', 'body', 'footer'],
-      modal: ['backdrop', 'surface', 'header', 'title', 'subtitle', 'close', 'closeButton', 'body', 'footer'],
-      dialog: ['backdrop', 'surface', 'header', 'title', 'subtitle', 'close', 'closeButton', 'body', 'footer'],
-      divider: ['base'],
-      stack: ['base'],
-      tooltip: ['base', 'tooltip', 'text'],
-      'dropdown-menu': ['base', 'trigger', 'menu', 'item', 'label', 'shortcut'],
-      drawer: ['backdrop', 'surface', 'header', 'title', 'description', 'desc', 'close', 'closeButton', 'body', 'footer'],
-      'bottom-sheet': ['backdrop', 'surface', 'grabber', 'handle', 'header', 'title', 'description', 'desc', 'body', 'footer'],
-      table: ['base', 'headerBar', 'title', 'searchBox', 'searchInput', 'table', 'thead', 'tr', 'th', 'tbody', 'td', 'actions', 'checkbox'],
-      tabs: ['base', 'list', 'tab', 'trigger', 'active', 'indicator', 'panel'],
-      accordion: ['base', 'item', 'trigger', 'title', 'chevron', 'content', 'body'],
-      'avatar-group': ['base', 'container', 'item', 'overflow', 'label'],
-      breadcrumbs: ['base', 'list', 'item', 'sep', 'separator', 'link', 'current'],
-      pagination: ['base', 'button', 'active'],
-      banner: ['base', 'inner', 'message', 'action', 'closeButton'],
-      popover: ['base', 'trigger', 'card', 'content', 'title', 'subtitle', 'body'],
-      'confirm-dialog': ['base', 'surface', 'header', 'title', 'description', 'content', 'actions', 'cancel', 'confirm'],
-      form: ['base'],
-      'form-field': ['base', 'label', 'description', 'control', 'fieldControl', 'message'],
-      'form-group': ['base'],
-      'form-actions': ['base'],
-      kbd: ['base', 'key', 'kbdKey'],
-      separator: ['base', 'line', 'content', 'label'],
-      'empty-state': ['base', 'iconBox', 'icon', 'title', 'description', 'desc', 'action']
-    }
-
-    const uiKeys = componentUiKeysMap[id] || ['base']
-    const uiKeysObjStr = uiKeys.map(k => `        ${k}: 'custom-${id}-${k}-class'`).join(',\n')
-    const localUiPropStr = uiKeys.slice(0, 2).map(k => `${k}: 'my-custom-${k}'`).join(', ')
-
-    return `// ─── 1. GLOBAL OVERRIDES (main.js / app.js) ───
-import { createApp } from 'vue'
-import { createIdesign } from '@idesign/vue'
-import App from './App.vue'
-
-const app = createApp(App)
-
-app.use(createIdesign({
+  return `// nuxt.config.ts or app.config.ts
+export default defineAppConfig({
   ui: {
-    components: {
-      ${baseName}: {
-        // Default properties for all instances
-        defaultProps: {
-          size: 'md'
+    ${baseName}: {
+      slots: {
+${slotsConfig}
+      },
+      variants: {
+        variant: {
+          default: 'bg-surface shadow-card',
+          glass: 'bg-glass backdrop-blur-md'
         },
-        // Component-specific customizable key classes
-        ui: {
-${uiKeysObjStr}
+        size: {
+          sm: 'text-xs p-2',
+          md: 'text-sm p-3',
+          lg: 'text-base p-4'
         }
+      },
+      compoundVariants: [
+        {
+          variant: 'glass',
+          size: 'lg',
+          class: 'shadow-lift'
+        }
+      ],
+      defaultVariants: {
+        variant: 'default',
+        size: 'md'
       }
     }
   }
-}))
+})`
+})
 
-app.mount('#app')
-
-// ─── 2. LOCAL PROP CUSTOMIZATION (SFC File) ───
-<!-- Customize per-part styles locally on this instance -->
-<template>
-  <${tag} :ui="{ ${localUiPropStr} }" />
-</template>`
+// ─── 8. Accessibility Specs Map ───
+const componentA11yMap = {
+  'liquid-button': {
+    keyboard: 'Focusable via Tab key. Activated with Enter or Space.',
+    aria: 'Uses native <button> with role="button". Inherits aria-disabled and aria-label.',
+    focus: 'Visible high-contrast focus ring using --accent color (outline-offset: 2px).',
+    screenReader: 'Screen readers announce button text and dynamic loading spinner status.'
+  },
+  'button': {
+    keyboard: 'Focusable via Tab key. Activated with Enter or Space.',
+    aria: 'Uses native <button> with role="button". Inherits aria-disabled and aria-label.',
+    focus: 'Visible high-contrast focus ring using --accent color (outline-offset: 2px).',
+    screenReader: 'Screen readers announce button text and dynamic loading spinner status.'
+  },
+  'input': {
+    keyboard: 'Direct text entry. Clearable trigger responds to Enter and Space.',
+    aria: 'role="textbox" with aria-invalid when validation errors are present, aria-describedby for hints.',
+    focus: 'Active input glows with Liquid Glass focus ring, maintaining contrast ratio > 4.5:1.',
+    screenReader: 'Associated <label> read automatically upon focus.'
+  },
+  'select': {
+    keyboard: 'ArrowUp/ArrowDown to navigate options. Enter/Space to open or commit selection. Esc to dismiss.',
+    aria: 'role="combobox" with aria-expanded, aria-haspopup="listbox", aria-activedescendant.',
+    focus: 'Focus stays managed within the active trigger and menu items.',
+    screenReader: 'Announces active option position e.g. "Option 2 of 5 selected".'
+  },
+  'liquid-modal': {
+    keyboard: 'Escape key instantly dismisses dialog. Tab cycle is trapped within modal boundaries.',
+    aria: 'role="dialog" or role="alertdialog" with aria-modal="true" and aria-labelledby="title".',
+    focus: 'Focus shifts automatically to first interactive element on open; returns to trigger on close.',
+    screenReader: 'Background page elements receive aria-hidden="true" when modal is mounted.'
+  },
+  'modal': {
+    keyboard: 'Escape key instantly dismisses dialog. Tab cycle is trapped within modal boundaries.',
+    aria: 'role="dialog" or role="alertdialog" with aria-modal="true" and aria-labelledby="title".',
+    focus: 'Focus shifts automatically to first interactive element on open; returns to trigger on close.',
+    screenReader: 'Background page elements receive aria-hidden="true" when modal is mounted.'
+  },
+  'tabs': {
+    keyboard: 'ArrowLeft/ArrowRight to move active tab focus; Enter/Space to select.',
+    aria: 'role="tablist" on container, role="tab" with aria-selected="true/false" on buttons.',
+    focus: 'Only the active tab is tab-focusable (roving tabindex).',
+    screenReader: 'Announces tab title, selection state, and panel associations.'
+  },
+  'table': {
+    keyboard: 'Tab cycles between sortable headers and row action buttons.',
+    aria: 'role="table" with proper <caption>, <th> scope="col", and aria-sort="ascending/descending".',
+    focus: 'Interactive controls inside cells maintain standard keyboard focus rings.',
+    screenReader: 'Headers are voiced alongside cell values for clear contextual navigation.'
   }
+}
+
+const activeComponentA11y = computed(() => {
+  if (!props.component) {
+    return {
+      keyboard: 'Standard keyboard navigation supported (Tab, Enter, Space, Escape).',
+      aria: 'Semantic HTML5 roles and attributes applied automatically.',
+      focus: 'High-contrast visible focus indicators comply with WCAG 2.4.7.',
+      screenReader: 'Semantic markup ensures natural screen-reader announcements.'
+    }
+  }
+  const id = props.component.id
+  return componentA11yMap[id] || {
+    keyboard: 'Standard keyboard navigation supported (Tab, Enter, Space, Escape).',
+    aria: 'Semantic HTML5 roles and attributes applied automatically.',
+    focus: 'High-contrast visible focus indicators comply with WCAG 2.4.7.',
+    screenReader: 'Semantic markup ensures natural screen-reader announcements.'
+  }
+})
+
+// ─── 9. Related Components Map ───
+const componentRelatedMap = {
+  'liquid-button': [
+    { id: 'button', name: 'Button', category: 'Buttons', tag: '<IdButton />' },
+    { id: 'segmented-control', name: 'Segmented Control', category: 'Navigation', tag: '<IdSegmentedControl />' },
+    { id: 'tag', name: 'Tag Badge', category: 'Indicators', tag: '<IdTag />' }
+  ],
+  'input': [
+    { id: 'textarea', name: 'Textarea', category: 'Inputs', tag: '<IdTextarea />' },
+    { id: 'select', name: 'Select Dropdown', category: 'Inputs', tag: '<IdSelect />' },
+    { id: 'tag-input', name: 'Tag Input', category: 'Inputs', tag: '<IdTagInput />' }
+  ],
+  'modal': [
+    { id: 'confirm-dialog', name: 'Confirm Dialog', category: 'Overlays', tag: '<IdConfirmDialog />' },
+    { id: 'bottom-sheet', name: 'Bottom Sheet', category: 'Overlays', tag: '<IdBottomSheet />' },
+    { id: 'drawer', name: 'Drawer', category: 'Overlays', tag: '<IdDrawer />' }
+  ],
+  'liquid-modal': [
+    { id: 'confirm-dialog', name: 'Confirm Dialog', category: 'Overlays', tag: '<IdConfirmDialog />' },
+    { id: 'bottom-sheet', name: 'Bottom Sheet', category: 'Overlays', tag: '<IdBottomSheet />' },
+    { id: 'drawer', name: 'Drawer', category: 'Overlays', tag: '<IdDrawer />' }
+  ],
+  'tabs': [
+    { id: 'segmented-control', name: 'Segmented Control', category: 'Navigation', tag: '<IdSegmentedControl />' },
+    { id: 'stepper', name: 'Stepper Progress', category: 'Navigation', tag: '<IdStepper />' },
+    { id: 'breadcrumbs', name: 'Breadcrumbs', category: 'Navigation', tag: '<IdBreadcrumbs />' }
+  ]
+}
+
+const activeRelatedComponents = computed(() => {
+  if (!props.component) return []
+  const id = props.component.id
+  return componentRelatedMap[id] || []
 })
 </script>
 
@@ -2098,14 +2269,22 @@ app.mount('#app')
 .playground-layout {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 28px;
 }
+
+/* 1. Playground Header */
+.playground-header {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
 .header-meta {
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-bottom: 6px;
 }
+
 .category-tag {
   font-size: 11px;
   font-weight: 700;
@@ -2113,6 +2292,7 @@ app.mount('#app')
   color: var(--text-3);
   letter-spacing: 0.08em;
 }
+
 .vue-tag {
   font-size: 11px;
   font-weight: 600;
@@ -2121,178 +2301,149 @@ app.mount('#app')
   padding: 2px 8px;
   border-radius: var(--r-pill);
 }
+
 .component-desc {
-  font-size: 14px;
+  font-size: 14.5px;
   color: var(--text-2);
-  line-height: 1.5;
+  line-height: 1.55;
+  letter-spacing: -0.01em;
+  margin: 0;
 }
 
-.quick-install-bar {
+/* Section Headings */
+.playground-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.playground-section-heading {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  margin-top: 14px;
-  padding-top: 12px;
-  border-top: 1px solid var(--hairline);
   flex-wrap: wrap;
 }
 
-.install-pill {
+.heading-left {
   display: inline-flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  background: var(--hover, #fbfbfd);
-  border: 1px solid var(--hairline, rgba(0, 0, 0, 0.07));
-  border-radius: var(--r-pill, 999px);
-  padding: 3px 4px 3px 12px;
+  gap: 8px;
+}
+
+.section-num {
   font-family: var(--mono);
-  cursor: pointer;
-  transition: all 0.2s var(--ease-spring);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
-  user-select: none;
-  max-width: 100%;
-}
-
-.install-pill:hover {
-  background: var(--surface, #ffffff);
-  border-color: rgba(0, 113, 227, 0.35);
-  box-shadow: 0 2px 8px rgba(0, 113, 227, 0.08);
-  transform: translateY(-1px);
-}
-
-.install-pill:active {
-  transform: scale(0.98);
-}
-
-.install-pill.is-copied {
-  border-color: rgba(48, 209, 88, 0.4);
-  background: rgba(48, 209, 88, 0.06);
-}
-
-.pill-leading {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  min-width: 0;
-}
-
-.cli-prompt {
-  color: var(--accent, #0071e3);
-  font-weight: 700;
-  font-size: 12px;
-  user-select: none;
-}
-
-.cli-cmd {
-  font-family: var(--mono);
-  font-size: 12px;
-  color: var(--text, #1d1d1f);
-  font-weight: 550;
-  letter-spacing: -0.01em;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.mini-copy-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  background: var(--surface, #ffffff);
-  border: 1px solid var(--hairline, rgba(0, 0, 0, 0.07));
-  color: var(--text-2, #6e6e73);
-  padding: 3px 8px;
-  border-radius: var(--r-pill, 999px);
   font-size: 11px;
-  font-family: var(--font);
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.15s ease;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
-  flex-shrink: 0;
+  font-weight: 700;
+  color: var(--accent);
+  background: rgba(0, 113, 227, 0.08);
+  padding: 1px 6px;
+  border-radius: var(--r-chip, 6px);
 }
 
-.install-pill:hover .mini-copy-btn {
-  color: var(--text, #1d1d1f);
-  background: #ffffff;
-  border-color: var(--faint, #d2d2d7);
+.section-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: var(--tracking-tight, -0.02em);
+  margin: 0;
 }
 
-.install-pill.is-copied .mini-copy-btn {
-  background: var(--live, #30d158);
-  color: #ffffff;
-  border-color: transparent;
+.spec-badge-count {
+  font-size: 11px;
+  font-weight: 650;
+  color: var(--text-3);
+  background: var(--hover);
+  border: 1px solid var(--hairline);
+  padding: 2px 8px;
+  border-radius: var(--r-pill);
+  font-family: var(--mono);
 }
 
-.copy-icon {
-  flex-shrink: 0;
+.a11y-badge {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--live, #30d158);
+  background: rgba(48, 209, 88, 0.1);
+  padding: 2px 8px;
+  border-radius: var(--r-pill);
+  letter-spacing: 0.02em;
 }
 
-.copy-label {
-  line-height: 1;
-}
-
-.install-guide-btn {
+/* Mode toggles / Segmented Control Pills */
+.view-mode-toggles {
   display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: transparent;
-  border: 1px solid transparent;
-  color: var(--accent-link, #0066cc);
-  font-size: 12.5px;
-  font-weight: 600;
-  cursor: pointer;
-  padding: 5px 10px;
+  gap: 2px;
+  background: var(--track, #e8e8ed);
+  padding: 3px;
   border-radius: var(--r-pill, 999px);
-  transition: all 0.2s var(--ease-spring);
+  border: 1px solid var(--hairline, rgba(0, 0, 0, 0.07));
+  transition: all 0.2s ease;
+}
+
+.mode-btn {
+  border: 1px solid transparent;
+  font-size: 11.5px;
+  font-weight: 550;
+  padding: 3px 10px;
+  border-radius: var(--r-pill, 999px);
+  background: transparent;
+  color: var(--text-2, #6e6e73);
+  cursor: pointer;
+  transition: all 0.18s cubic-bezier(0.32, 0.72, 0, 1);
   user-select: none;
-  white-space: nowrap;
 }
 
-.install-guide-btn:hover {
-  background: rgba(0, 113, 227, 0.07);
-  color: var(--accent, #0071e3);
-  border-color: rgba(0, 113, 227, 0.15);
+.mode-btn:hover {
+  color: var(--text, #1d1d1f);
 }
 
-.install-guide-btn:active {
-  transform: scale(0.97);
+.mode-btn.active {
+  background: var(--surface, #ffffff);
+  color: var(--text, #1d1d1f);
+  font-weight: 650;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  border-color: rgba(0, 0, 0, 0.04);
 }
 
-.guide-arrow-icon {
-  transition: transform 0.2s var(--ease-spring);
-}
-
-.install-guide-btn:hover .guide-arrow-icon {
-  transform: translateX(3px);
-}
-
-:root.dark .install-pill {
-  background: #1c1c1e;
+:root.dark .view-mode-toggles,
+[data-theme="dark"] .view-mode-toggles,
+.dark .view-mode-toggles {
+  background: #252528;
   border-color: rgba(255, 255, 255, 0.10);
 }
-:root.dark .install-pill:hover {
-  background: #2c2c2e;
-  border-color: var(--accent);
-}
-:root.dark .cli-cmd {
-  color: #f5f5f7;
-}
-:root.dark .mini-copy-btn {
-  background: #2c2c2e;
-  border-color: rgba(255, 255, 255, 0.12);
-  color: #d1d1d6;
+
+:root.dark .mode-btn,
+[data-theme="dark"] .mode-btn,
+.dark .mode-btn {
+  color: #a1a1a6;
 }
 
+:root.dark .mode-btn:hover,
+[data-theme="dark"] .mode-btn:hover,
+.dark .mode-btn:hover {
+  color: #f5f5f7;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+:root.dark .mode-btn.active,
+[data-theme="dark"] .mode-btn.active,
+.dark .mode-btn.active {
+  background: #3a3a3c;
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.14);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+/* 2. Preview Stage */
 .preview-stage {
   border: 1px solid var(--hairline);
   border-radius: var(--r-card);
-  overflow: visible;
+  overflow: hidden;
   background: var(--surface);
-  position: relative;
+  box-shadow: var(--sh-card);
 }
+
 .stage-bar {
   display: flex;
   align-items: center;
@@ -2301,35 +2452,13 @@ app.mount('#app')
   background: rgba(0, 0, 0, 0.02);
   border-bottom: 1px solid var(--hairline);
 }
+
 .stage-title {
   font-size: 12px;
   font-weight: 650;
   color: var(--text-3);
   text-transform: uppercase;
   letter-spacing: 0.08em;
-}
-.view-mode-toggles {
-  display: flex;
-  gap: 4px;
-  background: rgba(0, 0, 0, 0.05);
-  padding: 2px;
-  border-radius: var(--r-pill);
-}
-.mode-btn {
-  border: none;
-  font-size: 11.5px;
-  font-weight: 550;
-  padding: 3px 10px;
-  border-radius: var(--r-pill);
-  background: transparent;
-  color: var(--text-2);
-  cursor: pointer;
-}
-.mode-btn.active {
-  background: var(--surface);
-  color: var(--text);
-  font-weight: 600;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
 }
 
 .canvas-area {
@@ -2338,13 +2467,49 @@ app.mount('#app')
   align-items: center;
   justify-content: center;
   padding: 30px 20px;
-  transition: background 0.2s ease;
+  transition: background 0.2s ease, color 0.2s ease;
 }
-.canvas-area.bg-light {
-  background: var(--bg);
+
+.canvas-area.bg-light,
+.canvas-area[data-theme="light"] {
+  --bg:                  #f5f5f7;
+  --surface:             #ffffff;
+  --surface-elevated:    #ffffff;
+  --hover:               #fbfbfd;
+  --text:                #1d1d1f;
+  --text-body:           #424245;
+  --text-2:              #6e6e73;
+  --text-3:              #86868b;
+  --text-4:              #aeaeb2;
+  --faint:               #d2d2d7;
+  --hairline:            rgba(0, 0, 0, 0.07);
+  --track:               #e8e8ed;
+  --accent:              #0071e3;
+  --sh-card:             0 1px 2px rgba(0, 0, 0, 0.04), 0 8px 24px rgba(0, 0, 0, 0.05);
+  --sh-panel:            0 1px 3px rgba(0, 0, 0, 0.05), 0 14px 40px rgba(0, 0, 0, 0.05);
+  background:            #f5f5f7;
+  color:                 #1d1d1f;
 }
-.canvas-area.bg-dark {
-  background: #000000;
+
+.canvas-area.bg-dark,
+.canvas-area[data-theme="dark"] {
+  --bg:                  #000000;
+  --surface:             #1c1c1e;
+  --surface-elevated:    #2c2c2e;
+  --hover:               #2c2c2e;
+  --text:                #f5f5f7;
+  --text-body:           #d1d1d6;
+  --text-2:              #98989d;
+  --text-3:              #6e6e73;
+  --text-4:              #48484a;
+  --faint:               #3a3a3c;
+  --hairline:            rgba(255, 255, 255, 0.12);
+  --track:               #3a3a3c;
+  --accent:              #0a84ff;
+  --sh-card:             0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.4);
+  --sh-panel:            0 1px 3px rgba(0, 0, 0, 0.3), 0 14px 40px rgba(0, 0, 0, 0.35);
+  background:            #000000;
+  color:                 #f5f5f7;
 }
 
 .controls-panel {
@@ -2352,28 +2517,33 @@ app.mount('#app')
   background: var(--hover);
   border-top: 1px solid var(--hairline);
 }
+
 .controls-title {
   font-size: 12px;
   font-weight: 650;
   color: var(--text-2);
   margin-bottom: 12px;
 }
+
 .props-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 12px;
 }
+
 .prop-item {
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
+
 .prop-label {
   font-size: 12px;
   font-weight: 600;
   color: var(--text-3);
   font-family: var(--mono);
 }
+
 .prop-input, .prop-select {
   height: 34px;
   border-radius: 8px;
@@ -2386,13 +2556,152 @@ app.mount('#app')
   outline: none;
 }
 
+/* 3. Installation Panel */
+.install-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.terminal-block {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  background: #1d1d1f;
+  color: #ffffff;
+  padding: 9px 12px 9px 14px;
+  border-radius: var(--r-card, 12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+}
+
+.code-line {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--mono);
+  font-size: 12.5px;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.prompt-sym {
+  color: #30d158;
+  font-weight: 700;
+  user-select: none;
+}
+
+.code-line code {
+  font-family: var(--mono);
+  color: #f5f5f7;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.terminal-copy-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(255, 255, 255, 0.14);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  font-family: var(--font);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: var(--r-pill);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.15s ease;
+}
+
+.terminal-copy-btn:hover {
+  background: var(--accent);
+  border-color: transparent;
+}
+
+.install-sub-snippet {
+  background: var(--surface);
+  border: 1px solid var(--hairline);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.sub-snippet-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 7px 12px;
+  background: rgba(0,0,0,0.02);
+  border-bottom: 1px solid var(--hairline);
+}
+
+.sub-snippet-label {
+  font-size: 11px;
+  font-weight: 650;
+  color: var(--text-3);
+  font-family: var(--mono);
+}
+
+.sub-copy-btn {
+  background: transparent;
+  border: none;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--accent);
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.sub-copy-btn:hover {
+  background: rgba(0, 113, 227, 0.08);
+}
+
+.sub-snippet-code {
+  margin: 0;
+  padding: 10px 14px;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--text);
+  line-height: 1.45;
+  background: var(--surface);
+  overflow-x: auto;
+}
+
+.cli-info-note {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+  color: var(--text-2);
+  background: var(--hover);
+  border: 1px solid var(--hairline);
+  padding: 8px 12px;
+  border-radius: 10px;
+}
+
+.cli-info-note code {
+  font-family: var(--mono);
+  color: var(--text);
+  background: var(--surface);
+  padding: 1px 5px;
+  border-radius: 4px;
+  border: 1px solid var(--hairline);
+}
+
+/* 4. Code Inspector */
 .code-inspector {
   border: 1px solid var(--hairline);
   border-radius: var(--r-card);
   overflow: hidden;
   background: #1d1d1f;
   color: #ffffff;
+  box-shadow: var(--sh-card);
 }
+
 .code-header {
   display: flex;
   align-items: center;
@@ -2401,26 +2710,13 @@ app.mount('#app')
   background: #141416;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
-.code-tabs {
-  display: flex;
-  gap: 4px;
+
+.code-file-label {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: #8e8e93;
 }
-.code-tab {
-  border: none;
-  background: transparent;
-  color: rgba(255, 255, 255, 0.6);
-  font-family: var(--font);
-  font-size: 12.5px;
-  font-weight: 550;
-  padding: 4px 10px;
-  border-radius: 6px;
-  cursor: pointer;
-}
-.code-tab.active {
-  background: rgba(255, 255, 255, 0.12);
-  color: #ffffff;
-  font-weight: 600;
-}
+
 .copy-code-btn {
   display: inline-flex;
   align-items: center;
@@ -2434,6 +2730,11 @@ app.mount('#app')
   padding: 5px 12px;
   border-radius: var(--r-pill);
   cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.copy-code-btn:hover {
+  background: var(--accent-hover);
 }
 
 .code-display {
@@ -2446,282 +2747,225 @@ app.mount('#app')
   max-height: 300px;
 }
 
-.install-tab-btn {
-  color: #ff9f0a;
-}
-.install-tab-btn.active {
-  background: rgba(255, 159, 10, 0.18);
-  color: #ffb340;
-}
-.install-guide-tab {
-  padding: 16px;
-  background: #18181a;
-  max-height: 360px;
-  overflow-y: auto;
-}
-.install-modal-content {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-.install-modal-desc {
-  font-size: 13.5px;
-  color: var(--text-2);
-  line-height: 1.5;
-  margin: 0;
-}
-.guide-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-.guide-card {
-  background: #232326;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 12px;
-  padding: 12px 14px;
-}
-.guide-card-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 6px;
-}
-.guide-chip {
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  padding: 2px 8px;
-  border-radius: var(--r-pill);
-}
-.cli-chip {
-  background: rgba(48, 209, 88, 0.15);
-  color: #30d158;
-}
-.npm-chip {
-  background: rgba(10, 132, 255, 0.15);
-  color: #0a84ff;
-}
-.nuxt-chip {
-  background: rgba(0, 220, 130, 0.15);
-  color: #00dc82;
-}
-.guide-mini-copy {
-  background: rgba(255, 255, 255, 0.12);
-  border: none;
-  color: #ffffff;
-  font-size: 11px;
-  font-family: var(--font);
-  font-weight: 600;
-  padding: 3px 9px;
-  border-radius: var(--r-pill);
-  cursor: pointer;
-  transition: background 0.15s;
-}
-.guide-mini-copy:hover {
-  background: var(--accent);
-}
-.guide-desc {
-  font-size: 12.5px;
-  color: rgba(255, 255, 255, 0.7);
-  margin: 0 0 8px;
-  line-height: 1.45;
-}
-.guide-desc code {
-  color: #ffffff;
-  background: rgba(255, 255, 255, 0.1);
-  padding: 1px 5px;
-  border-radius: 4px;
-  font-family: var(--mono);
-}
-.guide-cmd {
-  margin: 0;
-  background: #161618;
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  padding: 8px 12px;
-  border-radius: 8px;
-  font-family: var(--mono);
-  font-size: 12px;
-  color: #f5f5f7;
-  overflow-x: auto;
-  line-height: 1.5;
-}
-
-@media (max-width: 600px) {
-  .stage-bar {
-    flex-wrap: wrap;
-    gap: 8px;
-  }
-  .props-grid {
-    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-  }
-  .code-header {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 10px;
-  }
-  .code-tabs {
-    overflow-x: auto;
-    width: 100%;
-    padding-bottom: 4px;
-  }
-  .code-tab {
-    white-space: nowrap;
-  }
-  .copy-code-btn {
-    align-self: flex-end;
-    width: 100%;
-    justify-content: center;
-  }
-  .canvas-area {
-    padding: 16px 10px;
-    overflow-x: auto;
-  }
-}
-
-.api-docs-section {
-  margin-top: 10px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-.api-docs-title {
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--text);
-  letter-spacing: -0.01em;
-}
+/* 5 & 6. API & Events Tables */
 .api-table-wrapper {
   overflow-x: auto;
   border: 1px solid var(--hairline);
   border-radius: 12px;
   background: var(--surface);
+  box-shadow: var(--sh-card);
 }
+
 .api-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 13px;
+  font-size: 12.5px;
   text-align: left;
 }
+
 .api-table th {
   padding: 10px 14px;
   background: rgba(0,0,0,0.02);
   color: var(--text-2);
   font-weight: 650;
-  font-size: 11.5px;
+  font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   border-bottom: 1px solid var(--hairline);
+  white-space: nowrap;
 }
+
 .api-table td {
   padding: 10px 14px;
   color: var(--text);
   border-bottom: 1px solid var(--hairline);
+  vertical-align: top;
 }
+
 .api-table tr:last-child td {
   border-bottom: none;
 }
-.prop-name code {
+
+.prop-name code, .event-name code, .slot-name code {
   color: var(--accent);
   font-family: var(--mono);
   font-size: 12px;
   font-weight: 600;
 }
+
 .type-name code {
-  color: var(--indigo);
+  color: var(--indigo, #5e5ce6);
   font-family: var(--mono);
-  font-size: 12px;
+  font-size: 11.5px;
 }
+
 .default-val code {
   color: var(--text-3);
   font-family: var(--mono);
-  font-size: 12px;
+  font-size: 11.5px;
 }
-.no-props {
-  text-align: center;
+
+.req-chip {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 650;
+  text-transform: uppercase;
+  padding: 1px 6px;
+  border-radius: var(--r-pill);
+  background: var(--hover);
   color: var(--text-3);
-  padding: 16px !important;
+  border: 1px solid var(--hairline);
 }
 
-/* Customization Docs Section */
-.customization-docs-section {
-  margin-top: 16px;
+.req-chip.required {
+  background: rgba(255, 107, 0, 0.1);
+  color: var(--heat, #ff6b00);
+  border-color: rgba(255, 107, 0, 0.2);
+}
+
+.options-list {
   display: flex;
-  flex-direction: column;
-  gap: 12px;
+  flex-wrap: wrap;
+  gap: 4px;
 }
 
-.customization-header-row {
+.opt-pill {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  background: var(--hover);
+  color: var(--text-2);
+  padding: 1px 5px;
+  border-radius: 4px;
+  border: 1px solid var(--hairline);
+}
+
+.desc-text {
+  line-height: 1.45;
+  color: var(--text-body, #424245);
+}
+
+.prop-example, .trigger-meta {
+  margin-top: 4px;
+  font-size: 11.5px;
+  color: var(--text-3);
+}
+
+.example-label, .meta-label {
+  font-weight: 600;
+  color: var(--text-2);
+}
+
+.prop-example code {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text);
+}
+
+.mini-example-code {
+  margin: 0;
+  font-family: var(--mono);
+  font-size: 11.5px;
+  color: var(--text);
+  background: var(--hover);
+  padding: 6px 8px;
+  border-radius: 6px;
+  border: 1px solid var(--hairline);
+  overflow-x: auto;
+  white-space: pre;
+}
+
+.empty-spec-card {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-
-.customization-docs-title {
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--text);
-  letter-spacing: -0.01em;
-  margin: 0;
-}
-
-.customization-tabs {
-  display: inline-flex;
-  background: var(--track);
-  padding: 3px;
-  border-radius: var(--r-pill);
-  gap: 2px;
-}
-
-.cust-tab-btn {
-  border: none;
-  background: transparent;
-  color: var(--text-2);
-  font-family: var(--font);
-  font-size: 12px;
-  font-weight: 550;
-  padding: 4px 12px;
-  border-radius: var(--r-pill);
-  cursor: pointer;
-  transition: all 0.18s ease;
-  white-space: nowrap;
-}
-
-.cust-tab-btn:hover {
-  color: var(--text);
-}
-
-.cust-tab-btn.active {
+  gap: 12px;
   background: var(--surface);
-  color: var(--text);
+  border: 1px solid var(--hairline);
+  border-radius: 12px;
+  padding: 14px 16px;
+  box-shadow: var(--sh-card);
+}
+
+.empty-spec-icon {
+  font-size: 20px;
+}
+
+.empty-spec-title {
+  font-size: 13px;
   font-weight: 650;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
-}
-
-:root.dark .cust-tab-btn.active {
-  background: var(--surface);
   color: var(--text);
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+  margin-bottom: 2px;
 }
 
-.customization-panel {
+.empty-spec-desc {
+  font-size: 12px;
+  color: var(--text-2);
+  line-height: 1.4;
+}
+
+.empty-spec-desc code {
+  font-family: var(--mono);
+  background: var(--hover);
+  padding: 1px 4px;
+  border-radius: 4px;
+}
+
+/* 7. Customization Guide */
+.customization-card-panel {
   background: var(--surface);
   border: 1px solid var(--hairline);
   border-radius: 14px;
   overflow: hidden;
   box-shadow: var(--sh-card);
-}
-
-.customization-tab-content {
+  padding: 16px;
   display: flex;
   flex-direction: column;
+  gap: 14px;
+}
+
+.ui-guide-p {
+  margin: 0;
+  font-size: 13px;
+  color: var(--text-2);
+  line-height: 1.5;
+}
+
+.ui-keys-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 10px;
+}
+
+.ui-key-card {
+  background: var(--hover);
+  border: 1px solid var(--hairline);
+  border-radius: 8px;
+  padding: 8px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ui-key-name code {
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.ui-key-desc {
+  font-size: 11.5px;
+  color: var(--text-2);
+  line-height: 1.35;
+}
+
+.inline-ui-example-block {
+  border: 1px solid var(--hairline);
+  border-radius: 12px;
+  overflow: hidden;
 }
 
 .code-box-header {
-  padding: 9px 14px;
+  padding: 8px 14px;
   background: #141416;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   display: flex;
@@ -2734,7 +2978,6 @@ app.mount('#app')
   font-size: 11.5px;
   font-weight: 650;
   color: #a1a1aa;
-  letter-spacing: 0.02em;
   font-family: var(--mono);
 }
 
@@ -2746,9 +2989,9 @@ app.mount('#app')
   color: #ffffff;
   border: 1px solid rgba(255, 255, 255, 0.12);
   font-family: var(--font);
-  font-size: 11.5px;
+  font-size: 11px;
   font-weight: 600;
-  padding: 4px 10px;
+  padding: 3px 9px;
   border-radius: var(--r-pill);
   cursor: pointer;
   transition: all 0.15s ease;
@@ -2761,10 +3004,10 @@ app.mount('#app')
 
 .recipe-pre {
   margin: 0;
-  padding: 16px;
+  padding: 14px;
   font-family: var(--mono);
-  font-size: 12.5px;
-  line-height: 1.6;
+  font-size: 12px;
+  line-height: 1.55;
   background: #18181b;
   color: #e4e4e7;
   overflow-x: auto;
