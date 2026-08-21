@@ -592,45 +592,52 @@ const tabs = [
     id: 'breadcrumbs',
     name: 'Breadcrumbs',
     category: 'navigation',
-    description: 'ARIA breadcrumb navigation supporting default, with-icons, and glass variants.',
-    tags: ['breadcrumbs', 'navigation', 'path', 'icon'],
+    description: 'ARIA breadcrumb trail with intelligent responsive mobile collapsing (Home / … / Product), interactive middle hierarchy popover, with-icons, and liquid glass variants.',
+    tags: ['breadcrumbs', 'navigation', 'path', 'icon', 'collapsing', 'mobile', 'responsive', 'ellipsis'],
     props: {
-      variant: { type: 'select', options: ['default', 'with-icons', 'glass'], default: 'default', description: 'Breadcrumb visual presentation style.' },
+      variant: { type: 'select', options: ['default', 'with-icons', 'glass', 'subtle'], default: 'default', description: 'Breadcrumb visual presentation style.' },
       size: { type: 'select', options: ['sm', 'md', 'lg'], default: 'md', description: 'Text and icon sizing.' },
-      color: { type: 'select', options: ['blue', 'purple', 'green', 'gray'], default: 'blue', description: 'Active item accent color.' }
+      color: { type: 'select', options: ['blue', 'purple', 'green', 'gray'], default: 'blue', description: 'Active item accent color.' },
+      maxItems: { type: 'number', default: 0, description: 'Maximum visible items before collapsing middle trail (0 = auto mobile collapsing).' },
+      collapseOnMobile: { type: 'boolean', default: true, description: 'Automatically collapse long trails on mobile screens.' },
+      itemsBeforeCollapse: { type: 'number', default: 1, description: 'Number of root items preserved before the ellipsis.' },
+      itemsAfterCollapse: { type: 'number', default: 1, description: 'Number of trail items preserved at the end.' }
     },
     vueCode: (p) => `<script setup>
 import { IdBreadcrumbs } from '@idesign/vue'
 
 const items = [
   { label: 'Home', href: '/', icon: 'Home' },
-  { label: 'Components', href: '/components', icon: 'Folder' },
-  { label: 'Button', icon: 'Square' }
+  { label: 'Products', href: '/products', icon: 'Folder' },
+  { label: 'Electronics', href: '/products/electronics', icon: 'Folder' },
+  { label: 'Computers', href: '/products/electronics/computers', icon: 'Folder' },
+  { label: 'MacBook Pro', icon: 'FileText' }
 ]
 </script>
 
 <template>
   <IdBreadcrumbs
-    variant="${p.variant}"
-    size="${p.size}"
-    color="${p.color}"
+    variant="${p.variant || 'default'}"
+    size="${p.size || 'md'}"
+    color="${p.color || 'blue'}"
     :items="items"
+    ${p.maxItems ? `:max-items="${p.maxItems}"\n    ` : ''}:collapse-on-mobile="${p.collapseOnMobile !== false}"
   />
 </template>`,
     nuxtCode: (p) => `<!-- Nuxt 3 Auto-Import -->
 <template>
   <IdBreadcrumbs
-    variant="${p.variant}"
-    size="${p.size}"
-    color="${p.color}"
+    variant="${p.variant || 'default'}"
+    size="${p.size || 'md'}"
     :items="items"
+    collapse-on-mobile
   />
 </template>`,
-    htmlCode: (p) => `<nav aria-label="Breadcrumb" class="id-breadcrumbs variant-${p.variant} size-${p.size} color-${p.color}">
-  <ol class="breadcrumb-list">
-    <li class="crumb-item"><a href="/">Home</a><span class="sep">›</span></li>
-    <li class="crumb-item"><a href="/components">Components</a><span class="sep">›</span></li>
-    <li class="crumb-item is-active" aria-current="page">Button</li>
+    htmlCode: (p) => `<nav aria-label="Breadcrumb" class="id-breadcrumbs variant-${p.variant || 'default'} size-${p.size || 'md'} color-${p.color || 'blue'}">
+  <ol class="crumbs-list">
+    <li class="crumb-item"><a href="/" class="crumb-link">Home</a><span class="crumb-sep">›</span></li>
+    <li class="crumb-item crumb-collapsed-item"><button class="crumb-ellipsis-btn" aria-label="Show hidden breadcrumb levels">…</button><span class="crumb-sep">›</span></li>
+    <li class="crumb-item"><span class="crumb-current" aria-current="page">MacBook Pro</span></li>
   </ol>
 </nav>`
   },
@@ -735,35 +742,100 @@ const items = [
     id: 'dock',
     name: 'macOS Floating Dock',
     category: 'navigation',
-    description: 'macOS-style liquid glass floating dock navbar with magnification physics, tooltips, and active dots.',
-    tags: ['dock', 'macos', 'navbar', 'glass', 'floating'],
+    description: 'macOS-style Liquid Glass floating navigation dock with smooth cursor magnification physics, tooltips, notification badges, active running dots, and full keyboard navigation.',
+    tags: ['dock', 'macos', 'navbar', 'glass', 'floating', 'navigation', 'magnification'],
     props: {
-      position: { type: 'select', options: ['bottom', 'top'], default: 'bottom', description: 'Screen placement position for floating dock bar.' }
+      variant: { type: 'select', options: ['glass', 'solid', 'translucent', 'tinted'], default: 'glass', description: 'Visual surface styling.' },
+      size: { type: 'select', options: ['sm', 'md', 'lg'], default: 'md', description: 'Overall size and icon scale.' },
+      position: { type: 'select', options: ['bottom', 'top', 'left', 'right', 'none'], default: 'bottom', description: 'Fixed placement or relative embedding.' },
+      alignment: { type: 'select', options: ['start', 'center', 'end'], default: 'center', description: 'Dock alignment along its axis.' },
+      direction: { type: 'select', options: ['auto', 'horizontal', 'vertical'], default: 'auto', description: 'Dock layout orientation.' },
+      magnification: { type: 'boolean', default: true, description: 'Smooth Gaussian/cosine hover magnification physics.' },
+      tooltip: { type: 'boolean', default: true, description: 'Display floating spring tooltip on hover/focus.' },
+      color: { type: 'select', options: ['blue', 'green', 'purple', 'orange', 'red'], default: 'blue', description: 'Accent color for active states.' },
+      disabled: { type: 'boolean', default: false, description: 'Disable entire dock interaction.' }
     },
     vueCode: (p) => `<script setup>
+import { ref } from 'vue'
 import { IdDock } from '@idesign/vue'
 
+const activeApp = ref('finder')
+
 const items = [
-  { id: 'finder', label: 'Finder', icon: '📁', iconBg: '#007aff', active: true },
-  { id: 'safari', label: 'Safari', icon: '🌐', iconBg: '#34c759' },
+  { id: 'finder', label: 'Finder', icon: '📁', iconBg: '#007aff' },
+  { id: 'safari', label: 'Safari', icon: '🌐', iconBg: '#34c759', badge: 3 },
+  { id: 'messages', label: 'Messages', icon: '💬', iconBg: '#30d158', badge: 'NEW' },
+  { id: 'notes', label: 'Notes', icon: '📝', iconBg: '#ff9500' },
   { separator: true },
   { id: 'settings', label: 'Settings', icon: '⚙️', iconBg: '#8e8e93' }
 ]
 </script>
 
 <template>
-  <IdDock position="${p.position}" :items="items" />
+  <IdDock
+    v-model:activeId="activeApp"
+    :items="items"
+    variant="${p.variant || 'glass'}"
+    size="${p.size || 'md'}"
+    position="${p.position || 'bottom'}"
+    alignment="${p.alignment || 'center'}"
+    direction="${p.direction || 'auto'}"
+    :magnification="${p.magnification ?? true}"
+    :tooltip="${p.tooltip ?? true}"
+    color="${p.color || 'blue'}"
+    ${p.disabled ? ':disabled="true"' : ''}
+  />
 </template>`,
     nuxtCode: (p) => `<!-- Nuxt 3 Auto-Import -->
+<script setup>
+const activeApp = ref('finder')
+
+const items = [
+  { id: 'finder', label: 'Finder', icon: '📁', iconBg: '#007aff' },
+  { id: 'safari', label: 'Safari', icon: '🌐', iconBg: '#34c759', badge: 3 },
+  { separator: true },
+  { id: 'settings', label: 'Settings', icon: '⚙️', iconBg: '#8e8e93' }
+]
+</script>
+
 <template>
-  <IdDock position="${p.position}" :items="items" />
+  <IdDock
+    v-model:activeId="activeApp"
+    :items="items"
+    variant="${p.variant || 'glass'}"
+    size="${p.size || 'md'}"
+    position="${p.position || 'bottom'}"
+  />
 </template>`,
-    htmlCode: (p) => `<div class="id-dock-wrap position-${p.position}">
+    htmlCode: (p) => `<div class="id-dock-wrap position-${p.position || 'bottom'} dir-${p.direction || 'horizontal'} size-${p.size || 'md'} variant-${p.variant || 'glass'}" role="toolbar" aria-label="macOS Dock">
   <div class="dock-container">
-    <button class="dock-icon active" title="Finder"><span class="icon-bg" style="background:#007aff;">📁</span><span class="active-dot"></span></button>
-    <button class="dock-icon" title="Safari"><span class="icon-bg" style="background:#34c759;">🌐</span></button>
-    <div class="dock-separator"></div>
-    <button class="dock-icon" title="Settings"><span class="icon-bg" style="background:#8e8e93;">⚙️</span></button>
+    <div class="dock-list">
+      <div class="dock-item-wrapper">
+        <button class="dock-item is-active" aria-label="Finder">
+          <div class="dock-tooltip">Finder</div>
+          <div class="icon-squircle" style="background:#007aff; color:#fff;">📁</div>
+          <span class="dock-dot"></span>
+        </button>
+      </div>
+      <div class="dock-item-wrapper">
+        <button class="dock-item" aria-label="Safari">
+          <div class="dock-tooltip">Safari</div>
+          <div class="icon-squircle" style="background:#34c759; color:#fff;">
+            🌐
+            <span class="dock-badge">3</span>
+          </div>
+        </button>
+      </div>
+      <div class="dock-item-wrapper is-separator">
+        <div class="dock-separator" role="separator"></div>
+      </div>
+      <div class="dock-item-wrapper">
+        <button class="dock-item" aria-label="Settings">
+          <div class="dock-tooltip">Settings</div>
+          <div class="icon-squircle" style="background:#8e8e93; color:#fff;">⚙️</div>
+        </button>
+      </div>
+    </div>
   </div>
 </div>`
   },
@@ -1368,6 +1440,48 @@ const enabled = ref(true)
 </template>`,
     htmlCode: (p) => `<button type="button" role="switch" aria-checked="true" class="id-toggle size-${p.size} variant-${p.variant} is-active">
   <span class="toggle-thumb"></span>
+</button>`
+  },
+
+  {
+    id: 'theme-toggle',
+    name: 'Theme Toggle (Dark/Light)',
+    category: 'inputs',
+    description: 'Polished Apple-grade animated theme switcher with smooth SVG sun/moon morphing, View Transitions API radial reveal, button, icon, segmented, and switch variants.',
+    tags: ['theme', 'dark-mode', 'light-mode', 'toggle', 'switch', 'transition', 'reveal', 'color-scheme'],
+    props: {
+      variant: { type: 'select', options: ['button', 'icon', 'segmented', 'switch', 'glass'], default: 'button', description: 'Visual display style.' },
+      size: { type: 'select', options: ['sm', 'md', 'lg'], default: 'md', description: 'Control sizing scale.' },
+      transitionEffect: { type: 'select', options: ['reveal', 'fade', 'none'], default: 'reveal', description: 'Animated transition animation effect.' },
+      showLabel: { type: 'boolean', default: true, description: 'Shows text mode label alongside the icon.' },
+      lightLabel: { type: 'text', default: 'Light', description: 'Label for light mode.' },
+      darkLabel: { type: 'text', default: 'Dark', description: 'Label for dark mode.' },
+      autoLabel: { type: 'text', default: 'Auto', description: 'Label for system auto mode.' },
+      animated: { type: 'boolean', default: true, description: 'Enables icon morph and animated theme transition.' },
+      disabled: { type: 'boolean', default: false, description: 'Disables interaction.' }
+    },
+    vueCode: (p) => `<script setup>
+import { IdThemeToggle } from '@idesign/vue'
+</script>
+
+<template>
+  <IdThemeToggle
+    variant="${p.variant || 'button'}"
+    size="${p.size || 'md'}"
+    transition-effect="${p.transitionEffect || 'reveal'}"
+    :show-label="${p.showLabel !== false}"
+    :animated="${p.animated !== false}"
+  />
+</template>`,
+    nuxtCode: (p) => `<!-- Nuxt 3 Auto-Import -->
+<template>
+  <IdThemeToggle variant="${p.variant || 'button'}" size="${p.size || 'md'}" />
+</template>`,
+    htmlCode: (p) => `<button type="button" class="id-theme-toggle-btn variant-${p.variant || 'button'} size-${p.size || 'md'}" aria-label="Toggle theme">
+  <div class="toggle-icon-container">
+    <span class="icon-layer icon-sun">☀️</span>
+  </div>
+  <span class="toggle-label-text">${p.darkLabel || 'Dark'}</span>
 </button>`
   },
 
@@ -3446,6 +3560,111 @@ const brandColor = ref('#0071E3')
     <span class="trigger-value-text">#0071E3</span>
   </div>
 </div>`
+  },
+
+  {
+    id: 'wallpaper',
+    name: 'Wallpaper & Background Gradient',
+    category: 'layout',
+    description: 'Apple-grade decorative background and gradient system with presets (solid, gradient, mesh, radial, aurora, glow, noise, image), masks, and full theme customization.',
+    tags: ['wallpaper', 'background', 'gradient', 'mesh', 'radial', 'aurora', 'glow', 'noise', 'backdrop', 'hero', 'layout'],
+    props: {
+      variant: { type: 'select', options: ['gradient', 'mesh', 'radial', 'aurora', 'glow', 'solid', 'noise', 'image'], default: 'gradient', description: 'Background aesthetic preset.' },
+      theme: { type: 'select', options: ['auto', 'light', 'dark'], default: 'auto', description: 'Explicit theme override or auto dark mode adaptation.' },
+      intensity: { type: 'select', options: ['subtle', 'soft', 'normal', 'vibrant'], default: 'normal', description: 'Color saturation and light/dark mode glow factor.' },
+      direction: { type: 'select', options: ['135deg', '180deg', 'to bottom right', 'to bottom', 'to right', '45deg'], default: '135deg', description: 'Linear gradient angle / direction.' },
+      mask: { type: 'select', options: ['none', 'fade-bottom', 'fade-top', 'fade-edges', 'radial'], default: 'none', description: 'Alpha gradient mask for seamless hero-to-page transitions.' },
+      overlay: { type: 'select', options: ['none', 'vignette', 'scrim', 'frosted', 'dots', 'grid'], default: 'none', description: 'Decorative top texture or backdrop scrim.' },
+      animated: { type: 'boolean', default: false, description: 'Gentle ambient motion (respects prefers-reduced-motion).' },
+      noise: { type: 'boolean', default: false, description: 'Micro-texture grain overlay.' }
+    },
+    vueCode: (p) => `<script setup>
+import { IdWallpaper } from '@idesign/vue'
+<\/script>
+
+<template>
+  <IdWallpaper
+    variant="${p.variant}"
+    intensity="${p.intensity}"
+    direction="${p.direction}"
+    mask="${p.mask}"
+    overlay="${p.overlay}"
+    :animated="${p.animated}"
+    :noise="${p.noise}"
+  >
+    <!-- Foreground content -->
+    <div style="padding: 48px 24px; text-align: center;">
+      <h1 style="font-size: 32px; font-weight: 700; letter-spacing: -0.025em; margin: 0 0 12px;">Spatial Interfaces</h1>
+      <p style="color: var(--text-2); max-width: 520px; margin: 0 auto;">Subtle, Apple-inspired ambient backgrounds designed with restraint.</p>
+    </div>
+  </IdWallpaper>
+</template>`,
+    nuxtCode: (p) => `<!-- Nuxt 3 Auto-Import -->
+<template>
+  <IdWallpaper variant="${p.variant}" intensity="${p.intensity}" mask="${p.mask}">
+    <slot />
+  </IdWallpaper>
+</template>`,
+    htmlCode: (p) => `<div class="id-wallpaper-root mask-${p.mask}">
+  <div class="id-wallpaper-canvas variant-${p.variant}"></div>
+  <div class="id-wallpaper-content">...</div>
+</div>`
+  },
+
+  {
+    id: 'qr-code',
+    name: 'QR Code Generator',
+    category: 'data',
+    description: 'High-precision, vector SVG QR code generator with Apple Liquid Glass styling, customizable error correction (L/M/Q/H), center logo badges, dark mode adaptability, and Retina-sharp scanning reliability.',
+    tags: ['qr', 'qrcode', 'barcode', 'generator', 'scan', 'camera', 'svg', 'matrix', 'data', 'link'],
+    props: {
+      value: { type: 'text', default: 'https://idesign.io', description: 'URL, text, or payload string to encode into the QR matrix.' },
+      variant: { type: 'select', options: ['default', 'rounded', 'minimal', 'glass'], default: 'default', description: 'Visual surface aesthetic variant.' },
+      size: { type: 'select', options: ['xs', 'sm', 'md', 'lg', 'xl'], default: 'md', description: 'Size preset (xs: 120px, sm: 160px, md: 200px, lg: 260px, xl: 320px) or custom pixel number.' },
+      errorCorrection: { type: 'select', options: ['L', 'M', 'Q', 'H'], default: 'M', description: 'Reed-Solomon Error Correction Level (L: 7%, M: 15%, Q: 25%, H: 30%).' },
+      margin: { type: 'number', default: 2, description: 'Quiet zone margin padding modules surrounding the matrix.' },
+      label: { type: 'text', default: 'Scan with Camera', description: 'Optional primary label heading.' },
+      caption: { type: 'text', default: 'Point your iPhone camera at this code to open.', description: 'Optional secondary descriptive caption.' },
+      logo: { type: 'boolean', default: false, description: 'Embed a center icon or logo badge with safe quiet cutout.' },
+      downloadable: { type: 'boolean', default: true, description: 'Show quick SVG download action button.' },
+      disabled: { type: 'boolean', default: false, description: 'Visually dim the QR code with accessible aria-disabled state.' }
+    },
+    vueCode: (p) => `<script setup>
+import { IdQRCode } from '@idesign/vue'
+<\/script>
+
+<template>
+  <IdQRCode
+    value="${p.value || 'https://idesign.io'}"
+    variant="${p.variant || 'default'}"
+    size="${p.size || 'md'}"
+    error-correction="${p.errorCorrection || 'M'}"
+    :margin="${p.margin ?? 2}"${p.label ? `\n    label="${p.label}"` : ''}${p.caption ? `\n    caption="${p.caption}"` : ''}${p.logo ? `\n    logo-src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=100&auto=format&fit=crop&q=80"` : ''}${p.downloadable ? `\n    :downloadable="true"` : ''}${p.disabled ? `\n    :disabled="true"` : ''}
+  />
+</template>`,
+    nuxtCode: (p) => `<!-- Nuxt 3 Auto-Import (Zero imports required) -->
+<template>
+  <IdQRCode
+    value="${p.value || 'https://idesign.io'}"
+    variant="${p.variant || 'default'}"
+    size="${p.size || 'md'}"
+    error-correction="${p.errorCorrection || 'M'}"
+    label="${p.label || 'Scan with Camera'}"
+  />
+</template>`,
+    htmlCode: (p) => `<div class="id-qr-code variant-${p.variant || 'default'} size-${p.size || 'md'}" role="img" aria-label="QR Code">
+  <div class="qr-frame">
+    <svg class="qr-svg" viewBox="0 0 250 250">
+      <!-- High-contrast vector modules -->
+      <path d="..." fill="currentColor" />
+    </svg>
+  </div>
+  <div class="qr-meta-box">
+    <span class="qr-label-text">${p.label || 'Scan with Camera'}</span>
+    <span class="qr-caption-text">${p.caption || 'Point your camera'}</span>
+  </div>
+</div>`
   }
 ]
+
 

@@ -279,8 +279,8 @@ const accentColors = [
   { name: 'Ruby Red', hex: '#ff3b30' }
 ]
 
-const setThemeMode = (mode) => {
-  themeConfig.setTheme(mode)
+const setThemeMode = (mode, event) => {
+  themeConfig.setTheme(mode, { event })
   toast.success(`Theme set to ${mode}`)
 }
 

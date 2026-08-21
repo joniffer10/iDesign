@@ -1,4 +1,5 @@
 import { reactive, inject, computed } from 'vue'
+import { executeThemeTransition } from './useTheme'
 
 const IDESIGN_CONFIG_KEY = Symbol('IDESIGN_CONFIG')
 
@@ -313,9 +314,9 @@ export function useIdesignConfig(componentNameOrOverrides = {}, maybeOverrides =
   }
   const globalConfig = injected || reactive({ ...defaultConfig, ui: defaultUiConfig })
 
-  const compGlobalDefaults = componentName && globalConfig?.ui?.components?.[componentName]
-    ? globalConfig.ui.components[componentName]
-    : {}
+  const compKey = componentName ? componentName.toLowerCase() : ''
+  const directUi = (componentName && (globalConfig?.ui?.[compKey] || globalConfig?.ui?.[componentName])) || {}
+  const compGlobalDefaults = (componentName && (globalConfig?.ui?.components?.[componentName] || globalConfig?.ui?.components?.[compKey])) || directUi || {}
 
   const theme = computed(() => componentOverrides?.theme || compGlobalDefaults?.defaultProps?.theme || compGlobalDefaults?.theme || globalConfig?.theme || defaultConfig.theme)
   const density = computed(() => componentOverrides?.density || compGlobalDefaults?.defaultProps?.density || compGlobalDefaults?.density || globalConfig?.density || defaultConfig.density)
@@ -337,11 +338,12 @@ export function useIdesignConfig(componentNameOrOverrides = {}, maybeOverrides =
   const mergedUi = computed(() => {
     if (!componentName) return {}
     const merged = {}
-    const compConfig = globalConfig?.ui?.components?.[componentName] || {}
-    const globalUi = compConfig.ui || {}
+    const compConfig = (globalConfig?.ui?.components?.[componentName] || globalConfig?.ui?.components?.[compKey]) || {}
+    const directUiConfig = (globalConfig?.ui?.[compKey] || globalConfig?.ui?.[componentName]) || {}
+    const globalUi = compConfig.ui || (typeof directUiConfig === 'object' ? directUiConfig : {})
     const propUi = componentOverrides?.ui || {}
 
-    const keys = new Set([...Object.keys(globalUi), ...Object.keys(propUi), ...Object.keys(compConfig)])
+    const keys = new Set([...Object.keys(globalUi), ...Object.keys(propUi), ...Object.keys(compConfig), ...Object.keys(directUiConfig)])
     for (const k of keys) {
       if (k === 'defaultProps' || k === 'variants' || k === 'sizes' || k === 'ui') continue
       if (propUi[k] !== undefined) {
@@ -350,14 +352,16 @@ export function useIdesignConfig(componentNameOrOverrides = {}, maybeOverrides =
         merged[k] = globalUi[k]
       } else if (compConfig[k] !== undefined) {
         merged[k] = compConfig[k]
+      } else if (directUiConfig[k] !== undefined) {
+        merged[k] = directUiConfig[k]
       }
     }
     return merged
   })
 
-  const setTheme = (newTheme) => {
+  const setTheme = (newTheme, options = {}) => {
     globalConfig.theme = newTheme
-    applyThemeToDom(newTheme)
+    return executeThemeTransition(newTheme, options)
   }
 
   const setDensity = (newDensity) => {

@@ -35,6 +35,7 @@ import IdEmpty from '../src/components/idesign/IdEmpty.vue'
 import IdBottomSheet from '../src/components/idesign/IdBottomSheet.vue'
 import IdMobileNavbar from '../src/components/idesign/IdMobileNavbar.vue'
 import IdRating from '../src/components/idesign/IdRating.vue'
+import IdDock from '../src/components/idesign/IdDock.vue'
 
 // Compound Form System
 import IdForm from '../src/components/idesign/IdForm.vue'
@@ -81,6 +82,10 @@ import IdNumericStepper from '../src/components/idesign/IdNumberInput.vue'
 import IdColorPicker from '../src/components/idesign/IdColorPicker.vue'
 import IdPieChart from '../src/components/idesign/IdPieChart.vue'
 import IdDonutChart from '../src/components/idesign/IdDonutChart.vue'
+import IdQRCode from '../src/components/idesign/IdQRCode.vue'
+const QRCode = IdQRCode
+
+
 
 // Composables & Config
 import { createIdesign, createUI, useIdesignConfig } from '../src/composables/useIdesignConfig'
@@ -775,7 +780,7 @@ describe('Idesign Component Suite — Comprehensive Tests', () => {
 
     // Paste full 4-digit code
     const pasteEvent = {
-      preventDefault: () => {},
+      preventDefault: () => { },
       clipboardData: {
         getData: () => '8492'
       }
@@ -899,7 +904,7 @@ describe('Idesign Component Suite — Comprehensive Tests', () => {
   it('handles keyboard navigation (ArrowUp, ArrowDown, Shift+ArrowUp, Enter, Escape, Home, End)', async () => {
     const wrapper = mount(IdNumberInput, { props: { modelValue: 20, step: 2, min: 0, max: 100 } })
     const input = wrapper.find('input.number-native-input')
-    
+
     // ArrowUp
     await input.trigger('keydown', { key: 'ArrowUp' })
     expect(wrapper.emitted('update:modelValue')[0]).toEqual([22])
@@ -960,11 +965,11 @@ describe('Idesign Component Suite — Comprehensive Tests', () => {
     const wrapper = mount(IdColorPicker, { props: { modelValue: '#0071E3', label: 'Theme Color' } })
     expect(wrapper.text()).toContain('Theme Color')
     expect(wrapper.find('.picker-trigger').exists()).toBe(true)
-    
+
     // Open popover by clicking trigger
     await wrapper.find('.picker-trigger').trigger('click')
     expect(wrapper.find('.picker-panel').exists()).toBe(true)
-    
+
     const swatches = wrapper.findAll('.preset-swatch')
     expect(swatches.length).toBeGreaterThan(0)
     await swatches[0].trigger('click')
@@ -2081,7 +2086,227 @@ describe('Idesign Component Suite — Comprehensive Tests', () => {
     expect(wrapper.emitted('update:modelValue')).toBeDefined()
     expect(minuteInput.element.value).toBe('31')
   })
+
+  // ── macOS Floating Dock System ──
+  it('renders IdDock with items, separators, badges, active dots, and emits select events', async () => {
+    const items = [
+      { id: 'finder', label: 'Finder', icon: '📁', active: true },
+      { id: 'safari', label: 'Safari', icon: '🌐', badge: 5 },
+      { id: 'messages', label: 'Messages', icon: '💬', badge: 'NEW' },
+      { separator: true },
+      { id: 'settings', label: 'Settings', icon: '⚙️', disabled: true }
+    ]
+
+    const wrapper = mount(IdDock, {
+      props: {
+        items,
+        variant: 'glass',
+        size: 'md',
+        position: 'bottom',
+        alignment: 'center',
+        direction: 'horizontal',
+        tooltip: true,
+        activeId: 'finder',
+        ui: {
+          base: 'custom-dock-base',
+          item: 'custom-dock-item',
+          badge: 'custom-dock-badge'
+        }
+      }
+    })
+
+    // Check base wrapper classes and attributes
+    const dockWrap = wrapper.find('.id-dock-wrap')
+    expect(dockWrap.exists()).toBe(true)
+    expect(dockWrap.classes()).toContain('position-bottom')
+    expect(dockWrap.classes()).toContain('dir-horizontal')
+    expect(dockWrap.classes()).toContain('size-md')
+    expect(dockWrap.classes()).toContain('variant-glass')
+    expect(dockWrap.classes()).toContain('custom-dock-base')
+    expect(dockWrap.attributes('role')).toBe('toolbar')
+
+    // Check items count and separators
+    const itemButtons = wrapper.findAll('button.dock-item')
+    expect(itemButtons.length).toBe(4)
+    expect(wrapper.find('.dock-separator').exists()).toBe(true)
+
+    // Check active item and dot
+    const activeItem = wrapper.find('button.dock-item.is-active')
+    expect(activeItem.exists()).toBe(true)
+    expect(activeItem.find('.dock-dot').exists()).toBe(true)
+
+    // Check badges
+    expect(wrapper.text()).toContain('5')
+    expect(wrapper.text()).toContain('NEW')
+
+    // Check tooltips
+    const tooltips = wrapper.findAll('.dock-tooltip')
+    expect(tooltips.length).toBe(4)
+    expect(wrapper.text()).toContain('Finder')
+    expect(wrapper.text()).toContain('Safari')
+
+    // Click interactive item
+    await itemButtons[1].trigger('click')
+    expect(wrapper.emitted('select')).toBeTruthy()
+    expect(wrapper.emitted('select')[0][0].id).toBe('safari')
+    expect(wrapper.emitted('update:activeId')[0]).toEqual(['safari'])
+
+    // Disabled item should not emit click
+    await itemButtons[3].trigger('click')
+    expect(itemButtons[3].attributes('disabled')).toBeDefined()
+  })
+
+  it('renders IdDock with custom slots and vertical orientation', () => {
+    const wrapper = mount(IdDock, {
+      props: {
+        items: [{ id: 'app1', label: 'App 1' }],
+        position: 'left',
+        direction: 'vertical',
+        variant: 'solid',
+        size: 'lg'
+      },
+      slots: {
+        leading: '<div class="leading-test">Apple</div>',
+        trailing: '<div class="trailing-test">Trash</div>',
+        icon: '<span class="custom-icon">✨</span>'
+      }
+    })
+
+    expect(wrapper.find('.id-dock-wrap').classes()).toContain('position-left')
+    expect(wrapper.find('.id-dock-wrap').classes()).toContain('dir-vertical')
+    expect(wrapper.find('.id-dock-wrap').classes()).toContain('variant-solid')
+    expect(wrapper.find('.id-dock-wrap').classes()).toContain('size-lg')
+    expect(wrapper.find('.leading-test').exists()).toBe(true)
+    expect(wrapper.find('.trailing-test').exists()).toBe(true)
+    expect(wrapper.find('.custom-icon').exists()).toBe(true)
+  })
+
+  // ── 39. QRCode Component Tests ──
+  it('renders IdQRCode with default props, SVG paths, and accessibility attributes', () => {
+    const wrapper = mount(IdQRCode, {
+      props: {
+        value: 'https://apple.com',
+        label: 'Apple Website',
+        caption: 'Scan with camera'
+      }
+    })
+
+    expect(wrapper.classes()).toContain('id-qr-code')
+    expect(wrapper.classes()).toContain('variant-default')
+    expect(wrapper.classes()).toContain('size-md')
+    expect(wrapper.attributes('role')).toBe('img')
+    expect(wrapper.attributes('aria-label')).toBe('Apple Website - QR Code')
+    
+    // Check SVG and modules
+    const svg = wrapper.find('.qr-svg')
+    expect(svg.exists()).toBe(true)
+    expect(svg.find('.qr-finder-module').exists()).toBe(true)
+    expect(svg.find('.qr-body-module').exists()).toBe(true)
+
+    // Check Label & Caption
+    expect(wrapper.find('.qr-label-text').text()).toBe('Apple Website')
+    expect(wrapper.find('.qr-caption-text').text()).toBe('Scan with camera')
+  })
+
+  it('supports size presets and custom numeric sizing', () => {
+    const wrapperXs = mount(IdQRCode, { props: { size: 'xs' } })
+    expect(wrapperXs.classes()).toContain('size-xs')
+    expect(wrapperXs.attributes('style')).toContain('width: 120px')
+
+    const wrapperCustom = mount(IdQRCode, { props: { size: 280 } })
+    expect(wrapperCustom.classes()).toContain('size-custom')
+    expect(wrapperCustom.attributes('style')).toContain('width: 280px')
+
+    const wrapperResponsive = mount(IdQRCode, { props: { size: 'lg', responsive: true } })
+    expect(wrapperResponsive.classes()).toContain('is-responsive')
+    expect(wrapperResponsive.attributes('style')).toContain('max-width: 260px')
+    expect(wrapperResponsive.attributes('style')).toContain('width: 100%')
+  })
+
+  it('supports all variants: default, rounded, minimal, glass', () => {
+    const wrapperRounded = mount(IdQRCode, { props: { variant: 'rounded' } })
+    expect(wrapperRounded.classes()).toContain('variant-rounded')
+
+    const wrapperMinimal = mount(IdQRCode, { props: { variant: 'minimal' } })
+    expect(wrapperMinimal.classes()).toContain('variant-minimal')
+
+    const wrapperGlass = mount(IdQRCode, { props: { variant: 'glass' } })
+    expect(wrapperGlass.classes()).toContain('variant-glass')
+  })
+
+  it('renders center logo image and custom logo slot with safe quiet zone cutout', () => {
+    const logoUrl = 'https://example.com/logo.png'
+    const wrapper = mount(IdQRCode, {
+      props: {
+        value: 'https://example.com/login',
+        logoSrc: logoUrl,
+        logoSize: 48
+      }
+    })
+
+    const centerLogo = wrapper.find('.qr-center-logo')
+    expect(centerLogo.exists()).toBe(true)
+    expect(centerLogo.attributes('style')).toContain('width: 48px')
+    expect(centerLogo.attributes('style')).toContain('height: 48px')
+
+    const img = wrapper.find('.qr-logo-image')
+    expect(img.exists()).toBe(true)
+    expect(img.attributes('src')).toBe(logoUrl)
+  })
+
+  it('handles disabled state with dimmed styling and aria-disabled', () => {
+    const wrapper = mount(IdQRCode, {
+      props: {
+        disabled: true
+      }
+    })
+
+    expect(wrapper.classes()).toContain('is-disabled')
+    expect(wrapper.attributes('aria-disabled')).toBe('true')
+    expect(wrapper.find('.qr-disabled-scrim').exists()).toBe(true)
+  })
+
+  it('supports downloadable action button and emits download event', async () => {
+    const wrapper = mount(IdQRCode, {
+      props: {
+        value: 'https://idesign.io',
+        downloadable: true
+      }
+    })
+
+    const downloadBtn = wrapper.find('.qr-action-btn')
+    expect(downloadBtn.exists()).toBe(true)
+    expect(downloadBtn.text()).toContain('Save SVG')
+
+    await downloadBtn.trigger('click')
+    expect(wrapper.emitted('download')).toBeTruthy()
+    expect(wrapper.emitted('download')[0][0]).toHaveProperty('svgContent')
+  })
+
+  it('supports custom ui slot class overrides and alias export QRCode', () => {
+    const wrapper = mount(QRCode, {
+      props: {
+        value: 'https://idesign.io/docs',
+        label: 'Docs',
+        caption: 'API Reference',
+        ui: {
+          base: 'my-custom-qr-base',
+          code: 'my-custom-qr-code',
+          background: 'my-custom-qr-bg',
+          label: 'my-custom-qr-label',
+          caption: 'my-custom-qr-caption'
+        }
+      }
+    })
+
+    expect(wrapper.classes()).toContain('my-custom-qr-base')
+    expect(wrapper.find('.qr-frame').classes()).toContain('my-custom-qr-bg')
+    expect(wrapper.find('.qr-svg').classes()).toContain('my-custom-qr-code')
+    expect(wrapper.find('.qr-label-box').classes()).toContain('my-custom-qr-label')
+    expect(wrapper.find('.qr-caption-box').classes()).toContain('my-custom-qr-caption')
+  })
 })
+
 
 
 

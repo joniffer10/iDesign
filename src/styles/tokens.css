@@ -170,11 +170,13 @@ html[data-theme="light"],
   --duration-fast:       200ms;
   --duration-normal:     300ms;
   --duration-slow:       400ms;
+  --duration-theme:      350ms;
 
   --ease-spring:         cubic-bezier(0.32, 0.72, 0, 1);
   --ease-out-quart:      cubic-bezier(0.25, 1, 0.5, 1);
   --ease-in-out:         cubic-bezier(0.4, 0, 0.2, 1);
   --ease-out:            cubic-bezier(0, 0, 0.2, 1);
+  --ease-theme:          var(--ease-out-quart);
 
   --delay-none:          0ms;
   --delay-short:         100ms;
@@ -432,6 +434,54 @@ html[data-theme="dark"] ::-webkit-scrollbar-thumb {
 }
 
 /* ═══════════════════════════════════════════
+   Global Theme Transition Engine
+   ═══════════════════════════════════════════ */
+.theme-transitioning,
+.theme-transitioning *,
+.theme-transitioning *::before,
+.theme-transitioning *::after {
+  transition: background-color var(--duration-theme) var(--ease-theme),
+              color var(--duration-theme) var(--ease-theme),
+              border-color var(--duration-theme) var(--ease-theme),
+              box-shadow var(--duration-theme) var(--ease-theme),
+              fill var(--duration-theme) var(--ease-theme),
+              stroke var(--duration-theme) var(--ease-theme) !important;
+}
+
+/* ═══════════════════════════════════════════
+   View Transitions API (Circular / Reveal Overlays)
+   ═══════════════════════════════════════════ */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+::view-transition-old(root) {
+  z-index: 1;
+}
+
+::view-transition-new(root) {
+  z-index: 9999;
+}
+
+[data-theme-transition="fade"]::view-transition-old(root) {
+  animation: theme-fade-out var(--duration-theme) var(--ease-theme) forwards;
+}
+[data-theme-transition="fade"]::view-transition-new(root) {
+  animation: theme-fade-in var(--duration-theme) var(--ease-theme) forwards;
+}
+
+@keyframes theme-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes theme-fade-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+/* ═══════════════════════════════════════════
    Reduced Motion Accessibility
    ═══════════════════════════════════════════ */
 @media (prefers-reduced-motion: reduce) {
@@ -440,6 +490,11 @@ html[data-theme="dark"] ::-webkit-scrollbar-thumb {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+  ::view-transition-group(root),
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none !important;
   }
   .pulse-dot {
     animation: none;

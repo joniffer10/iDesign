@@ -35,11 +35,11 @@
           UI Guidelines & Tokens
         </button>
 
-        <button type="button" class="theme-toggle-btn" aria-label="Toggle Dark Mode" @click="toggleDarkMode">
-          <Sun v-if="isDark" :size="15" />
-          <Moon v-else :size="15" />
-          {{ isDark ? 'Light' : 'Dark' }}
-        </button>
+        <IdThemeToggle
+          variant="button"
+          size="sm"
+          transition-effect="reveal"
+        />
 
         <button type="button" class="cli-btn" @click="$emit('open-install')">
           <Terminal :size="15" />
@@ -226,6 +226,8 @@ import {
   ChevronRight,
   Sparkles
 } from '@lucide/vue'
+import IdThemeToggle from './idesign/IdThemeToggle.vue'
+import { useTheme } from '../composables/useTheme'
 
 const props = defineProps({
   searchQuery: {
@@ -248,8 +250,10 @@ const emit = defineEmits([
 ])
 
 const searchInputRef = ref(null)
-const isDark = ref(false)
 const mobileMenuOpen = ref(false)
+
+const themeEngine = useTheme()
+const isDark = themeEngine.isDark
 
 const quickCategories = [
   { id: 'all', label: 'All' },
@@ -293,20 +297,8 @@ const focusSearch = () => {
 
 defineExpose({ focusSearch })
 
-const setDarkMode = (dark) => {
-  isDark.value = dark
-  if (dark) {
-    document.documentElement.classList.add('dark')
-    document.documentElement.classList.remove('light')
-  } else {
-    document.documentElement.classList.remove('dark')
-    document.documentElement.classList.add('light')
-  }
-  localStorage.setItem('idesign_dark', dark ? 'true' : 'false')
-}
-
-const toggleDarkMode = () => {
-  setDarkMode(!isDark.value)
+const toggleDarkMode = (event) => {
+  themeEngine.toggleTheme(event)
 }
 
 // Lock body scrolling when drawer is active
@@ -324,14 +316,6 @@ const handleKeyDown = (e) => {
 
 onMounted(() => {
   window.addEventListener('keydown', handleKeyDown)
-  const saved = localStorage.getItem('idesign_dark')
-  let dark = false
-  if (saved !== null) {
-    dark = saved === 'true'
-  } else {
-    dark = document.documentElement.classList.contains('dark') || window.matchMedia('(prefers-color-scheme: dark)').matches
-  }
-  setDarkMode(dark)
 })
 
 onUnmounted(() => {

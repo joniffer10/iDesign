@@ -46,7 +46,7 @@ export declare const IdCarousel: DefineComponent<{ showControls?: boolean, showD
 export declare const IdMacOsBanner: DefineComponent<{ modelValue?: boolean, appName?: string, title: string, message?: string, time?: string, iconBg?: string, dismissible?: boolean }>
 export declare const IdFileTree: DefineComponent<{ items: Array<any>, selectedId?: string | number, expandedIds?: Array<any> }>
 export declare const IdPopover: DefineComponent<{ position?: 'top' | 'bottom' | 'left' | 'right', title?: string, subtitle?: string, content?: string, body?: string, size?: IdSize, variant?: string, ui?: Record<string, any> }>
-export declare const IdDock: DefineComponent<{ items: Array<any>, activeId?: string | number, position?: 'bottom' | 'top' }>
+export declare const IdDock: DefineComponent<{ items: Array<{ id?: string | number, label?: string, tooltip?: string, icon?: any, iconBg?: string, active?: boolean, disabled?: boolean, badge?: number | string | boolean, badgeColor?: string, separator?: boolean, showDot?: boolean, onClick?: (e: MouseEvent) => void, [key: string]: any }>, activeId?: string | number, modelValue?: string | number, variant?: 'glass' | 'solid' | 'translucent' | 'tinted' | string, size?: IdSize, direction?: 'horizontal' | 'vertical' | 'auto', position?: 'bottom' | 'top' | 'left' | 'right' | 'none' | 'static' | 'relative', alignment?: 'start' | 'center' | 'end', color?: IdColor, magnification?: boolean | number, magnifyDistance?: number, tooltip?: boolean, disabled?: boolean, safeArea?: boolean, ariaLabel?: string, ui?: Record<string, any> }>
 export declare const IdAvatarGroup: DefineComponent<{ users: Array<any>, max?: number, size?: IdSize, shape?: 'circle' | 'squircle', variant?: string, direction?: IdDirection, framed?: boolean, interactive?: boolean, label?: string, ui?: Record<string, any> }>
 export declare const IdSparkline: DefineComponent<{ data?: Array<number>, color?: string, fill?: boolean, width?: number, height?: number, strokeWidth?: number }>
 export declare const IdStat: DefineComponent<{ label: string, value: string | number, unit?: string, change?: string, changeType?: 'positive' | 'negative' | 'neutral', description?: string, sparklineData?: Array<number> }>
@@ -95,6 +95,30 @@ export declare const IdFooter: DefineComponent<{ columns?: any[], copyrightText?
 export declare const IdBanner: DefineComponent<{ modelValue?: boolean, message?: string, icon?: string, actionLabel?: string, dismissible?: boolean, sticky?: boolean, align?: string, variant?: string, size?: IdSize, radius?: IdRadius, ui?: Record<string, any> }>
 export declare const IdSeparator: DefineComponent<{ orientation?: IdDirection, label?: string, spacing?: string, variant?: string, ui?: Record<string, any> }>
 export declare const IdKbd: DefineComponent<{ keys?: string | string[], size?: IdSize, variant?: string, ui?: Record<string, any> }>
+export declare const IdWallpaper: DefineComponent<{
+  variant?: 'solid' | 'gradient' | 'mesh' | 'radial' | 'aurora' | 'glow' | 'noise' | 'image' | string,
+  preset?: string,
+  direction?: string,
+  from?: string,
+  to?: string,
+  stops?: (string | { color: string, offset?: string })[],
+  intensity?: 'subtle' | 'soft' | 'normal' | 'vibrant' | number,
+  opacity?: number | string,
+  position?: 'top' | 'top-left' | 'top-right' | 'center' | 'bottom' | 'bottom-left' | 'bottom-right' | string,
+  size?: 'cover' | 'contain' | 'auto' | string,
+  blur?: 'none' | 'sm' | 'md' | 'lg' | 'xl' | number | string,
+  mask?: 'none' | 'fade-bottom' | 'fade-top' | 'fade-edges' | 'radial' | string,
+  overlay?: 'none' | 'vignette' | 'scrim' | 'frosted' | 'dots' | 'grid' | string,
+  imageSrc?: string,
+  imageAlt?: string,
+  noise?: boolean,
+  animated?: boolean,
+  fixed?: boolean,
+  as?: string,
+  color?: string,
+  ui?: Record<string, any>
+}>
+export declare const Wallpaper: typeof IdWallpaper
 
 // ── Advanced Form Inputs ──
 export declare const IdPinInput: DefineComponent<{
@@ -294,6 +318,41 @@ export declare const IdColorPicker: DefineComponent<{
     [key: string]: any
   }
 }>
+export declare const IdQRCode: DefineComponent<{
+  value?: string | number,
+  size?: IdSize | number | string,
+  variant?: 'default' | 'rounded' | 'minimal' | 'glass' | string,
+  color?: string,
+  background?: string,
+  errorCorrection?: 'L' | 'M' | 'Q' | 'H' | 'l' | 'm' | 'q' | 'h',
+  margin?: number,
+  radius?: IdRadius | number | string,
+  disabled?: boolean,
+  logo?: any,
+  logoSrc?: string,
+  logoIcon?: any,
+  logoSize?: number | string,
+  logoRadius?: string | number,
+  logoBackground?: string,
+  logoMargin?: number,
+  label?: string,
+  caption?: string,
+  labelPosition?: 'top' | 'bottom',
+  responsive?: boolean,
+  downloadable?: boolean,
+  ariaLabel?: string,
+  ui?: {
+    base?: string,
+    code?: string,
+    background?: string,
+    logo?: string,
+    label?: string,
+    caption?: string,
+    actions?: string,
+    [key: string]: any
+  }
+}>
+export declare const QRCode: typeof IdQRCode
 
 
 export declare const HeroTemplate: DefineComponent<{}>

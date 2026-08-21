@@ -18,6 +18,7 @@ export { default as IdCheckbox } from './components/idesign/IdCheckbox.vue'
 export { default as IdRadioGroup } from './components/idesign/IdRadioGroup.vue'
 export { default as IdSlider } from './components/idesign/IdSlider.vue'
 export { default as IdToggle } from './components/idesign/IdToggle.vue'
+export { default as IdThemeToggle } from './components/idesign/IdThemeToggle.vue'
 export { default as IdModal } from './components/idesign/IdModal.vue'
 export { default as IdBottomSheet } from './components/idesign/IdBottomSheet.vue'
 export { default as IdDrawer } from './components/idesign/IdDrawer.vue'
@@ -65,6 +66,9 @@ export { default as IdDonutChart } from './components/idesign/IdDonutChart.vue'
 export { default as IdMobileNavbar } from './components/idesign/IdMobileNavbar.vue'
 export { default as MobileNavbar } from './components/idesign/IdMobileNavbar.vue'
 export { default as IdTour } from './components/idesign/IdTour.vue'
+export { default as IdQRCode } from './components/idesign/IdQRCode.vue'
+export { default as QRCode } from './components/idesign/IdQRCode.vue'
+
 
 // ── Compound Form System ──
 export { default as IdForm } from './components/idesign/IdForm.vue'
@@ -100,6 +104,8 @@ export { default as IdFooter } from './components/idesign/IdFooter.vue'
 export { default as IdBanner } from './components/idesign/IdBanner.vue'
 export { default as IdSeparator } from './components/idesign/IdSeparator.vue'
 export { default as IdKbd } from './components/idesign/IdKbd.vue'
+export { default as IdWallpaper } from './components/idesign/IdWallpaper.vue'
+export { default as Wallpaper } from './components/idesign/IdWallpaper.vue'
 
 // ── Advanced Form Inputs ──
 export { default as IdPinInput } from './components/idesign/IdPinInput.vue'
@@ -127,6 +133,7 @@ export { useToast } from './composables/useToast'
 export { useModal } from './composables/useModal'
 export { useClipboard } from './composables/useClipboard'
 export { useBreakpoint, breakpoints } from './composables/useBreakpoint'
+export { useTheme } from './composables/useTheme'
 export { createIdesign, createUI, useIdesignConfig } from './composables/useIdesignConfig'
 
 
@@ -145,6 +152,7 @@ import IdCheckbox from './components/idesign/IdCheckbox.vue'
 import IdRadioGroup from './components/idesign/IdRadioGroup.vue'
 import IdSlider from './components/idesign/IdSlider.vue'
 import IdToggle from './components/idesign/IdToggle.vue'
+import IdThemeToggle from './components/idesign/IdThemeToggle.vue'
 import IdModal from './components/idesign/IdModal.vue'
 import IdBottomSheet from './components/idesign/IdBottomSheet.vue'
 import IdDrawer from './components/idesign/IdDrawer.vue'
@@ -220,16 +228,19 @@ import IdFooter from './components/idesign/IdFooter.vue'
 import IdBanner from './components/idesign/IdBanner.vue'
 import IdSeparator from './components/idesign/IdSeparator.vue'
 import IdKbd from './components/idesign/IdKbd.vue'
+import IdWallpaper from './components/idesign/IdWallpaper.vue'
 import IdPinInput from './components/idesign/IdPinInput.vue'
 import IdTimePicker from './components/idesign/IdTimePicker.vue'
 import IdTagInput from './components/idesign/IdTagInput.vue'
 import IdRating from './components/idesign/IdRating.vue'
 import IdNumberInput from './components/idesign/IdNumberInput.vue'
 import IdColorPicker from './components/idesign/IdColorPicker.vue'
+import IdQRCode from './components/idesign/IdQRCode.vue'
+
 
 const allComponents = {
   IdGlassNav, IdSegmentedControl, IdButton, IdPanel, IdPanelRow, IdCard, IdHeroCta,
-  IdInput, IdTextarea, IdSelect, IdCheckbox, IdRadioGroup, IdSlider, IdToggle,
+  IdInput, IdTextarea, IdSelect, IdCheckbox, IdRadioGroup, IdSlider, IdToggle, IdThemeToggle,
   IdModal, IdBottomSheet, IdDrawer, IdDropdownMenu, IdTooltip, IdTag, IdLiveDot,
   IdBadge, IdAvatar, IdProgress, IdSkeleton, IdSpinner, IdAccordion, IdTabs,
   IdAlert, IdDivider, IdBreadcrumbs, IdPagination, IdTable, IdFileUpload,
@@ -246,8 +257,11 @@ const allComponents = {
   IdDialog, IdDialogHeader, IdDialogTitle, IdDialogDescription, IdDialogBody, IdDialogFooter,
   // Hardware & Layout Components
   IdMacbookFrame, IdIpadFrame, IdSidebar, IdHeader, IdFooter, IdBanner, IdSeparator, IdKbd,
+  IdWallpaper, Wallpaper: IdWallpaper,
   // Advanced Form Inputs
-  IdPinInput, IdTimePicker, IdTagInput, IdRating, IdNumberInput, IdNumericStepper: IdNumberInput, IdColorPicker
+  IdPinInput, IdTimePicker, IdTagInput, IdRating, IdNumberInput, IdNumericStepper: IdNumberInput, IdColorPicker,
+  // Indicators & Data
+  IdQRCode, QRCode: IdQRCode
 }
 
 export default {

@@ -181,16 +181,25 @@
           </template>
 
           <template v-else-if="component.id === 'dock'">
-            <div style="position: relative; width: 100%; height: 120px; display: flex; align-items: flex-end; justify-content: center;">
+            <div style="position: relative; width: 100%; min-height: 140px; display: flex; align-items: center; justify-content: center; overflow: visible;">
               <IdDock
                 :items="[
                   { id: 'finder', label: 'Finder', icon: '📁', iconBg: '#007aff', active: true },
-                  { id: 'safari', label: 'Safari', icon: '🌐', iconBg: '#34c759' },
+                  { id: 'safari', label: 'Safari', icon: '🌐', iconBg: '#34c759', badge: 3 },
+                  { id: 'messages', label: 'Messages', icon: '💬', iconBg: '#30d158', badge: 'NEW' },
                   { id: 'notes', label: 'Notes', icon: '📝', iconBg: '#ff9500' },
                   { separator: true },
                   { id: 'settings', label: 'Settings', icon: '⚙️', iconBg: '#8e8e93' }
                 ]"
-                style="position: relative; bottom: 0;"
+                :variant="propState.variant || 'glass'"
+                :size="propState.size || 'md'"
+                :position="propState.position === 'none' ? 'none' : 'none'"
+                :alignment="propState.alignment || 'center'"
+                :direction="propState.direction || 'auto'"
+                :magnification="propState.magnification ?? true"
+                :tooltip="propState.tooltip ?? true"
+                :color="propState.color || 'blue'"
+                :disabled="propState.disabled || false"
               />
             </div>
           </template>
@@ -960,6 +969,33 @@
             </div>
           </template>
 
+          <template v-else-if="component.id === 'wallpaper'">
+            <div style="width: 100%; max-width: 680px; height: 360px; position: relative; border-radius: var(--r-panel); overflow: hidden; border: 1px solid var(--hairline); box-shadow: var(--sh-panel);">
+              <IdWallpaper
+                :variant="propState.variant || 'gradient'"
+                :theme="propState.theme || bgMode"
+                :intensity="propState.intensity || 'normal'"
+                :direction="propState.direction || '135deg'"
+                :mask="propState.mask || 'none'"
+                :overlay="propState.overlay || 'none'"
+                :animated="propState.animated || false"
+                :noise="propState.noise || false"
+              >
+                <div style="height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 28px; text-align: center; box-sizing: border-box;">
+                  <span style="font-size: 11px; font-weight: 750; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); margin-bottom: 8px;">LIQUID GLASS SYSTEM</span>
+                  <h3 style="font-size: 24px; font-weight: 750; letter-spacing: -0.025em; margin: 0 0 10px; color: var(--text);">Ambient Wallpaper Engine</h3>
+                  <p style="font-size: 13.5px; line-height: 1.5; color: var(--text-2); max-width: 440px; margin: 0 0 20px;">
+                    Calm, high-contrast, and hardware-accelerated backgrounds designed with Apple-grade restraint.
+                  </p>
+                  <div style="display: flex; gap: 10px; align-items: center;">
+                    <button type="button" style="background: var(--accent); color: #fff; border: none; height: 34px; padding: 0 18px; border-radius: var(--r-pill); font-size: 13px; font-weight: 600; cursor: pointer;">Explore Preset</button>
+                    <button type="button" style="background: var(--surface); color: var(--text); border: 1px solid var(--hairline); height: 34px; padding: 0 18px; border-radius: var(--r-pill); font-size: 13px; font-weight: 600; cursor: pointer;">Copy Tokens</button>
+                  </div>
+                </div>
+              </IdWallpaper>
+            </div>
+          </template>
+
           <template v-else-if="component.id === 'pin-input'">
             <IdPinInput
               :length="Number(propState.length) || 6"
@@ -1046,6 +1082,76 @@
             />
           </template>
 
+          <template v-else-if="component.id === 'separator' || component.id === 'divider'">
+            <div style="width: 100%; max-width: 480px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px;">
+              <div v-if="(propState.orientation || 'horizontal') === 'vertical'" style="display: flex; align-items: center; height: 120px; gap: 16px; background: var(--surface); padding: 16px 24px; border-radius: var(--r-panel); box-shadow: var(--sh-card); width: 100%; justify-content: center;">
+                <span style="font-size: 13px; font-weight: 500; color: var(--text);">Left Panel</span>
+                <IdSeparator
+                  orientation="vertical"
+                  :variant="propState.variant || 'hairline'"
+                  :spacing="propState.spacing || 'md'"
+                  :label="propState.label"
+                  :icon="propState.icon"
+                />
+                <span style="font-size: 13px; font-weight: 500; color: var(--text);">Right Panel</span>
+              </div>
+
+              <div v-else style="width: 100%; background: var(--surface); padding: 24px; border-radius: var(--r-panel); box-shadow: var(--sh-card);">
+                <div style="font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 4px;">Unified Surface Panel</div>
+                <div style="font-size: 12.5px; color: var(--text-2);">Top content section with hairline boundary.</div>
+                
+                <IdSeparator
+                  :orientation="propState.orientation || 'horizontal'"
+                  :variant="propState.variant || 'hairline'"
+                  :spacing="propState.spacing || 'md'"
+                  :label="propState.label"
+                  :icon="propState.icon"
+                />
+                
+                <div style="font-size: 12.5px; color: var(--text-2);">Bottom content section resting on the same continuous ground.</div>
+              </div>
+            </div>
+          </template>
+
+          <template v-else-if="component.id === 'theme-toggle'">
+            <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px; padding: 24px;">
+              <IdThemeToggle
+                :variant="propState.variant || 'button'"
+                :size="propState.size || 'md'"
+                :transition-effect="propState.transitionEffect || 'reveal'"
+                :show-label="propState.showLabel !== false && propState.showLabel !== 'false'"
+                :light-label="propState.lightLabel || 'Light'"
+                :dark-label="propState.darkLabel || 'Dark'"
+                :auto-label="propState.autoLabel || 'Auto'"
+                :animated="propState.animated !== false && propState.animated !== 'false'"
+                :disabled="propState.disabled === true || propState.disabled === 'true'"
+              />
+              <div style="font-size: 12.5px; color: var(--text-2); text-align: center; max-width: 320px;">
+                Click to switch themes with native smooth animated transitions.
+              </div>
+            </div>
+          </template>
+
+          <template v-else-if="component.id === 'qr-code'">
+            <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; padding: 24px;">
+              <IdQRCode
+                :key="`qr-${JSON.stringify(propState)}`"
+                :value="propState.value || 'https://idesign.io'"
+                :size="propState.size || 'md'"
+                :variant="propState.variant || 'default'"
+                :error-correction="propState.errorCorrection || 'M'"
+                :color="propState.color"
+                :background="propState.background"
+                :margin="Number(propState.margin ?? 2)"
+                :label="propState.label"
+                :caption="propState.caption"
+                :disabled="propState.disabled"
+                :logo-src="propState.logo ? 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=100&auto=format&fit=crop&q=80' : undefined"
+                :downloadable="propState.downloadable"
+                @download="toastInstance.success('QR Code SVG downloaded!')"
+              />
+            </div>
+          </template>
 
           <template v-else>
             <div style="text-align: center; color: var(--text-3); font-size: 14px;">
@@ -1625,6 +1731,7 @@ import IdFooter from './idesign/IdFooter.vue'
 import IdBanner from './idesign/IdBanner.vue'
 import IdSeparator from './idesign/IdSeparator.vue'
 import IdKbd from './idesign/IdKbd.vue'
+import IdWallpaper from './idesign/IdWallpaper.vue'
 import IdPinInput from './idesign/IdPinInput.vue'
 import IdTimePicker from './idesign/IdTimePicker.vue'
 import IdTagInput from './idesign/IdTagInput.vue'
@@ -1632,6 +1739,9 @@ import IdRating from './idesign/IdRating.vue'
 import IdNumberInput from './idesign/IdNumberInput.vue'
 import IdColorPicker from './idesign/IdColorPicker.vue'
 import IdMobileNavbar from './idesign/IdMobileNavbar.vue'
+import IdThemeToggle from './idesign/IdThemeToggle.vue'
+import IdQRCode from './idesign/IdQRCode.vue'
+
 
 import { Search, FolderOpen, Inbox, AlertCircle, Sparkles, Lock, Zap, Box, Folder, Check, Wifi, Bluetooth, Bell, Home, Compass, User } from '@lucide/vue'
 import { useToast } from '../composables/useToast'
@@ -1800,7 +1910,9 @@ const componentTagMap = {
   'banner': 'IdBanner',
   'separator': 'IdSeparator',
   'kbd': 'IdKbd',
-  'empty-state': 'IdEmpty'
+  'wallpaper': 'IdWallpaper',
+  'empty-state': 'IdEmpty',
+  'qr-code': 'IdQRCode'
 }
 
 const cliTargetName = computed(() => {
@@ -2007,6 +2119,9 @@ const componentEventsMap = {
   ],
   'file-upload': [
     { name: 'update:modelValue', payload: 'File | File[] | string', description: 'Emitted when valid files are dropped or selected.', trigger: 'File selection or drop', example: '<IdFileUpload v-model="files" />' }
+  ],
+  'qr-code': [
+    { name: 'download', payload: '{ svgContent, url }', description: 'Emitted when the SVG export action is clicked.', trigger: 'Save SVG button click', example: '<IdQRCode @download="handleDownload" />' }
   ]
 }
 
@@ -2068,6 +2183,13 @@ const componentSlotsMap = {
   'popover': [
     { name: 'trigger', purpose: 'Anchor element that triggers popover bubble.', props: '—', example: '<template #trigger><span>ℹ️</span></template>' },
     { name: 'default', purpose: 'Popover card body content.', props: '—', example: '<p>Helpful context.</p>' }
+  ],
+  'qr-code': [
+    { name: 'default', purpose: 'Optional inner children or container slot.', props: '—', example: '<IdQRCode />' },
+    { name: 'logo', purpose: 'Custom center icon or branding element override.', props: '—', example: '<template #logo><Zap :size="20" /></template>' },
+    { name: 'label', purpose: 'Custom top/bottom heading typography.', props: '—', example: '<template #label><h4>Scan with Phone</h4></template>' },
+    { name: 'caption', purpose: 'Custom secondary descriptive caption.', props: '—', example: '<template #caption><p>Point camera</p></template>' },
+    { name: 'actions', purpose: 'Custom bottom action buttons row.', props: '—', example: '<template #actions><IdButton size="sm">Save</IdButton></template>' }
   ]
 }
 
@@ -2097,7 +2219,8 @@ const componentUiKeysMap = {
   'table': { root: 'Table wrapper panel', headerBar: 'Top search/title bar', table: 'Native table element', thead: 'Header row container', th: 'Header cell', tr: 'Body row', td: 'Data cell', actions: 'Action cell' },
   'tabs': { root: 'Tab container', list: 'Pill navigation bar', tab: 'Tab button', active: 'Active indicator pill', panel: 'Active content container' },
   'bottom-sheet': { backdrop: 'Dim/blur backdrop', surface: 'Sheet surface panel', grabber: 'Top handle bar', header: 'Header area', body: 'Scrollable sheet content' },
-  'tag': { root: 'Tag pill container', label: 'Tag text', iconLeft: 'Leading icon', closeButton: 'Dismiss button' }
+  'tag': { root: 'Tag pill container', label: 'Tag text', iconLeft: 'Leading icon', closeButton: 'Dismiss button' },
+  'qr-code': { base: 'Outer container card', code: 'Inner SVG element', background: 'Frame surface wrapper', logo: 'Center logo container badge', label: 'Label typography container', caption: 'Caption description container', actions: 'Bottom action buttons container' }
 }
 
 const activeComponentUiKeys = computed(() => {

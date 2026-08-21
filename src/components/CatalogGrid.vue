@@ -273,6 +273,20 @@
             </div>
           </template>
 
+          <!-- Theme Toggle Mini -->
+          <template v-else-if="item.id === 'theme-toggle'">
+            <div class="mini-theme-toggle-box">
+              <div class="m-theme-pill">
+                <span class="m-theme-icon-sun">☀️</span>
+                <span class="m-theme-label">Light</span>
+              </div>
+              <div class="m-theme-pill dark active">
+                <span class="m-theme-icon-moon">🌙</span>
+                <span class="m-theme-label">Dark</span>
+              </div>
+            </div>
+          </template>
+
           <!-- Date Picker Mini -->
           <template v-else-if="item.id === 'date-picker'">
             <div class="mini-date-box">
@@ -699,6 +713,18 @@
             </div>
           </template>
 
+          <!-- Wallpaper & Background Gradient Mini -->
+          <template v-else-if="item.id === 'wallpaper'">
+            <div class="mini-wallpaper-box">
+              <div class="m-wall-aurora"></div>
+              <div class="m-wall-orb"></div>
+              <div class="m-wall-content">
+                <span class="m-wall-badge">LIQUID GLASS</span>
+                <span class="m-wall-title">Wallpaper</span>
+              </div>
+            </div>
+          </template>
+
           <!-- PIN & OTP Code Input Mini -->
           <template v-else-if="item.id === 'pin-input'">
             <div class="mini-pin-box">
@@ -1037,6 +1063,11 @@ const filteredComponents = computed(() => {
 .m-switch { width: 40px; height: 24px; border-radius: 999px; background: #34c759; padding: 2px; }
 .m-thumb { display: block; width: 20px; height: 20px; border-radius: 50%; background: #fff; transform: translateX(16px); }
 
+.mini-theme-toggle-box { display: flex; align-items: center; gap: 6px; background: var(--surface); padding: 4px 8px; border-radius: var(--r-pill); border: 1px solid var(--hairline); box-shadow: var(--shadow-xs); }
+.m-theme-pill { display: flex; align-items: center; gap: 4px; padding: 3px 8px; border-radius: var(--r-pill); font-size: 11.5px; font-weight: 600; color: var(--text-2); }
+.m-theme-pill.active { background: var(--track); color: var(--text); }
+.m-theme-pill.dark.active { background: #1c1c1e; color: #f5f5f7; }
+
 .mini-date-box { background: var(--surface); border: 1px solid var(--hairline); border-radius: 12px; padding: 8px 14px; display: flex; align-items: center; gap: 10px; font-size: 12px; font-weight: 600; color: var(--text); }
 .m-cal-badge { font-size: 10px; background: var(--hover); padding: 2px 6px; border-radius: 4px; color: var(--text-3); }
 
@@ -1348,6 +1379,66 @@ const filteredComponents = computed(() => {
 .m-color-dots { display: flex; gap: 4px; }
 .m-color-dots span { width: 10px; height: 10px; border-radius: 50%; }
 .m-color-dots span.active { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+/* Wallpaper */
+.mini-wallpaper-box {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg);
+}
+.m-wall-aurora {
+  position: absolute;
+  inset: -10%;
+  width: 120%;
+  height: 120%;
+  background: linear-gradient(135deg, rgba(0, 113, 227, 0.22) 0%, rgba(94, 92, 230, 0.15) 50%, rgba(48, 209, 88, 0.1) 100%);
+  filter: blur(20px);
+}
+.m-wall-orb {
+  position: absolute;
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  background: rgba(0, 113, 227, 0.28);
+  top: 10px;
+  right: 15px;
+  filter: blur(16px);
+}
+.m-wall-content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: saturate(180%) blur(12px);
+  -webkit-backdrop-filter: saturate(180%) blur(12px);
+  border: 1px solid var(--hairline);
+  padding: 6px 14px;
+  border-radius: var(--r-card);
+  box-shadow: var(--sh-card);
+}
+:root.dark .m-wall-content {
+  background: rgba(28, 28, 30, 0.7);
+}
+.m-wall-badge {
+  font-size: 9px;
+  font-weight: 750;
+  letter-spacing: 0.08em;
+  color: var(--accent);
+}
+.m-wall-title {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--text);
+}
 
 .generic-preview { display: flex; flex-direction: column; align-items: center; gap: 6px; font-size: 13px; font-weight: 650; color: var(--text-2); }
 .m-icon-box { font-size: 24px; color: var(--accent); }
