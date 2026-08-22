@@ -92,7 +92,7 @@
           </div>
 
           <div v-if="filteredOptions.length === 0" class="select-no-results">
-            {{ emptyText || 'No options found' }}
+            {{ emptyText || (searchQuery ? 'No matching options' : 'No options found') }}
           </div>
         </div>
       </div>
@@ -105,18 +105,19 @@
 <script setup>
 import { ref, computed, nextTick, onMounted, onBeforeUnmount, watch } from 'vue'
 import { useIdesignConfig } from '../../composables/useIdesignConfig'
+import { resolveVariant } from '../../composables/useVariant'
 
 const props = defineProps({
   modelValue: { type: [String, Number, null], default: null },
   options: { type: Array, required: true },
   label: String,
-  placeholder: { type: String, default: 'Select an option...' },
+  placeholder: { type: String, default: 'Select an option' },
   hint: String,
   disabled: Boolean,
   clearable: Boolean,
   searchable: Boolean,
-  searchPlaceholder: { type: String, default: 'Search options...' },
-  emptyText: { type: String, default: 'No matching options' },
+  searchPlaceholder: { type: String, default: 'Search...' },
+  emptyText: { type: String, default: undefined },
   size: { type: String, default: undefined },
   variant: { type: String, default: undefined },
   radius: { type: String, default: undefined },
@@ -128,7 +129,13 @@ const emit = defineEmits(['update:modelValue', 'change', 'search'])
 const config = useIdesignConfig('Select', props)
 const currentSize = computed(() => config.resolvedSize.value || 'md')
 const currentRadius = computed(() => config.resolvedRadius.value || 'md')
-const currentVariant = computed(() => config.resolvedVariant.value || 'default')
+const currentVariant = computed(() => {
+  const raw = config.resolvedVariant.value || 'default'
+  return resolveVariant(raw, null, {
+    'no-outline': 'borderless',
+    'no-border': 'borderless'
+  })
+})
 
 const selectRef = ref(null)
 const searchInputRef = ref(null)
@@ -312,11 +319,31 @@ onBeforeUnmount(() => document.removeEventListener('click', handleOutside))
   outline: none;
 }
 
-.variant-glass .select-wrapper {
-  background: rgba(255, 255, 255, 0.65); backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+.variant-glass.select-wrapper {
+  background: var(--variant-glass-bg); backdrop-filter: var(--variant-glass-backdrop);
+  -webkit-backdrop-filter: var(--variant-glass-backdrop); border: var(--variant-glass-border);
 }
-:root.dark .variant-glass .select-wrapper { background: rgba(28, 28, 30, 0.65); }
+.variant-glass.select-dropdown {
+  background: var(--variant-glass-bg); backdrop-filter: var(--variant-glass-backdrop);
+  -webkit-backdrop-filter: var(--variant-glass-backdrop); border: var(--variant-glass-border);
+  box-shadow: var(--variant-glass-shadow);
+}
+
+.variant-outline.select-wrapper {
+  border: var(--variant-outline-border); background: transparent;
+}
+
+.variant-soft.select-wrapper {
+  background: var(--variant-soft-bg); border: none; color: var(--variant-soft-color);
+}
+
+.variant-subtle.select-wrapper {
+  background: var(--variant-subtle-bg); border: var(--variant-subtle-border);
+}
+
+.variant-borderless.select-wrapper {
+  border: none; box-shadow: none; background: transparent;
+}
 
 .select-wrapper:focus-visible,
 .select-wrapper.is-focused { border-color: var(--accent); box-shadow: var(--focus-ring); }

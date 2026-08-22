@@ -165,6 +165,7 @@
 <script setup>
 import { computed, isVNode } from 'vue'
 import { useIdesignConfig } from '../../composables/useIdesignConfig'
+import { resolveVariant } from '../../composables/useVariant'
 
 let idCounter = 0
 
@@ -265,8 +266,8 @@ const isComponent = (comp) => comp && (typeof comp === 'object' || typeof comp =
 
 // Variant resolution
 const currentVariant = computed(() => {
-  const v = props.variant || config.resolvedVariant.value || 'full'
-  return v === 'default' ? 'full' : v
+  const raw = props.variant || config.resolvedVariant.value || 'full'
+  return resolveVariant(raw)
 })
 
 // Data mode vs single-value mode

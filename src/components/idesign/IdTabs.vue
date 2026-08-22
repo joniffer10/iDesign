@@ -42,6 +42,7 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { useIdesignConfig } from '../../composables/useIdesignConfig'
+import { resolveVariant } from '../../composables/useVariant'
 
 const props = defineProps({
   modelValue: { type: [String, Number], required: true },
@@ -57,7 +58,10 @@ const emit = defineEmits(['update:modelValue', 'change'])
 
 const config = useIdesignConfig('Tabs', props)
 const currentSize = computed(() => config.resolvedSize.value || 'md')
-const currentVariant = computed(() => config.resolvedVariant.value || 'default')
+const currentVariant = computed(() => {
+  const raw = config.resolvedVariant.value || 'default'
+  return resolveVariant(raw)
+})
 const currentColor = computed(() => {
   const c = config.resolvedColor.value || 'blue'
   if (c === 'default' || c === 'primary') return 'blue'
@@ -196,15 +200,32 @@ const handleKeydown = (e) => {
 
 /* Glass Variant */
 .variant-glass .tabs-list {
-  border-bottom: none; background: rgba(255, 255, 255, 0.65); backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px); border: 1px solid var(--hairline); padding: 4px;
-  border-radius: var(--r-pill); gap: 4px; box-shadow: var(--sh-card);
+  border-bottom: none; background: var(--variant-glass-bg); backdrop-filter: var(--variant-glass-backdrop);
+  -webkit-backdrop-filter: var(--variant-glass-backdrop); border: var(--variant-glass-border); padding: 4px;
+  border-radius: var(--r-pill); gap: 4px; box-shadow: var(--variant-glass-shadow-subtle);
 }
-:root.dark .variant-glass .tabs-list { background: rgba(28, 28, 30, 0.65); }
 .variant-glass .tab-trigger.active {
-  background: rgba(255, 255, 255, 0.88); color: var(--text); border-radius: var(--r-pill);
+  background: var(--surface); color: var(--text); border-radius: var(--r-pill); box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
-:root.dark .variant-glass .tab-trigger.active { background: rgba(255, 255, 255, 0.15); }
+
+/* Soft Variant */
+.variant-soft .tabs-list {
+  border-bottom: none; background: var(--variant-soft-bg); padding: 3px; border-radius: var(--r-pill); gap: 2px;
+}
+.variant-soft .tab-trigger { border-radius: var(--r-pill); color: var(--variant-soft-color); }
+.variant-soft .tab-trigger.active { background: var(--surface); color: var(--accent); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+
+/* Outline Variant */
+.variant-outline .tabs-list {
+  border: var(--variant-outline-border); border-radius: var(--r-pill); padding: 3px; gap: 2px;
+}
+.variant-outline .tab-trigger { border-radius: var(--r-pill); }
+.variant-outline .tab-trigger.active { background: var(--hover); color: var(--accent); }
+
+/* Borderless Variant */
+.variant-borderless .tabs-list {
+  border-bottom: none;
+}
 
 .tab-panel { padding: 20px 0; outline: none; }
 .tab-panel:focus-visible { box-shadow: var(--focus-ring); border-radius: var(--radius-sm); }

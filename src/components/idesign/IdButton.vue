@@ -48,6 +48,7 @@
 import { computed } from 'vue'
 import { Loader2 } from '@lucide/vue'
 import { useIdesignConfig } from '../../composables/useIdesignConfig'
+import { resolveVariant } from '../../composables/useVariant'
 
 const props = defineProps({
   label: String,
@@ -71,12 +72,30 @@ defineEmits(['click'])
 const config = useIdesignConfig('Button', props)
 const currentSize = computed(() => config.resolvedSize.value || 'md')
 const currentDensity = computed(() => config.resolvedDensity.value || 'comfortable')
-const currentRadius = computed(() => config.resolvedRadius.value || 'full')
+
+const currentRadius = computed(() => {
+  // pill variant forces full radius
+  const v = resolvedVariantRaw.value
+  if (v === 'pill') return 'full'
+  return config.resolvedRadius.value || 'full'
+})
+
+const resolvedVariantRaw = computed(() => {
+  const raw = config.resolvedVariant.value || 'default'
+  return resolveVariant(raw, null, {
+    'primary': 'solid',
+    'filled': 'solid',
+    'tinted': 'soft'
+  })
+})
 
 const currentVariant = computed(() => {
-  const v = config.resolvedVariant.value || 'default'
-  if (v === 'default' || v === 'primary') return 'primary'
-  if (v === 'soft' || v === 'subtle') return 'subtle'
+  const v = resolvedVariantRaw.value
+  // Map canonical variants to CSS class names
+  if (v === 'default' || v === 'solid') return 'primary'
+  if (v === 'soft') return 'soft'
+  if (v === 'subtle') return 'subtle'
+  if (v === 'pill') return 'primary' // pill changes radius, not surface treatment
   return v
 })
 
@@ -169,6 +188,17 @@ const isComponent = (val) => typeof val === 'object' || typeof val === 'function
 
 .btn-danger { background: #ff3b30; color: #ffffff; }
 .btn-danger:hover:not(.is-disabled) { background: #d70015; }
+
+.btn-soft {
+  background: var(--variant-soft-bg); color: var(--variant-soft-color); border: none;
+}
+.btn-soft:hover:not(.is-disabled) { background: var(--variant-soft-bg-hover); }
+
+.btn-hero {
+  background: var(--variant-hero-bg); border: var(--variant-hero-border);
+  color: var(--text); box-shadow: var(--variant-hero-shadow);
+}
+.btn-hero:hover:not(.is-disabled) { box-shadow: var(--variant-hero-shadow), var(--sh-lift); transform: translateY(-1px); }
 
 /* Custom Color Overrides for Primary */
 .color-green.btn-primary { background: #34c759; color: #ffffff; }

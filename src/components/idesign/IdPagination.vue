@@ -23,6 +23,7 @@
 import { computed } from 'vue'
 import { ChevronLeft, ChevronRight } from '@lucide/vue'
 import { useIdesignConfig } from '../../composables/useIdesignConfig'
+import { resolveVariant } from '../../composables/useVariant'
 
 const props = defineProps({
   modelValue: { type: Number, required: true },
@@ -39,7 +40,10 @@ const emit = defineEmits(['update:modelValue'])
 
 const config = useIdesignConfig('Pagination', props)
 const currentSize = computed(() => config.resolvedSize.value || 'md')
-const currentVariant = computed(() => config.resolvedVariant.value || 'default')
+const currentVariant = computed(() => {
+  const raw = config.resolvedVariant.value || 'default'
+  return resolveVariant(raw)
+})
 const currentColor = computed(() => {
   const c = config.resolvedColor.value || 'blue'
   if (c === 'default' || c === 'primary') return 'blue'
@@ -70,11 +74,19 @@ const visiblePages = computed(() => {
 .id-pagination { display: inline-flex; align-items: center; gap: 4px; font-family: var(--font); }
 
 .variant-glass {
-  padding: 4px 8px; border-radius: var(--r-pill); background: rgba(255, 255, 255, 0.65);
-  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-  border: 1px solid var(--hairline); box-shadow: var(--sh-card);
+  padding: 4px 8px; border-radius: var(--r-pill); background: var(--variant-glass-bg);
+  backdrop-filter: var(--variant-glass-backdrop); -webkit-backdrop-filter: var(--variant-glass-backdrop);
+  border: var(--variant-glass-border); box-shadow: var(--variant-glass-shadow-subtle);
 }
-:root.dark .variant-glass { background: rgba(28, 28, 30, 0.65); }
+
+.variant-soft {
+  padding: 4px 8px; border-radius: var(--r-pill); background: var(--variant-soft-bg);
+}
+
+.variant-subtle {
+  padding: 4px 8px; border-radius: var(--r-pill); background: var(--variant-subtle-bg);
+  border: var(--variant-subtle-border);
+}
 
 .size-sm .page-btn { min-width: 30px; height: 30px; font-size: 12.5px; }
 .size-md .page-btn { min-width: 36px; height: 36px; font-size: 14px; }

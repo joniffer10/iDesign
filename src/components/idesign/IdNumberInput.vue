@@ -215,6 +215,7 @@
 import { ref, computed, watch, onBeforeUnmount } from 'vue'
 import { Plus, Minus, ChevronUp, ChevronDown, Loader2 } from '@lucide/vue'
 import { useIdesignConfig } from '../../composables/useIdesignConfig'
+import { resolveVariant } from '../../composables/useVariant'
 
 const props = defineProps({
   modelValue: {
@@ -311,7 +312,10 @@ const currentSize = computed(() => config.resolvedSize.value || 'md')
 const currentRadius = computed(() => config.resolvedRadius.value || 'full')
 const currentDirection = computed(() => props.direction || config.resolvedDirection?.value || 'horizontal')
 const currentColor = computed(() => config.resolvedColor?.value || 'blue')
-const currentVariant = computed(() => config.resolvedVariant?.value || 'default')
+const currentVariant = computed(() => {
+  const raw = config.resolvedVariant?.value || 'default'
+  return resolveVariant(raw)
+})
 
 const inputId = computed(() => props.id || `id-stepper-${Math.random().toString(36).substring(2, 9)}`)
 const effectiveStep = computed(() => {

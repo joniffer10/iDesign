@@ -4,6 +4,16 @@ export type IdSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl'
 export type IdColor = 'default' | 'primary' | 'secondary' | 'success' | 'warning' | 'danger' | 'info' | string
 export type IdRadius = 'none' | 'sm' | 'md' | 'lg' | 'full' | string
 export type IdDirection = 'horizontal' | 'vertical'
+export type IdVariant = 'default' | 'solid' | 'outline' | 'soft' | 'subtle' | 'ghost' | 'glass' | 'borderless' | 'seamless' | 'hero' | 'pill' | string
+
+export declare function resolveVariant(variant?: string, allowedVariants?: string[], componentAliases?: Record<string, string>): string
+export declare function createVariantResolver(allowedVariants?: string[], componentAliases?: Record<string, string>): (variant?: string) => string
+export declare function isGlassVariant(variant?: string): boolean
+export declare function isSeamlessVariant(variant?: string): boolean
+export declare function isBorderlessVariant(variant?: string): boolean
+export declare function isPillVariant(variant?: string): boolean
+export declare const CANONICAL_VARIANTS: string[]
+export declare const VARIANT_ALIASES: Record<string, string>
 
 export declare const IdGlassNav: DefineComponent<{ title?: string }>
 export declare const IdSegmentedControl: DefineComponent<{ modelValue: string | number, options: Array<any>, theme?: string, variant?: 'default' | 'glass', size?: IdSize, ui?: Record<string, any> }>
@@ -41,7 +51,7 @@ export declare const IdTable: DefineComponent<{ columns: Array<{ key: string, la
 export declare const IdFileUpload: DefineComponent<{ modelValue?: Array<any> | any, src?: string, imageSrc?: string, preview?: string, accept?: string, multiple?: boolean, title?: string, hint?: string, label?: string, buttonLabel?: string, buttonVariant?: string, shape?: 'circle' | 'squircle' | 'rounded', aspectRatio?: string, size?: IdSize, variant?: 'default' | 'glass' | 'compact' | 'avatar' | 'button' | 'image-card' | string, disabled?: boolean, loading?: boolean, showFileList?: boolean, maxSize?: number, ui?: Record<string, any> }>
 export declare const IdConfirmDialog: DefineComponent<{ modelValue?: boolean, open?: boolean, title?: string, message?: string, description?: string, content?: string, confirmText?: string, cancelText?: string, icon?: any, danger?: boolean, loading?: boolean, confirmLoading?: boolean, disabled?: boolean, confirmDisabled?: boolean, cancelDisabled?: boolean, variant?: 'default' | 'centered' | 'centered-empty' | 'inset' | 'compact' | string, closeOnBackdrop?: boolean, closeOnOutsideClick?: boolean, closeOnEscape?: boolean, teleport?: boolean, ui?: Record<string, any> }>
 export declare const IdStack: DefineComponent<{ direction?: IdDirection, gap?: number | string, align?: string, justify?: string, wrap?: boolean, ui?: Record<string, any> }>
-export { default as IdCommandPalette } from './components/idesign/IdCommandPalette.vue'
+export declare const IdCommandPalette: DefineComponent<{ modelValue?: boolean, groups?: Array<any>, placeholder?: string, variant?: 'solid' | 'seamless' | 'glass' | string, size?: IdSize, ui?: Record<string, any> }>
 export declare const IdCarousel: DefineComponent<{ showControls?: boolean, showDots?: boolean }>
 export declare const IdMacOsBanner: DefineComponent<{ modelValue?: boolean, appName?: string, title: string, message?: string, time?: string, iconBg?: string, dismissible?: boolean }>
 export declare const IdFileTree: DefineComponent<{ items: Array<any>, selectedId?: string | number, expandedIds?: Array<any> }>
@@ -115,10 +125,80 @@ export declare const IdWallpaper: DefineComponent<{
   animated?: boolean,
   fixed?: boolean,
   as?: string,
-  color?: string,
   ui?: Record<string, any>
 }>
 export declare const Wallpaper: typeof IdWallpaper
+
+export declare const IdTerminal: DefineComponent<{
+  modelValue?: Array<any> | string,
+  lines?: Array<any> | string,
+  commands?: Array<any> | string,
+  title?: string,
+  subtitle?: string,
+  directory?: string,
+  path?: string,
+  prompt?: string,
+  variant?: 'default' | 'minimal' | 'macos' | 'glass' | string,
+  size?: IdSize,
+  radius?: IdRadius,
+  theme?: 'dark' | 'light' | 'auto' | 'system' | string,
+  color?: IdColor,
+  controls?: 'macos' | 'dots' | 'none' | boolean | string,
+  showControls?: boolean,
+  showHeader?: boolean,
+  showFooter?: boolean,
+  showLineNumbers?: boolean,
+  showCopy?: boolean,
+  showCopyLabel?: boolean,
+  showClear?: boolean,
+  loading?: boolean,
+  running?: boolean,
+  status?: 'idle' | 'running' | 'success' | 'error' | 'warning' | 'info' | string,
+  statusText?: string,
+  interactive?: boolean,
+  inputPlaceholder?: string,
+  cursor?: 'block' | 'line' | 'underline' | boolean | string,
+  height?: string | number,
+  maxHeight?: string | number,
+  autoScroll?: boolean,
+  ui?: {
+    base?: string,
+    header?: string,
+    controls?: string,
+    title?: string,
+    subtitle?: string,
+    body?: string,
+    line?: string,
+    lineNumber?: string,
+    prompt?: string,
+    command?: string,
+    output?: string,
+    actions?: string,
+    input?: string,
+    cursor?: string,
+    footer?: string,
+    scrollArea?: string,
+    [key: string]: any
+  }
+}>
+export declare const Terminal: typeof IdTerminal
+
+export declare const IdQRCode: DefineComponent<{
+  value: string,
+  size?: IdSize | number | string,
+  variant?: 'default' | 'card' | 'glass' | 'bordered' | 'minimal' | string,
+  errorCorrection?: 'L' | 'M' | 'Q' | 'H' | string,
+  color?: string,
+  background?: string,
+  margin?: number,
+  label?: string,
+  caption?: string,
+  disabled?: boolean,
+  downloadable?: boolean,
+  logoSrc?: string,
+  ui?: Record<string, any>
+}>
+export declare const QRCode: typeof IdQRCode
 
 // ── Advanced Form Inputs ──
 export declare const IdPinInput: DefineComponent<{
@@ -353,6 +433,100 @@ export declare const IdQRCode: DefineComponent<{
   }
 }>
 export declare const QRCode: typeof IdQRCode
+
+export declare const IdDottedActivity: DefineComponent<{
+  data?: Array<number | { date?: string | Date; value?: number; count?: number; intensity?: number; label?: string; tooltip?: string; [key: string]: any }>,
+  rows?: number,
+  cols?: number,
+  columns?: number,
+  variant?: 'default' | 'rounded' | 'square' | 'minimal' | string,
+  color?: 'accent' | 'heat' | 'success' | 'mono' | string,
+  size?: IdSize | number | string,
+  gap?: string | number,
+  radius?: IdRadius | number | string,
+  thresholds?: number[],
+  max?: number,
+  showTooltip?: boolean,
+  teleportTooltip?: boolean,
+  tooltipFormatter?: (dot: any, index: number) => string,
+  showLegend?: boolean,
+  showLabels?: boolean,
+  showStats?: boolean,
+  totalLabel?: string,
+  legendLessLabel?: string,
+  legendMoreLabel?: string,
+  disabled?: boolean,
+  readonly?: boolean,
+  responsive?: boolean,
+  modelValue?: any,
+  ui?: {
+    base?: string,
+    grid?: string,
+    dot?: string,
+    active?: string,
+    tooltip?: string,
+    header?: string,
+    legend?: string,
+    [key: string]: any
+  }
+}>
+export declare const DottedActivity: typeof IdDottedActivity
+
+export declare const IdMarquee: DefineComponent<{
+  direction?: 'left' | 'right' | 'up' | 'down' | string,
+  vertical?: boolean,
+  reverse?: boolean,
+  speed?: 'slow' | 'normal' | 'fast' | number | string,
+  duration?: number | string,
+  gap?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | number | string,
+  pauseOnHover?: boolean,
+  pauseOnInteraction?: boolean,
+  paused?: boolean,
+  disabled?: boolean,
+  repeat?: number | string,
+  fade?: boolean | 'sm' | 'md' | 'lg' | string,
+  fadeWidth?: number | string,
+  variant?: 'default' | 'subtle' | 'soft' | 'glass' | 'hero' | string,
+  size?: 'sm' | 'md' | 'lg' | string,
+  ariaLabel?: string,
+  ui?: {
+    base?: string,
+    track?: string,
+    content?: string,
+    fadeStart?: string,
+    fadeEnd?: string,
+    [key: string]: any
+  }
+}>
+export declare const Marquee: typeof IdMarquee
+
+export declare const IdDateRangePicker: DefineComponent<{
+  modelValue?: { start?: string; end?: string } | [string, string] | any,
+  startDate?: string,
+  endDate?: string,
+  label?: string,
+  placeholder?: string,
+  separator?: string,
+  min?: string,
+  max?: string,
+  disabledDates?: any[] | ((date: string) => boolean),
+  disabled?: boolean,
+  readonly?: boolean,
+  size?: 'sm' | 'md' | 'lg' | string,
+  variant?: 'default' | 'subtle' | 'soft' | 'glass' | 'hero' | string,
+  color?: string,
+  doubleMonth?: boolean,
+  ui?: {
+    base?: string,
+    input?: string,
+    popover?: string,
+    header?: string,
+    cell?: string,
+    range?: string,
+    [key: string]: any
+  }
+}>
+export declare const DateRangePicker: typeof IdDateRangePicker
 
 
 export declare const HeroTemplate: DefineComponent<{}>

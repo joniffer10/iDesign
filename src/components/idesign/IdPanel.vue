@@ -7,6 +7,7 @@
 <script setup>
 import { computed } from 'vue'
 import { useIdesignConfig } from '../../composables/useIdesignConfig'
+import { resolveVariant } from '../../composables/useVariant'
 
 const props = defineProps({
   size: {
@@ -31,7 +32,13 @@ const props = defineProps({
 const config = useIdesignConfig('Panel', props)
 const currentSize = computed(() => config.resolvedSize.value || 'md')
 const currentRadius = computed(() => config.resolvedRadius.value || 'xl')
-const currentVariant = computed(() => config.resolvedVariant.value || 'default')
+const currentVariant = computed(() => {
+  const raw = config.resolvedVariant.value || 'default'
+  return resolveVariant(raw, null, {
+    'no-dividers': 'seamless',
+    'no-divider': 'seamless'
+  })
+})
 </script>
 
 <style scoped>
@@ -52,12 +59,34 @@ const currentVariant = computed(() => config.resolvedVariant.value || 'default')
 .radius-full { border-radius: var(--r-pill) !important; }
 
 .variant-glass {
-  background: rgba(255, 255, 255, 0.75);
-  backdrop-filter: saturate(180%) blur(20px);
-  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  background: var(--variant-glass-bg);
+  backdrop-filter: var(--variant-glass-backdrop);
+  -webkit-backdrop-filter: var(--variant-glass-backdrop);
 }
-:root.dark .variant-glass {
-  background: rgba(28, 28, 30, 0.78);
+
+.variant-solid {
+  background: var(--variant-solid-bg);
+  color: var(--variant-solid-color);
+  border: none;
+}
+.variant-solid :deep(.id-panel-row) { color: rgba(255, 255, 255, 0.95); border-top-color: rgba(255, 255, 255, 0.15); }
+.variant-solid :deep(.row-title) { color: #ffffff; }
+.variant-solid :deep(.row-subtitle) { color: rgba(255, 255, 255, 0.7); }
+
+.variant-subtle {
+  background: var(--variant-subtle-bg);
+  border: var(--variant-subtle-border);
+  box-shadow: none;
+}
+
+.variant-borderless {
+  border: none !important;
+  box-shadow: none !important;
+  background: var(--surface);
+}
+
+.variant-seamless :deep(.id-panel-row + .id-panel-row) {
+  border-top: none !important;
 }
 
 .variant-inset {

@@ -4,6 +4,7 @@
 <script setup>
 import { computed } from 'vue'
 import { useIdesignConfig } from '../../composables/useIdesignConfig'
+import { resolveVariant } from '../../composables/useVariant'
 
 const props = defineProps({
   direction: { type: String, default: undefined },
@@ -13,7 +14,7 @@ const props = defineProps({
 
 const config = useIdesignConfig('Divider', props)
 const currentDirection = computed(() => config.resolvedDirection.value || 'horizontal')
-const currentVariant = computed(() => config.resolvedVariant.value || 'hairline')
+const currentVariant = computed(() => resolveVariant(props.variant || config.resolvedVariant.value || 'hairline'))
 </script>
 <style scoped>
 .id-divider.horizontal { width: 100%; height: 1px; }

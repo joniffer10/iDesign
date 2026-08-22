@@ -1,5 +1,5 @@
 <template>
-  <div :class="['id-stat-card', `size-${size}`, `variant-${variant}`]">
+  <div :class="['id-stat-card', `size-${currentSize}`, `variant-${currentVariant}`, config.mergedUi.value.base]">
     <div class="stat-header">
       <span class="stat-label">{{ label }}</span>
       <span v-if="change" :class="['stat-badge', changeType]">
@@ -24,6 +24,8 @@
 <script setup>
 import { computed } from 'vue'
 import IdSparkline from './IdSparkline.vue'
+import { useIdesignConfig } from '../../composables/useIdesignConfig'
+import { resolveVariant } from '../../composables/useVariant'
 
 const props = defineProps({
   label: { type: String, required: true },
@@ -33,8 +35,15 @@ const props = defineProps({
   changeType: { type: String, default: 'positive', validator: v => ['positive', 'negative', 'neutral'].includes(v) },
   description: String,
   sparklineData: Array,
-  size: { type: String, default: 'md', validator: v => ['sm', 'md', 'lg'].includes(v) },
-  variant: { type: String, default: 'default', validator: v => ['default', 'glass', 'hero'].includes(v) }
+  size: { type: String, default: undefined },
+  variant: { type: String, default: undefined }
+})
+
+const config = useIdesignConfig('Stat', props)
+const currentSize = computed(() => props.size || config.resolvedSize.value || 'md')
+const currentVariant = computed(() => {
+  const raw = props.variant || config.resolvedVariant.value || 'default'
+  return resolveVariant(raw)
 })
 
 const sparklineHeight = computed(() => props.size === 'sm' ? 28 : props.size === 'lg' ? 48 : 38)
@@ -58,13 +67,26 @@ const sparklineColor = computed(() => {
 .size-lg { padding: 26px; }
 
 .variant-glass {
-  background: rgba(255, 255, 255, 0.65); backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  background: var(--variant-glass-bg); backdrop-filter: var(--variant-glass-backdrop);
+  -webkit-backdrop-filter: var(--variant-glass-backdrop); border: var(--variant-glass-border);
 }
-:root.dark .variant-glass { background: rgba(28, 28, 30, 0.65); }
+
+.variant-solid {
+  background: var(--variant-solid-bg); color: var(--variant-solid-color); border: none;
+}
+.variant-solid .stat-label, .variant-solid .stat-unit, .variant-solid .stat-desc { color: rgba(255, 255, 255, 0.85); }
+.variant-solid .stat-value { color: #ffffff; }
+
+.variant-subtle {
+  background: var(--variant-subtle-bg); border: var(--variant-subtle-border); box-shadow: none;
+}
+
+.variant-borderless {
+  border: none !important; box-shadow: none !important; background: transparent;
+}
 
 .variant-hero {
-  background: var(--grad-cta); color: #ffffff; border: none;
+  background: var(--variant-hero-bg); color: #ffffff; border: var(--variant-hero-border); box-shadow: var(--variant-hero-shadow);
 }
 .variant-hero .stat-label, .variant-hero .stat-unit, .variant-hero .stat-desc { color: rgba(255, 255, 255, 0.85); }
 .variant-hero .stat-value { color: #ffffff; }

@@ -231,6 +231,7 @@ import { AlertTriangle, Info } from '@lucide/vue'
 import IdModal from './IdModal.vue'
 import IdButton from './IdButton.vue'
 import { useIdesignConfig } from '../../composables/useIdesignConfig'
+import { resolveVariant } from '../../composables/useVariant'
 
 const props = defineProps({
   modelValue: { type: Boolean, default: false },
@@ -280,6 +281,8 @@ const isLoading = computed(() => props.loading || props.confirmLoading || false)
 const isDisabled = computed(() => props.disabled || props.confirmDisabled || false)
 
 const modalVariant = computed(() => {
+  const v = resolveVariant(currentVariant.value)
+  if (v === 'glass' || v === 'solid' || v === 'seamless' || v === 'borderless') return v
   if (isInsetVariant.value) return 'seamless'
   if (isCenteredVariant.value) return 'alert'
   return 'default'

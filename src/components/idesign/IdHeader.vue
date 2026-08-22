@@ -1,5 +1,5 @@
 <template>
-  <header :class="['id-header', `variant-${variant}`, { 'is-sticky': sticky, 'has-border': border }]">
+  <header :class="['id-header', `variant-${currentVariant}`, { 'is-sticky': sticky, 'has-border': border }, config.mergedUi.value.base]">
     <div class="header-inner">
       <!-- Left: Title / Breadcrumbs / Brand -->
       <div class="header-start">
@@ -30,7 +30,11 @@
 </template>
 
 <script setup>
-defineProps({
+import { computed } from 'vue'
+import { useIdesignConfig } from '../../composables/useIdesignConfig'
+import { resolveVariant } from '../../composables/useVariant'
+
+const props = defineProps({
   title: String,
   subtitle: String,
   eyebrow: String,
@@ -44,10 +48,16 @@ defineProps({
   },
   variant: {
     type: String,
-    default: 'default',
-    validator: v => ['default', 'glass', 'transparent'].includes(v)
+    default: undefined
+  },
+  ui: {
+    type: Object,
+    default: () => ({})
   }
 })
+
+const config = useIdesignConfig('Header', props)
+const currentVariant = computed(() => resolveVariant(props.variant || config.resolvedVariant.value || 'default'))
 </script>
 
 <style scoped>
@@ -70,12 +80,22 @@ defineProps({
 }
 
 .variant-glass {
-  background: rgba(255, 255, 255, 0.8);
-  backdrop-filter: saturate(180%) blur(20px);
-  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  background: var(--variant-glass-bg);
+  backdrop-filter: var(--variant-glass-backdrop);
+  -webkit-backdrop-filter: var(--variant-glass-backdrop);
 }
-:root.dark .variant-glass {
-  background: rgba(28, 28, 30, 0.8);
+
+.variant-solid {
+  background: var(--variant-solid-bg);
+  color: var(--variant-solid-color);
+  border: none;
+}
+.variant-solid .header-title,
+.variant-solid .header-eyebrow,
+.variant-solid .header-subtitle { color: #ffffff; }
+
+.variant-subtle {
+  background: var(--variant-subtle-bg);
 }
 
 .variant-transparent {

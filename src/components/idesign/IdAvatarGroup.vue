@@ -87,6 +87,7 @@
 import { computed } from 'vue'
 import IdAvatar from './IdAvatar.vue'
 import { useIdesignConfig } from '../../composables/useIdesignConfig'
+import { resolveVariant } from '../../composables/useVariant'
 
 const props = defineProps({
   users: { type: Array, required: true },
@@ -105,7 +106,7 @@ defineEmits(['click-avatar', 'click-overflow'])
 
 const config = useIdesignConfig('AvatarGroup', props)
 const currentSize = computed(() => config.resolvedSize.value || 'md')
-const currentVariant = computed(() => config.resolvedVariant.value || 'stacked')
+const currentVariant = computed(() => resolveVariant(props.variant || config.resolvedVariant.value || 'stacked'))
 const currentDirection = computed(() => config.resolvedDirection.value || 'row')
 
 const visibleUsers = computed(() => (props.users || []).slice(0, props.max))

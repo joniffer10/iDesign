@@ -280,6 +280,42 @@ const otp = ref('')
 
 ---
 
+---
+
+## 🎨 Standardized Canonical Variant System
+
+Every component across the library adheres to a shared visual language powered by `variants.css` and the `resolveVariant` composable:
+
+| Canonical Variant | Visual Meaning & Liquid Glass Characteristic | Typical Components |
+|:---|:---|:---|
+| `solid` / `default` | Opaque solid surface (`#ffffff` light / `#1c1c1e` dark) + 2-layer elevation shadow. | Button, Panel, Card, Modal, Sheet |
+| `soft` | Low-contrast tinted accent ground with saturated colored text. | Badge, Tag, Button, Input |
+| `subtle` | Micro-contrast background (`var(--hover)`), faint hairline boundary. | Card, Stat, Input, Textarea |
+| `outline` | 1px hairline border (`var(--hairline)`), transparent/solid interior. | Button, Input, Select, Badge, Tag |
+| `ghost` | Transparent background, visible hairline or background only on hover/focus. | Button, Action icons, Table rows |
+| `glass` | Frosted translucency (`backdrop-filter: saturate(180%) blur(20px)`). Overlapping layers only. | Nav, Modal, Popover, Dock, Hero CTA |
+| `hero` | Signature gradient accent glow (`var(--grad-cta)` / `var(--grad-blue)`). | Hero CTA, Featured Cards, Badges |
+| `borderless` | Clean flat surface without outline borders; relies on whitespace separation. | Input, Select, Table, Card |
+| `seamless` | Unified continuous panel without dividing hairlines. Anti-fragmentation. | Panel, Modal, Sheet, Table, Drawer |
+| `pill` | Full capsule border-radius (`--r-pill: 999px`). | Buttons, Tags, Segmented Controls, Nav |
+
+### Automatic Semantic Aliases
+`resolveVariant` intelligently maps common synonyms:
+- `clean`, `plain`, `no-dividers` $\rightarrow$ `seamless`
+- `no-border`, `no-outline` $\rightarrow$ `borderless`
+- `filled`, `primary` $\rightarrow$ `solid`
+
+---
+
+## 🎮 Interactive Live Preview Sandbox
+
+Explore, experiment, and test every component prop directly in the built-in documentation playground:
+- **Real-Time Prop Controls**: Segmented pills, switches, sliders, color swatches, and text inputs for every public prop.
+- **Dynamic Code Snippets**: Copy-paste ready Vue 3 and Nuxt 3 snippets synchronized with your custom configuration.
+- **1-Click Reset to Defaults**: Restores component specifications with a single click.
+
+---
+
 ## 🛠️ Runtime Theming & Formatting Helpers
 
 Use `useIdesignConfig` in any component to dynamically adapt themes, RTL, and localization:
@@ -312,7 +348,7 @@ const formattedDate = formatDate(new Date())           // "Aug 19, 2026"
 
 ## 🧪 Testing & Verification
 
-Run the comprehensive 94-test Vitest suite:
+Run the comprehensive Vitest suite:
 
 ```bash
 npm test

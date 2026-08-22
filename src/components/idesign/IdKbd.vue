@@ -10,6 +10,7 @@
 <script setup>
 import { computed } from 'vue'
 import { useIdesignConfig } from '../../composables/useIdesignConfig'
+import { resolveVariant } from '../../composables/useVariant'
 
 const props = defineProps({
   keys: {
@@ -32,7 +33,10 @@ const props = defineProps({
 
 const config = useIdesignConfig('Kbd', props)
 const currentSize = computed(() => config.resolvedSize.value || 'md')
-const currentVariant = computed(() => config.resolvedVariant.value || 'default')
+const currentVariant = computed(() => {
+  const raw = config.resolvedVariant.value || 'default'
+  return resolveVariant(raw)
+})
 
 const symbolMap = {
   cmd: '⌘',
@@ -114,19 +118,29 @@ const formattedKeys = computed(() => {
 
 /* Variants */
 .variant-glass {
-  background: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-}
-:root.dark .variant-glass {
-  background: rgba(255, 255, 255, 0.12);
-  color: #f5f5f7;
+  background: var(--variant-glass-bg);
+  backdrop-filter: var(--variant-glass-backdrop);
+  -webkit-backdrop-filter: var(--variant-glass-backdrop);
+  border: var(--variant-glass-border);
 }
 
 .variant-outline {
   background: transparent;
   box-shadow: none;
-  border-color: var(--faint);
+  border: var(--variant-outline-border);
+}
+
+.variant-soft {
+  background: var(--variant-soft-bg);
+  color: var(--variant-soft-color);
+  border: none;
+  box-shadow: none;
+}
+
+.variant-subtle {
+  background: var(--variant-subtle-bg);
+  border: var(--variant-subtle-border);
+  box-shadow: none;
 }
 
 .kbd-key {

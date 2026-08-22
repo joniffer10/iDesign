@@ -682,13 +682,25 @@
 
           <template v-else-if="component.id === 'date-picker'">
             <div style="width: 100%; max-width: 320px;">
-              <IdDatePicker v-model="demoDate" :label="propState.label || 'Select Date'" />
+              <IdDatePicker
+                v-model="demoDate"
+                :label="propState.label || 'Select Date'"
+                :placeholder="propState.placeholder || 'Select date...'"
+                :variant="propState.variant || 'default'"
+                :size="propState.size || 'md'"
+                :clearable="propState.clearable !== false"
+                :disabled="!!propState.disabled"
+              />
             </div>
           </template>
 
           <template v-else-if="component.id === 'carousel'">
             <div style="width: 100%; max-width: 500px;">
-              <IdCarousel :show-dots="propState.showDots" :show-controls="propState.showControls">
+              <IdCarousel
+                :show-dots="propState.showDots !== false"
+                :show-controls="propState.showControls !== false"
+                :variant="propState.variant || 'default'"
+              >
                 <IdCard title="Vision Studio Pro" subtitle="Spatial Computing" variant="framed" />
                 <IdCard title="Studio Book Pro" subtitle="Mind-blowing speed" variant="glass" />
                 <IdCard title="Studio Tab Pro" subtitle="Ultra Retina XDR" variant="hero" />
@@ -711,6 +723,8 @@
           <template v-else-if="component.id === 'file-tree'">
             <div style="width: 100%; max-width: 320px; background: var(--surface); border: 1px solid var(--hairline); border-radius: 12px; padding: 10px;">
               <IdFileTree
+                :variant="propState.variant || 'default'"
+                :size="propState.size || 'md'"
                 :items="[
                   { id: '1', name: 'src', children: [{ id: '2', name: 'App.vue' }, { id: '3', name: 'components', children: [{ id: '4', name: 'Navbar.vue' }] }] },
                   { id: '5', name: 'package.json' }
@@ -744,10 +758,15 @@
           <template v-else-if="component.id === 'command-palette'">
             <div style="display: flex; flex-direction: column; align-items: center; gap: 12px;">
               <IdButton variant="primary" @click="demoCommandOpen = true">Trigger Command Palette (⌘K)</IdButton>
-              <IdCommandPalette v-model="demoCommandOpen" :groups="[
-                { title: 'Navigation', items: [{ id: '1', label: 'Go to Components', shortcut: '⌘C' }, { id: '2', label: 'View Tokens', shortcut: '⌘T' }] },
-                { title: 'Actions', items: [{ id: '3', label: 'Copy Installation CLI', shortcut: '⌘I' }] }
-              ]" />
+              <IdCommandPalette
+                v-model="demoCommandOpen"
+                :variant="propState.variant || 'solid'"
+                :placeholder="propState.placeholder || 'Type a command or search...'"
+                :groups="[
+                  { title: 'Navigation', items: [{ id: '1', label: 'Go to Components', shortcut: '⌘C' }, { id: '2', label: 'View Tokens', shortcut: '⌘T' }] },
+                  { title: 'Actions', items: [{ id: '3', label: 'Copy Installation CLI', shortcut: '⌘I' }] }
+                ]"
+              />
             </div>
           </template>
 
@@ -1153,6 +1172,102 @@
             </div>
           </template>
 
+          <template v-else-if="component.id === 'terminal'">
+            <div style="width: 100%; max-width: 620px; padding: 12px; box-sizing: border-box;">
+              <IdTerminal
+                :key="`term-${JSON.stringify(propState)}`"
+                :lines="[
+                  '$ pnpm add @idesign/vue',
+                  'Packages: +42',
+                  '++++++++++++++++++++++++++++++++++++++++++',
+                  'Progress: resolved 120, reused 115, downloaded 5, added 42, done',
+                  '✓ Dependencies installed in 1.4s',
+                  '$ npx idesign init --template vue3',
+                  'ℹ Initializing Liquid Glass design tokens...',
+                  '✓ Created src/styles/tokens.css',
+                  '✓ Configured Vite resolver @idesign/vue/resolver',
+                  '✓ Liquid Glass component library ready!'
+                ]"
+                :title="propState.title || 'bash — 80×24'"
+                :subtitle="propState.subtitle || '~/projects/idesign'"
+                :variant="propState.variant || 'default'"
+                :size="propState.size || 'md'"
+                :theme="propState.theme || 'dark'"
+                :prompt="propState.prompt || '$'"
+                :show-line-numbers="propState.showLineNumbers === true || propState.showLineNumbers === 'true'"
+                :show-copy="propState.showCopy !== false && propState.showCopy !== 'false'"
+                :show-clear="propState.showClear === true || propState.showClear === 'true'"
+                :interactive="propState.interactive !== false && propState.interactive !== 'false'"
+                :loading="propState.loading === true || propState.loading === 'true'"
+                :status="propState.status || 'idle'"
+                @command="(cmd) => toastInstance.success(`Executed command: ${cmd}`)"
+                @copy="toastInstance.success('Terminal output copied to clipboard!')"
+                @clear="toastInstance.info('Terminal cleared')"
+                @close="toastInstance.warning('Terminal closed')"
+              />
+            </div>
+          </template>
+
+          <template v-else-if="component.id === 'dotted-activity'">
+            <div style="width: 100%; max-width: 640px; padding: 12px; box-sizing: border-box;">
+              <IdDottedActivity
+                :variant="propState.variant || 'default'"
+                :color="propState.color || 'accent'"
+                :size="propState.size || 'md'"
+                :gap="propState.gap || 'xs'"
+                :rows="Number(propState.rows) || 7"
+                :show-legend="propState.showLegend !== false && propState.showLegend !== 'false'"
+                :show-labels="propState.showLabels !== false && propState.showLabels !== 'false'"
+                :show-stats="propState.showStats !== false && propState.showStats !== 'false'"
+                :disabled="propState.disabled === true || propState.disabled === 'true'"
+                :readonly="propState.readonly === true || propState.readonly === 'true'"
+              />
+            </div>
+          </template>
+
+          <template v-else-if="component.id === 'marquee'">
+            <div style="width: 100%; max-width: 680px; padding: 16px; box-sizing: border-box;">
+              <IdMarquee
+                :variant="propState.variant || 'default'"
+                :size="propState.size || 'md'"
+                :direction="propState.direction || 'left'"
+                :speed="propState.speed || 'normal'"
+                :gap="propState.gap || 'md'"
+                :vertical="propState.vertical === true || propState.vertical === 'true'"
+                :reverse="propState.reverse === true || propState.reverse === 'true'"
+                :fade="propState.fade !== false && propState.fade !== 'false'"
+                :pause-on-hover="propState.pauseOnHover !== false && propState.pauseOnHover !== 'false'"
+                :pause-on-interaction="propState.pauseOnInteraction === true || propState.pauseOnInteraction === 'true'"
+                :disabled="propState.disabled === true || propState.disabled === 'true'"
+              >
+                <IdTag variant="accent">Vue 3</IdTag>
+                <IdTag variant="heat">Nuxt 3</IdTag>
+                <IdTag variant="indigo">TypeScript</IdTag>
+                <IdTag variant="live">Vite Engine</IdTag>
+                <IdTag variant="subtle">Liquid Glass</IdTag>
+                <IdTag variant="accent">Spatial UI</IdTag>
+                <IdTag variant="hero">Apple Design</IdTag>
+              </IdMarquee>
+            </div>
+          </template>
+
+          <template v-else-if="component.id === 'date-range-picker'">
+            <div style="width: 100%; max-width: 440px; padding: 12px; box-sizing: border-box;">
+              <IdDateRangePicker
+                :label="propState.label || 'Reservation Dates'"
+                :placeholder="propState.placeholder || 'Select date range...'"
+                :size="propState.size || 'md'"
+                :variant="propState.variant || 'default'"
+                :double-month="propState.doubleMonth === true || propState.doubleMonth === 'true'"
+                :disabled="propState.disabled === true || propState.disabled === 'true'"
+                :readonly="propState.readonly === true || propState.readonly === 'true'"
+              />
+            </div>
+          </template>
+
+
+
+
           <template v-else>
             <div style="text-align: center; color: var(--text-3); font-size: 14px;">
               Preview for this component is rendered from the code snippet.
@@ -1163,37 +1278,157 @@
 
         <!-- Prop Controls Drawer -->
         <div v-if="hasProps" class="controls-panel">
-          <div class="controls-title">Interactive Props</div>
-          <div class="props-grid">
-            <div v-for="(spec, key) in component.props" :key="key" class="prop-item">
-              <label class="prop-label">{{ key }}</label>
-              
-              <input
-                v-if="spec.type === 'text'"
-                v-model="propState[key]"
-                type="text"
-                class="prop-input"
-              />
+          <div class="controls-panel-header">
+            <div class="controls-header-left">
+              <span class="controls-icon-box">
+                <Sliders :size="13" />
+              </span>
+              <span class="controls-title">Interactive Props Sandbox</span>
+              <span class="props-count-badge">{{ Object.keys(component.props).length }} props</span>
+              <span v-if="modifiedPropsCount > 0" class="props-modified-badge">
+                {{ modifiedPropsCount }} modified
+              </span>
+            </div>
 
-              <input
-                v-else-if="spec.type === 'number'"
-                v-model.number="propState[key]"
-                type="number"
-                class="prop-input"
-              />
-
-              <select
-                v-else-if="spec.type === 'select'"
-                v-model="propState[key]"
-                class="prop-select"
+            <div class="controls-header-right">
+              <button
+                type="button"
+                :class="['reset-props-btn', { 'is-active': modifiedPropsCount > 0 }]"
+                :disabled="modifiedPropsCount === 0"
+                title="Reset all props to default values"
+                @click="resetProps"
               >
-                <option v-for="opt in spec.options" :key="opt" :value="opt">{{ opt }}</option>
-              </select>
+                <RotateCcw :size="12" class="reset-icon" />
+                <span>Reset Defaults</span>
+              </button>
+            </div>
+          </div>
 
-              <IdToggle
-                v-else-if="spec.type === 'boolean'"
-                v-model="propState[key]"
-              />
+          <div class="props-grid">
+            <div
+              v-for="(spec, key) in component.props"
+              :key="key"
+              :class="['prop-item', `type-${spec.type}`, { 'is-modified': isPropModified(key) }]"
+            >
+              <div class="prop-item-header">
+                <label class="prop-label">
+                  {{ key }}
+                  <span v-if="isPropModified(key)" class="modified-dot" title="Modified from default" />
+                </label>
+                <span class="prop-type-tag">{{ getPropTypeLabel(spec) }}</span>
+              </div>
+
+              <!-- 1. Select / Enum Control -->
+              <template v-if="spec.type === 'select'">
+                <!-- Segmented Pills for <= 4 options -->
+                <div v-if="spec.options && spec.options.length <= 4" class="segmented-prop-control">
+                  <button
+                    v-for="opt in spec.options"
+                    :key="opt"
+                    type="button"
+                    :class="['seg-prop-btn', { active: propState[key] === opt }]"
+                    @click="propState[key] = opt"
+                  >
+                    {{ opt }}
+                  </button>
+                </div>
+                <!-- Dropdown Select for > 4 options -->
+                <div v-else class="prop-select-wrap">
+                  <select
+                    v-model="propState[key]"
+                    class="prop-select"
+                  >
+                    <option v-for="opt in spec.options" :key="opt" :value="opt">{{ opt }}</option>
+                  </select>
+                  <span class="select-chevron">▾</span>
+                </div>
+              </template>
+
+              <!-- 2. Boolean Toggle -->
+              <template v-else-if="spec.type === 'boolean'">
+                <div class="boolean-control-row">
+                  <IdToggle
+                    v-model="propState[key]"
+                    size="sm"
+                  />
+                  <span :class="['boolean-state-pill', { 'is-true': !!propState[key] }]">
+                    {{ propState[key] ? 'true' : 'false' }}
+                  </span>
+                </div>
+              </template>
+
+              <!-- 3. Number / Range Slider -->
+              <template v-else-if="spec.type === 'number'">
+                <div v-if="spec.min !== undefined && spec.max !== undefined" class="slider-control-wrap">
+                  <input
+                    v-model.number="propState[key]"
+                    type="range"
+                    :min="spec.min"
+                    :max="spec.max"
+                    :step="spec.step || 1"
+                    class="prop-slider"
+                  />
+                  <span class="slider-val-badge">{{ propState[key] }}</span>
+                </div>
+                <div v-else class="number-input-wrap">
+                  <input
+                    v-model.number="propState[key]"
+                    type="number"
+                    :step="spec.step || 1"
+                    class="prop-input prop-number-input"
+                  />
+                </div>
+              </template>
+
+              <!-- 4. Color Palette Picker -->
+              <template v-else-if="spec.type === 'color'">
+                <div class="color-swatches-wrap">
+                  <div class="color-swatches-row">
+                    <button
+                      v-for="c in (spec.options || ['blue', 'indigo', 'green', 'orange', 'red', 'purple', 'gray'])"
+                      :key="c"
+                      type="button"
+                      :class="['color-swatch-btn', `color-${c}`, { active: propState[key] === c }]"
+                      :title="c"
+                      @click="propState[key] = c"
+                    >
+                      <span class="swatch-inner" :style="{ background: getColorHex(c) }" />
+                    </button>
+                  </div>
+                  <input
+                    v-model="propState[key]"
+                    type="text"
+                    class="prop-input color-text-input"
+                    placeholder="e.g. blue or #0071e3"
+                  />
+                </div>
+              </template>
+
+              <!-- 5. Text Input with Clear Button -->
+              <template v-else>
+                <div class="text-input-wrap">
+                  <input
+                    v-model="propState[key]"
+                    type="text"
+                    class="prop-input"
+                    :placeholder="spec.placeholder || 'Enter value...'"
+                  />
+                  <button
+                    v-if="propState[key]"
+                    type="button"
+                    class="clear-input-btn"
+                    title="Clear text"
+                    @click="propState[key] = ''"
+                  >
+                    <X :size="11" />
+                  </button>
+                </div>
+              </template>
+
+              <!-- Prop Description Tooltip/Helper -->
+              <div v-if="spec.description" class="prop-description">
+                {{ spec.description }}
+              </div>
             </div>
           </div>
         </div>
@@ -1715,6 +1950,8 @@ import IdGrid from './idesign/IdGrid.vue'
 import IdBarChart from './idesign/IdBarChart.vue'
 import IdPieChart from './idesign/IdPieChart.vue'
 import IdTour from './idesign/IdTour.vue'
+import IdDottedActivity from './idesign/IdDottedActivity.vue'
+
 import HeroTemplate from './templates/HeroTemplate.vue'
 import ProductShowcaseTemplate from './templates/ProductShowcaseTemplate.vue'
 import AiChatTemplate from './templates/AiChatTemplate.vue'
@@ -1741,9 +1978,14 @@ import IdColorPicker from './idesign/IdColorPicker.vue'
 import IdMobileNavbar from './idesign/IdMobileNavbar.vue'
 import IdThemeToggle from './idesign/IdThemeToggle.vue'
 import IdQRCode from './idesign/IdQRCode.vue'
+import IdTerminal from './idesign/IdTerminal.vue'
+import IdMarquee from './idesign/IdMarquee.vue'
+import IdDateRangePicker from './idesign/IdDateRangePicker.vue'
 
 
-import { Search, FolderOpen, Inbox, AlertCircle, Sparkles, Lock, Zap, Box, Folder, Check, Wifi, Bluetooth, Bell, Home, Compass, User } from '@lucide/vue'
+
+
+import { Search, FolderOpen, Inbox, AlertCircle, Sparkles, Lock, Zap, Box, Folder, Check, Wifi, Bluetooth, Bell, Home, Compass, User, Sliders, RotateCcw, X, Palette, Info } from '@lucide/vue'
 import { useToast } from '../composables/useToast'
 
 const iconMap = {
@@ -1841,6 +2083,54 @@ const hasProps = computed(() => {
   return props.component && props.component.props && Object.keys(props.component.props).length > 0
 })
 
+const isPropModified = (key) => {
+  if (!props.component || !props.component.props || !props.component.props[key]) return false
+  return propState[key] !== props.component.props[key].default
+}
+
+const modifiedPropsCount = computed(() => {
+  if (!props.component || !props.component.props) return 0
+  let count = 0
+  for (const k of Object.keys(props.component.props)) {
+    if (propState[k] !== props.component.props[k].default) count++
+  }
+  return count
+})
+
+const resetProps = () => {
+  if (!props.component || !props.component.props) return
+  Object.keys(props.component.props).forEach(k => {
+    propState[k] = props.component.props[k].default
+  })
+  emit('toast', `Restored all ${props.component.name} props to default`)
+}
+
+const getPropTypeLabel = (spec) => {
+  if (!spec) return 'any'
+  if (spec.type === 'select') return 'enum'
+  if (spec.type === 'boolean') return 'bool'
+  if (spec.type === 'number') return 'number'
+  if (spec.type === 'color') return 'color'
+  return spec.type || 'string'
+}
+
+const getColorHex = (c) => {
+  const map = {
+    'blue': '#0071e3',
+    'indigo': '#5e5ce6',
+    'green': '#30d158',
+    'orange': '#ff6b00',
+    'red': '#ff3b30',
+    'purple': '#af52de',
+    'teal': '#00c7be',
+    'yellow': '#ffcc00',
+    'gray': '#8e8e93',
+    'black': '#1d1d1f',
+    'white': '#ffffff'
+  }
+  return map[c] || c
+}
+
 const componentTagMap = {
   'button': 'IdButton',
   'liquid-button': 'IdButton',
@@ -1912,7 +2202,9 @@ const componentTagMap = {
   'kbd': 'IdKbd',
   'wallpaper': 'IdWallpaper',
   'empty-state': 'IdEmpty',
-  'qr-code': 'IdQRCode'
+  'qr-code': 'IdQRCode',
+  'terminal': 'IdTerminal',
+  'dotted-activity': 'IdDottedActivity'
 }
 
 const cliTargetName = computed(() => {
@@ -2122,6 +2414,14 @@ const componentEventsMap = {
   ],
   'qr-code': [
     { name: 'download', payload: '{ svgContent, url }', description: 'Emitted when the SVG export action is clicked.', trigger: 'Save SVG button click', example: '<IdQRCode @download="handleDownload" />' }
+  ],
+  'terminal': [
+    { name: 'update:modelValue', payload: 'string[]', description: 'Emitted when terminal output lines change.', trigger: 'Output append or clear', example: '<IdTerminal v-model="lines" />' },
+    { name: 'command', payload: 'string', description: 'Emitted when a command is entered and submitted via Enter key.', trigger: 'Enter key in interactive prompt', example: '<IdTerminal @command="runCommand" />' },
+    { name: 'submit', payload: 'string', description: 'Emitted on command prompt form submission.', trigger: 'Form submit', example: '<IdTerminal @submit="runCommand" />' },
+    { name: 'copy', payload: 'string', description: 'Emitted when all terminal text is copied to clipboard.', trigger: 'Copy button click', example: '<IdTerminal @copy="onCopied" />' },
+    { name: 'clear', payload: 'void', description: 'Emitted when terminal output is cleared.', trigger: 'Clear button click', example: '<IdTerminal @clear="onCleared" />' },
+    { name: 'close', payload: 'void', description: 'Emitted when red macOS window dot is clicked.', trigger: 'Red window button click', example: '<IdTerminal @close="closeTerminal" />' }
   ]
 }
 
@@ -2190,6 +2490,17 @@ const componentSlotsMap = {
     { name: 'label', purpose: 'Custom top/bottom heading typography.', props: '—', example: '<template #label><h4>Scan with Phone</h4></template>' },
     { name: 'caption', purpose: 'Custom secondary descriptive caption.', props: '—', example: '<template #caption><p>Point camera</p></template>' },
     { name: 'actions', purpose: 'Custom bottom action buttons row.', props: '—', example: '<template #actions><IdButton size="sm">Save</IdButton></template>' }
+  ],
+  'terminal': [
+    { name: 'default', purpose: 'Raw multiline terminal content or custom slotted markup.', props: '—', example: '<IdTerminal>\\n$ pnpm test\\n✓ 12 passed\\n</IdTerminal>' },
+    { name: 'header', purpose: 'Custom window header and titlebar override.', props: '—', example: '<template #header><div class="custom-titlebar">My Shell</div></template>' },
+    { name: 'title', purpose: 'Custom window title and subtitle layout.', props: '—', example: '<template #title><span>zsh — production</span></template>' },
+    { name: 'controls', purpose: 'Custom window traffic light control buttons.', props: '—', example: '<template #controls><span class="dot" /></template>' },
+    { name: 'actions', purpose: 'Custom header actions (buttons, icons, switches).', props: '—', example: '<template #actions><button>Reload</button></template>' },
+    { name: 'line', purpose: 'Custom scoped renderer for individual output lines.', props: '{ line, index, type }', example: '<template #line="{ line }"><span class="my-line">{{ line.text }}</span></template>' },
+    { name: 'prompt', purpose: 'Custom CLI prompt symbol renderer.', props: '{ prompt }', example: '<template #prompt="{ prompt }"><span class="prompt-icon">⚡</span></template>' },
+    { name: 'cursor', purpose: 'Custom blinking cursor indicator.', props: '—', example: '<template #cursor><span class="cursor-bar">|</span></template>' },
+    { name: 'footer', purpose: 'Bottom status bar and metrics area.', props: '—', example: '<template #footer><span>Ready</span></template>' }
   ]
 }
 
@@ -2220,7 +2531,24 @@ const componentUiKeysMap = {
   'tabs': { root: 'Tab container', list: 'Pill navigation bar', tab: 'Tab button', active: 'Active indicator pill', panel: 'Active content container' },
   'bottom-sheet': { backdrop: 'Dim/blur backdrop', surface: 'Sheet surface panel', grabber: 'Top handle bar', header: 'Header area', body: 'Scrollable sheet content' },
   'tag': { root: 'Tag pill container', label: 'Tag text', iconLeft: 'Leading icon', closeButton: 'Dismiss button' },
-  'qr-code': { base: 'Outer container card', code: 'Inner SVG element', background: 'Frame surface wrapper', logo: 'Center logo container badge', label: 'Label typography container', caption: 'Caption description container', actions: 'Bottom action buttons container' }
+  'qr-code': { base: 'Outer container card', code: 'Inner SVG element', background: 'Frame surface wrapper', logo: 'Center logo container badge', label: 'Label typography container', caption: 'Caption description container', actions: 'Bottom action buttons container' },
+  'terminal': {
+    base: 'Outer window container card',
+    header: 'Window title bar chrome',
+    controls: 'macOS window dots container',
+    title: 'Window title typography',
+    subtitle: 'Directory badge container',
+    body: 'Scrollable terminal content body',
+    line: 'Terminal line row wrapper',
+    lineNumber: 'Line number gutter',
+    prompt: 'CLI prompt symbol span',
+    command: 'Command text span',
+    output: 'Output text block',
+    actions: 'Header action buttons container',
+    input: 'Interactive prompt input wrapper',
+    cursor: 'Blinking cursor element',
+    footer: 'Bottom status bar'
+  }
 }
 
 const activeComponentUiKeys = computed(() => {
@@ -2635,48 +2963,368 @@ const activeRelatedComponents = computed(() => {
   color:                 #f5f5f7;
 }
 
+/* ──────────────────────────────────────────────────────────
+   CONTROLS PANEL (Apple-grade interactive prop sandbox)
+   ────────────────────────────────────────────────────────── */
 .controls-panel {
-  padding: 16px;
-  background: var(--hover);
+  padding: 16px 20px;
+  background: var(--surface);
   border-top: 1px solid var(--hairline);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.controls-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.controls-header-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.controls-icon-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  background: rgba(0, 113, 227, 0.08);
+  color: var(--accent);
 }
 
 .controls-title {
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 650;
+  color: var(--text);
+  letter-spacing: -0.01em;
+}
+
+.props-count-badge {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-3);
+  background: var(--hover);
+  border: 1px solid var(--hairline);
+  padding: 2px 7px;
+  border-radius: var(--r-pill);
+  font-family: var(--mono);
+}
+
+.props-modified-badge {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--heat);
+  background: rgba(255, 107, 0, 0.08);
+  border: 1px solid rgba(255, 107, 0, 0.2);
+  padding: 2px 8px;
+  border-radius: var(--r-pill);
+  font-family: var(--mono);
+}
+
+.reset-props-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 5px 10px;
+  border-radius: var(--r-pill);
+  border: 1px solid var(--hairline);
+  background: var(--hover);
   color: var(--text-2);
-  margin-bottom: 12px;
+  cursor: pointer;
+  transition: all 0.15s var(--ease-out-quart);
+}
+
+.reset-props-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.reset-props-btn.is-active:not(:disabled) {
+  background: rgba(0, 113, 227, 0.08);
+  border-color: rgba(0, 113, 227, 0.2);
+  color: var(--accent);
+}
+
+.reset-props-btn.is-active:hover:not(:disabled) {
+  background: rgba(0, 113, 227, 0.14);
+  transform: translateY(-1px);
 }
 
 .props-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
   gap: 12px;
 }
 
 .prop-item {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
+  background: var(--hover);
+  border: 1px solid var(--hairline);
+  border-radius: 12px;
+  padding: 10px 12px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.prop-item.is-modified {
+  border-color: rgba(0, 113, 227, 0.28);
+  background: rgba(0, 113, 227, 0.03);
+}
+
+.prop-item-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
 }
 
 .prop-label {
-  font-size: 12px;
+  font-size: 11.5px;
+  font-weight: 650;
+  color: var(--text);
+  font-family: var(--mono);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.modified-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+.prop-type-tag {
+  font-size: 9.5px;
   font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
   color: var(--text-3);
+  background: var(--surface);
+  border: 1px solid var(--hairline);
+  padding: 1px 5px;
+  border-radius: 4px;
   font-family: var(--mono);
 }
 
-.prop-input, .prop-select {
-  height: 34px;
+/* Segmented Pill prop control */
+.segmented-prop-control {
+  display: flex;
+  background: var(--surface);
+  border: 1px solid var(--hairline);
+  border-radius: 8px;
+  padding: 2px;
+  gap: 2px;
+  overflow: hidden;
+}
+
+.seg-prop-btn {
+  flex: 1;
+  border: none;
+  background: transparent;
+  padding: 5px 6px;
+  border-radius: 6px;
+  font-size: 11.5px;
+  font-weight: 550;
+  color: var(--text-2);
+  cursor: pointer;
+  transition: all 0.15s var(--ease-out-quart);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  text-align: center;
+}
+
+.seg-prop-btn.active {
+  background: var(--hover);
+  color: var(--text);
+  font-weight: 650;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+/* Prop inputs & selects */
+.prop-select-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.prop-select {
+  width: 100%;
+  height: 32px;
   border-radius: 8px;
   border: 1px solid var(--hairline);
-  padding: 0 10px;
+  padding: 0 24px 0 9px;
   font-family: var(--font);
-  font-size: 13px;
+  font-size: 12.5px;
   background: var(--surface);
   color: var(--text);
   outline: none;
+  appearance: none;
+  cursor: pointer;
+}
+
+.select-chevron {
+  position: absolute;
+  right: 8px;
+  font-size: 10px;
+  color: var(--text-3);
+  pointer-events: none;
+}
+
+.prop-input {
+  width: 100%;
+  height: 32px;
+  border-radius: 8px;
+  border: 1px solid var(--hairline);
+  padding: 0 9px;
+  font-family: var(--font);
+  font-size: 12.5px;
+  background: var(--surface);
+  color: var(--text);
+  outline: none;
+}
+
+.text-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.clear-input-btn {
+  position: absolute;
+  right: 6px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: none;
+  background: var(--hover);
+  color: var(--text-3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.clear-input-btn:hover {
+  background: var(--faint);
+  color: var(--text);
+}
+
+/* Boolean control row */
+.boolean-control-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 2px 0;
+}
+
+.boolean-state-pill {
+  font-size: 11px;
+  font-weight: 600;
+  font-family: var(--mono);
+  padding: 2px 7px;
+  border-radius: 5px;
+  background: var(--surface);
+  color: var(--text-3);
+  border: 1px solid var(--hairline);
+}
+
+.boolean-state-pill.is-true {
+  color: var(--live);
+  background: rgba(48, 209, 88, 0.08);
+  border-color: rgba(48, 209, 88, 0.2);
+}
+
+/* Range slider wrap */
+.slider-control-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.prop-slider {
+  flex: 1;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+.slider-val-badge {
+  font-size: 11px;
+  font-weight: 650;
+  font-family: var(--mono);
+  background: var(--surface);
+  border: 1px solid var(--hairline);
+  padding: 2px 6px;
+  border-radius: 5px;
+  color: var(--text);
+  min-width: 28px;
+  text-align: center;
+}
+
+/* Color swatches wrap */
+.color-swatches-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.color-swatches-row {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.color-swatch-btn {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  padding: 0;
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.15s;
+}
+
+.color-swatch-btn:hover {
+  transform: scale(1.15);
+}
+
+.color-swatch-btn.active {
+  border-color: var(--accent);
+}
+
+.swatch-inner {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+.color-text-input {
+  height: 26px;
+  font-size: 11.5px;
+}
+
+.prop-description {
+  font-size: 10.5px;
+  line-height: 1.35;
+  color: var(--text-3);
+  margin-top: 1px;
 }
 
 /* 3. Installation Panel */

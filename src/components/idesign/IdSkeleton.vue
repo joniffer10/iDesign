@@ -10,12 +10,12 @@
 <script setup>
 import { computed } from 'vue'
 import { useIdesignConfig } from '../../composables/useIdesignConfig'
+import { resolveVariant } from '../../composables/useVariant'
 
 const props = defineProps({
   variant: {
     type: String,
-    default: 'rect',
-    validator: v => ['rect', 'text', 'circle', 'card'].includes(v)
+    default: undefined
   },
   size: {
     type: String,
@@ -32,7 +32,7 @@ const props = defineProps({
 const config = useIdesignConfig('Skeleton', props)
 const currentSize = computed(() => config.resolvedSize.value || 'md')
 const currentRadius = computed(() => config.resolvedRadius.value || 'md')
-const currentVariant = computed(() => config.resolvedVariant.value || 'rect')
+const currentVariant = computed(() => resolveVariant(props.variant || config.resolvedVariant.value || 'rect'))
 
 const defaultHeights = computed(() => ({
   sm: { text: '12px', circle: '36px', card: '100px', rect: '60px' },

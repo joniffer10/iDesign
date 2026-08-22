@@ -1,5 +1,5 @@
 <template>
-  <footer :class="['id-footer', `variant-${variant}`, { 'has-border': border }]">
+  <footer :class="['id-footer', `variant-${currentVariant}`, { 'has-border': border }, config.mergedUi.value.base]">
     <div class="footer-inner">
       <!-- Main Content / Link Columns -->
       <div v-if="columns && columns.length > 0" class="footer-grid">
@@ -39,6 +39,8 @@
 
 <script setup>
 import { computed } from 'vue'
+import { useIdesignConfig } from '../../composables/useIdesignConfig'
+import { resolveVariant } from '../../composables/useVariant'
 
 const props = defineProps({
   columns: {
@@ -65,11 +67,16 @@ const props = defineProps({
   },
   variant: {
     type: String,
-    default: 'default',
-    validator: v => ['default', 'glass', 'muted'].includes(v)
+    default: undefined
+  },
+  ui: {
+    type: Object,
+    default: () => ({})
   }
 })
 
+const config = useIdesignConfig('Footer', props)
+const currentVariant = computed(() => resolveVariant(props.variant || config.resolvedVariant.value || 'default'))
 const currentYear = computed(() => new Date().getFullYear())
 </script>
 
@@ -91,13 +98,16 @@ const currentYear = computed(() => new Date().getFullYear())
 }
 
 .variant-glass {
-  background: rgba(255, 255, 255, 0.75);
-  backdrop-filter: saturate(180%) blur(20px);
-  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  background: var(--variant-glass-bg);
+  backdrop-filter: var(--variant-glass-backdrop);
+  -webkit-backdrop-filter: var(--variant-glass-backdrop);
 }
-:root.dark .variant-glass {
-  background: rgba(28, 28, 30, 0.75);
+
+.variant-solid {
+  background: var(--variant-solid-bg);
+  color: var(--variant-solid-color);
 }
+.variant-solid .col-title, .variant-solid .col-link, .variant-solid .footer-copy { color: rgba(255, 255, 255, 0.9); }
 
 .footer-inner {
   max-width: 1120px;

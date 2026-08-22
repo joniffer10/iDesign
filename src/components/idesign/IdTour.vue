@@ -6,7 +6,7 @@
         <div class="tour-backdrop"></div>
 
         <!-- Liquid Glass Tour Card -->
-        <div class="tour-card" role="dialog" aria-modal="true" :aria-label="currentStepData.title">
+        <div :class="['tour-card', `variant-${currentVariant}`, config.mergedUi.value.base]" role="dialog" aria-modal="true" :aria-label="currentStepData.title">
           <!-- Top Background Glow Orbs -->
           <div class="tour-glow-orb orb-top"></div>
           <div class="tour-glow-orb orb-bottom"></div>
@@ -111,6 +111,8 @@
 <script setup>
 import { ref, computed, watch } from 'vue'
 import { Sparkles } from '@lucide/vue'
+import { useIdesignConfig } from '../../composables/useIdesignConfig'
+import { resolveVariant } from '../../composables/useVariant'
 
 const props = defineProps({
   modelValue: {
@@ -152,10 +154,21 @@ const props = defineProps({
   skipLabel: {
     type: String,
     default: 'Skip'
+  },
+  variant: {
+    type: String,
+    default: undefined
+  },
+  ui: {
+    type: Object,
+    default: () => ({})
   }
 })
 
 const emit = defineEmits(['update:modelValue', 'update:activeStep', 'change', 'finish', 'close'])
+
+const config = useIdesignConfig('Tour', props)
+const currentVariant = computed(() => resolveVariant(props.variant || config.resolvedVariant.value || 'glass'))
 
 const currentStep = ref(props.activeStep)
 

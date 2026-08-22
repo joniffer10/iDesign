@@ -1,6 +1,6 @@
 <template>
-  <div :class="['id-avatar-wrap', `size-${currentSize}`, { 'has-status': !!status }, config.mergedUi.value.base]" role="img" :aria-label="alt || name || 'Avatar'">
-    <div :class="['id-avatar', `shape-${shape}`, { 'is-framed': framed }, config.mergedUi.value.avatar]">
+  <div :class="['id-avatar-wrap', `size-${currentSize}`, `variant-${currentVariant}`, { 'has-status': !!status }, config.mergedUi.value.base]" role="img" :aria-label="alt || name || 'Avatar'">
+    <div :class="['id-avatar', `shape-${shape}`, `variant-${currentVariant}`, { 'is-framed': framed }, config.mergedUi.value.avatar]">
       <slot>
         <img v-if="src && !imgError" :src="src" :alt="alt || name" :class="['avatar-img', config.mergedUi.value.image]" @error="imgError = true" />
         
@@ -20,6 +20,7 @@
 <script setup>
 import { computed, ref } from 'vue'
 import { useIdesignConfig } from '../../composables/useIdesignConfig'
+import { resolveVariant } from '../../composables/useVariant'
 
 const props = defineProps({
   src: String,
@@ -27,6 +28,7 @@ const props = defineProps({
   icon: [String, Object, Function],
   alt: String,
   size: { type: String, default: undefined },
+  variant: { type: String, default: undefined },
   shape: { type: String, default: 'circle', validator: v => ['circle', 'squircle'].includes(v) },
   framed: Boolean,
   status: { type: String, default: null, validator: v => [null, 'online', 'offline', 'busy'].includes(v) },
@@ -37,6 +39,7 @@ const imgError = ref(false)
 
 const config = useIdesignConfig('Avatar', props)
 const currentSize = computed(() => config.resolvedSize.value || 'md')
+const currentVariant = computed(() => resolveVariant(props.variant || config.resolvedVariant.value || 'default'))
 
 const initials = computed(() => {
   if (!props.name) return '?'

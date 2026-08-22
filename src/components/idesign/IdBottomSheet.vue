@@ -128,6 +128,7 @@ import { ref, computed, watch, onBeforeUnmount, useSlots } from 'vue'
 import { X } from '@lucide/vue'
 import IdButton from './IdButton.vue'
 import { useIdesignConfig } from '../../composables/useIdesignConfig'
+import { resolveVariant } from '../../composables/useVariant'
 
 const props = defineProps({
   modelValue: {
@@ -221,7 +222,13 @@ const emit = defineEmits(['update:modelValue', 'close', 'open'])
 const slots = useSlots()
 const config = useIdesignConfig('BottomSheet', props)
 const currentSize = computed(() => config.resolvedSize.value || 'md')
-const currentVariant = computed(() => config.resolvedVariant.value || 'default')
+const currentVariant = computed(() => {
+  const raw = config.resolvedVariant.value || 'default'
+  return resolveVariant(raw, null, {
+    'no-dividers': 'seamless',
+    'no-divider': 'seamless'
+  })
+})
 const currentPosition = computed(() => props.position || 'bottom')
 const currentRadius = computed(() => config.resolvedRadius.value || props.radius)
 const currentColor = computed(() => config.resolvedColor.value || props.color)
@@ -533,6 +540,31 @@ html[data-theme="dark"] .id-sheet-surface {
 .id-sheet-surface.is-inset.pos-left,
 .id-sheet-surface.is-inset.pos-right {
   height: calc(100vh - 32px) !important;
+}
+
+/* Glass Variant Surface */
+.id-sheet-surface.variant-glass {
+  background: var(--variant-glass-bg);
+  backdrop-filter: var(--variant-glass-backdrop);
+  -webkit-backdrop-filter: var(--variant-glass-backdrop);
+  border-color: var(--variant-glass-border);
+}
+
+/* Solid Variant Surface */
+.id-sheet-surface.variant-solid {
+  background: var(--variant-solid-bg);
+  color: var(--variant-solid-color);
+  border: none;
+}
+.id-sheet-surface.variant-solid .sheet-title { color: #ffffff; }
+.id-sheet-surface.variant-solid .sheet-desc { color: rgba(255, 255, 255, 0.8); }
+
+/* Seamless Variant Surface */
+.id-sheet-surface.variant-seamless .sheet-header {
+  border-bottom: none;
+}
+.id-sheet-surface.variant-seamless .sheet-footer {
+  border-top: none;
 }
 
 /* ═══════════════════════════════════════════

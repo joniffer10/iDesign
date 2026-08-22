@@ -278,9 +278,11 @@ import {
   Plus,
   X,
   FileText,
+  Trash2,
   Loader2
 } from '@lucide/vue'
 import { useIdesignConfig } from '../../composables/useIdesignConfig'
+import { resolveVariant } from '../../composables/useVariant'
 
 const props = defineProps({
   modelValue: {
@@ -342,8 +344,7 @@ const props = defineProps({
   },
   variant: {
     type: String,
-    default: undefined,
-    validator: v => !v || ['default', 'glass', 'compact', 'avatar', 'button', 'image-card'].includes(v)
+    default: undefined
   },
   disabled: {
     type: Boolean,
@@ -371,7 +372,10 @@ const emit = defineEmits(['update:modelValue', 'update:src', 'change', 'drop', '
 
 const config = useIdesignConfig('FileUpload', props)
 const currentSize = computed(() => config.resolvedSize.value || 'md')
-const currentVariant = computed(() => config.resolvedVariant.value || 'default')
+const currentVariant = computed(() => {
+  const raw = config.resolvedVariant.value || 'default'
+  return resolveVariant(raw)
+})
 
 const fileInput = ref(null)
 const isDragging = ref(false)

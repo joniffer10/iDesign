@@ -1,5 +1,5 @@
 <template>
-  <div class="id-form-section">
+  <div :class="['id-form-section', `variant-${currentVariant}`, config.mergedUi.value.base]">
     <div v-if="title || description || $slots.header" class="form-section-header">
       <slot name="header">
         <h4 v-if="title" class="form-section-title">{{ title }}</h4>
@@ -16,14 +16,29 @@
 </template>
 
 <script setup>
-defineProps({
+import { computed } from 'vue'
+import { useIdesignConfig } from '../../composables/useIdesignConfig'
+import { resolveVariant } from '../../composables/useVariant'
+
+const props = defineProps({
   title: String,
   description: String,
   divider: {
     type: Boolean,
     default: true
+  },
+  variant: {
+    type: String,
+    default: undefined
+  },
+  ui: {
+    type: Object,
+    default: () => ({})
   }
 })
+
+const config = useIdesignConfig('FormSection', props)
+const currentVariant = computed(() => resolveVariant(props.variant || config.resolvedVariant.value || 'default'))
 </script>
 
 <style scoped>

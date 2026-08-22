@@ -2,7 +2,8 @@
   <div
     :class="[
       'id-empty-state',
-      { 'no-bg': noBg },
+      `variant-${currentVariant}`,
+      { 'no-bg': noBg || currentVariant === 'borderless' },
       config.mergedUi.value.base
     ]"
   >
@@ -31,6 +32,7 @@
 import { computed } from 'vue'
 import IdButton from './IdButton.vue'
 import { useIdesignConfig } from '../../composables/useIdesignConfig'
+import { resolveVariant } from '../../composables/useVariant'
 
 const props = defineProps({
   title: { type: String, default: undefined },
@@ -46,6 +48,13 @@ const props = defineProps({
 defineEmits(['action', 'click'])
 
 const config = useIdesignConfig('Empty', props)
+const currentVariant = computed(() => {
+  const raw = config.resolvedVariant.value || 'default'
+  return resolveVariant(raw, null, {
+    'no-border': 'borderless',
+    'no-bg': 'borderless'
+  })
+})
 const currentTitle = computed(() => props.title !== undefined ? props.title : 'No Results Found')
 const currentDescription = computed(() => props.description !== undefined ? props.description : 'Try adjusting your search filters or create a new item.')
 const currentIcon = computed(() => props.icon !== undefined ? props.icon : '🔍')
@@ -58,12 +67,21 @@ const currentIcon = computed(() => props.icon !== undefined ? props.icon : '🔍
   border-radius: var(--r-card); background: var(--surface); color: var(--text);
   width: 100%; max-width: 520px; margin: 0 auto;
 }
-.id-empty-state.no-bg {
-  background: transparent;
-  border: none;
-  box-shadow: none;
-  padding: 0;
+.id-empty-state.no-bg { background: transparent; border: none; }
+
+.variant-glass {
+  background: var(--variant-glass-bg); backdrop-filter: var(--variant-glass-backdrop);
+  -webkit-backdrop-filter: var(--variant-glass-backdrop); border: var(--variant-glass-border);
 }
+
+.variant-subtle {
+  background: var(--variant-subtle-bg); border: var(--variant-subtle-border);
+}
+
+.variant-borderless {
+  background: transparent !important; border: none !important; box-shadow: none !important;
+}
+
 .empty-icon-box {
   width: 64px; height: 64px; border-radius: 50%; background: var(--hover);
   display: flex; align-items: center; justify-content: center; margin-bottom: 16px;

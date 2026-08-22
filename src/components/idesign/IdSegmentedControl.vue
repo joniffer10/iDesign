@@ -47,6 +47,7 @@
 <script setup>
 import { ref, computed, watch, onMounted, onUnmounted, nextTick } from 'vue'
 import { useIdesignConfig } from '../../composables/useIdesignConfig'
+import { resolveVariant } from '../../composables/useVariant'
 
 const props = defineProps({
   modelValue: {
@@ -89,7 +90,10 @@ const emit = defineEmits(['update:modelValue', 'update:active', 'change'])
 
 const config = useIdesignConfig('SegmentedControl', props)
 const currentSize = computed(() => config.resolvedSize.value || 'md')
-const currentVariant = computed(() => config.resolvedVariant.value || 'default')
+const currentVariant = computed(() => {
+  const raw = config.resolvedVariant.value || 'default'
+  return resolveVariant(raw)
+})
 const currentTheme = computed(() => props.theme || (currentVariant.value === 'glass' ? 'black' : 'white'))
 
 const containerRef = ref(null)
@@ -414,15 +418,20 @@ onUnmounted(() => {
 
 /* ── Glass Variant ── */
 .variant-glass {
-  background: rgba(255, 255, 255, 0.18);
-  backdrop-filter: saturate(180%) blur(20px);
-  -webkit-backdrop-filter: saturate(180%) blur(20px);
-  border: 1px solid var(--hairline, rgba(255, 255, 255, 0.2));
-  box-shadow: var(--sh-card, 0 2px 10px rgba(0, 0, 0, 0.05));
+  background: var(--variant-glass-bg);
+  backdrop-filter: var(--variant-glass-backdrop);
+  -webkit-backdrop-filter: var(--variant-glass-backdrop);
+  border: var(--variant-glass-border);
+  box-shadow: var(--variant-glass-shadow-subtle);
 }
-:root.dark .variant-glass {
-  background: rgba(28, 28, 30, 0.5);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+
+/* ── Soft Variant ── */
+.variant-soft {
+  background: var(--variant-soft-bg);
+}
+.variant-soft .seg-item.active {
+  background: var(--surface);
+  color: var(--accent);
 }
 
 /* ── Mobile Screen Optimization & Responsive Auto-Width ── */

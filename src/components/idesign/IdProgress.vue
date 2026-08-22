@@ -16,6 +16,7 @@
 <script setup>
 import { computed } from 'vue'
 import { useIdesignConfig } from '../../composables/useIdesignConfig'
+import { resolveVariant } from '../../composables/useVariant'
 
 const props = defineProps({
   value: { type: Number, default: 0 },
@@ -32,7 +33,7 @@ const props = defineProps({
 const config = useIdesignConfig('Progress', props)
 const currentSize = computed(() => config.resolvedSize.value || 'md')
 const currentRadius = computed(() => config.resolvedRadius.value || 'full')
-const currentVariant = computed(() => config.resolvedVariant.value || 'default')
+const currentVariant = computed(() => resolveVariant(props.variant || config.resolvedVariant.value || 'default'))
 
 const currentColor = computed(() => {
   const c = config.resolvedColor.value || 'blue'
@@ -57,11 +58,19 @@ const clampedPct = computed(() => Math.min(100, Math.max(0, props.value)))
 .radius-full .progress-track, .radius-full .progress-fill { border-radius: var(--r-pill) !important; }
 
 .variant-glass {
-  padding: 10px 14px; border-radius: var(--r-panel); background: rgba(255, 255, 255, 0.65);
-  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-  border: 1px solid var(--hairline); box-shadow: var(--sh-card);
+  padding: 10px 14px; border-radius: var(--r-panel); background: var(--variant-glass-bg);
+  backdrop-filter: var(--variant-glass-backdrop); -webkit-backdrop-filter: var(--variant-glass-backdrop);
+  border: var(--variant-glass-border); box-shadow: var(--variant-glass-shadow-subtle);
 }
-:root.dark .variant-glass { background: rgba(28, 28, 30, 0.65); }
+
+.variant-soft .progress-track {
+  background: var(--variant-soft-bg);
+}
+
+.variant-subtle .progress-track {
+  background: var(--variant-subtle-bg);
+  border: var(--variant-subtle-border);
+}
 
 .progress-header { display: flex; justify-content: space-between; margin-bottom: 6px; }
 .progress-label { font-size: 13px; font-weight: 600; color: var(--text-2); }

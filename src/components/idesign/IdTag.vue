@@ -38,6 +38,7 @@
 import { computed } from 'vue'
 import { X } from '@lucide/vue'
 import { useIdesignConfig } from '../../composables/useIdesignConfig'
+import { resolveVariant } from '../../composables/useVariant'
 
 const props = defineProps({
   label: String,
@@ -70,14 +71,25 @@ defineEmits(['remove'])
 
 const config = useIdesignConfig('Tag', props)
 const currentSize = computed(() => config.resolvedSize.value || 'md')
-const currentRadius = computed(() => config.resolvedRadius.value || 'full')
-const resolvedVariant = computed(() => config.resolvedVariant.value || 'plain')
+
+const currentRadius = computed(() => {
+  const v = resolvedVariantRaw.value
+  if (v === 'pill') return 'full'
+  return config.resolvedRadius.value || 'full'
+})
+
 const resolvedColor = computed(() => config.resolvedColor.value || 'default')
 
+const resolvedVariantRaw = computed(() => {
+  const raw = config.resolvedVariant.value || 'plain'
+  return resolveVariant(raw)
+})
+
 const computedVariant = computed(() => {
-  // If variant is soft, we map it to colored classes based on resolvedColor
-  const v = resolvedVariant.value
+  const v = resolvedVariantRaw.value
   if (v === 'default') return 'plain'
+  if (v === 'pill') return 'plain' // pill is radius-only
+  if (v === 'solid') return 'solid'
   if (v === 'soft') {
     const c = resolvedColor.value
     if (c === 'primary' || c === 'accent') return 'accent'
@@ -86,6 +98,7 @@ const computedVariant = computed(() => {
     if (c === 'danger') return 'danger'
     return 'plain'
   }
+  if (v === 'subtle') return 'subtle'
   return v
 })
 
@@ -136,6 +149,15 @@ const isComponent = (val) => typeof val === 'object' || typeof val === 'function
 .color-warning.tag-outline { color: #b25000; border-color: #b25000; }
 .color-danger.tag-outline { color: #d70015; border-color: #d70015; }
 
+/* Solid variant (filled accent surface) */
+.tag-solid { background: var(--variant-solid-bg); color: var(--variant-solid-color); border: none; font-weight: 600; }
+.color-success.tag-solid { background: #30d158; }
+.color-warning.tag-solid { background: #ff9f0a; }
+.color-danger.tag-solid { background: #ff3b30; }
+
+/* Subtle variant (minimal emphasis) */
+.tag-subtle { color: var(--variant-subtle-color); background: var(--variant-subtle-bg); border: var(--variant-subtle-border); }
+
 /* Dark mode explicit high-contrast text & background overlays */
 :root.dark .tag-accent { color: #2997ff; background: rgba(41, 151, 255, 0.15); border-color: rgba(41, 151, 255, 0.3); }
 :root.dark .tag-success { color: #34c759; background: rgba(52, 199, 89, 0.15); border-color: rgba(52, 199, 89, 0.3); }
@@ -143,6 +165,10 @@ const isComponent = (val) => typeof val === 'object' || typeof val === 'function
 :root.dark .tag-danger { color: #ff453a; background: rgba(255, 69, 58, 0.15); border-color: rgba(255, 69, 58, 0.3); }
 :root.dark .tag-heat { color: #ff453a; background: rgba(255, 69, 58, 0.18); }
 :root.dark .tag-mono { color: #000000; background: #ffffff; }
+:root.dark .tag-solid { background: var(--variant-solid-bg); }
+:root.dark .color-success.tag-solid { background: #30d158; }
+:root.dark .color-warning.tag-solid { background: #ff9f0a; }
+:root.dark .color-danger.tag-solid { background: #ff453a; }
 
 .tag-icon { display: inline-flex; align-items: center; }
 

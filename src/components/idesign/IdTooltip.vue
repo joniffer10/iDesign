@@ -2,7 +2,7 @@
   <div :class="['id-tooltip-wrapper', config.mergedUi.value.base]" @mouseenter="show = true" @mouseleave="show = false" @focus="show = true" @blur="show = false">
     <slot />
     <Transition name="tooltip-pop">
-      <div v-if="show" :class="['id-tooltip', `pos-${currentPosition}`, config.mergedUi.value.tooltip]" role="tooltip">
+      <div v-if="show" :class="['id-tooltip', `pos-${currentPosition}`, `variant-${currentVariant}`, config.mergedUi.value.tooltip]" role="tooltip">
         <span :class="['tooltip-text', config.mergedUi.value.text]">{{ text }}</span>
       </div>
     </Transition>
@@ -12,10 +12,15 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { useIdesignConfig } from '../../composables/useIdesignConfig'
+import { resolveVariant } from '../../composables/useVariant'
 
 const props = defineProps({
   text: { type: String, required: true },
   position: {
+    type: String,
+    default: undefined
+  },
+  variant: {
     type: String,
     default: undefined
   },
@@ -27,6 +32,7 @@ const props = defineProps({
 
 const config = useIdesignConfig('Tooltip', props)
 const currentPosition = computed(() => props.position || 'top')
+const currentVariant = computed(() => resolveVariant(props.variant || config.resolvedVariant.value || 'default'))
 const show = ref(false)
 </script>
 
@@ -42,6 +48,14 @@ const show = ref(false)
 :root.dark .id-tooltip {
   background: #ffffff; color: #1c1c1e; border-color: rgba(0, 0, 0, 0.12);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+.variant-glass {
+  background: var(--variant-glass-bg) !important;
+  backdrop-filter: var(--variant-glass-backdrop);
+  -webkit-backdrop-filter: var(--variant-glass-backdrop);
+  border: var(--variant-glass-border) !important;
+  color: var(--text) !important;
 }
 
 .pos-top { bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%); }

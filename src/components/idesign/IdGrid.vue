@@ -1,6 +1,6 @@
 <template>
   <div
-    class="id-grid"
+    :class="['id-grid', `variant-${currentVariant}`, config.mergedUi.value.base]"
     :style="{
       gridTemplateColumns: gridCols,
       gap: parsedGap
@@ -12,6 +12,8 @@
 
 <script setup>
 import { computed } from 'vue'
+import { useIdesignConfig } from '../../composables/useIdesignConfig'
+import { resolveVariant } from '../../composables/useVariant'
 
 const props = defineProps({
   cols: {
@@ -26,8 +28,13 @@ const props = defineProps({
     type: String,
     default: '280px'
   },
-  autoFit: Boolean
+  autoFit: Boolean,
+  variant: { type: String, default: undefined },
+  ui: { type: Object, default: () => ({}) }
 })
+
+const config = useIdesignConfig('Grid', props)
+const currentVariant = computed(() => resolveVariant(props.variant || config.resolvedVariant.value || 'default'))
 
 const gridCols = computed(() => {
   if (props.autoFit) {

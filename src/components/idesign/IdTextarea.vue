@@ -23,6 +23,7 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { useIdesignConfig } from '../../composables/useIdesignConfig'
+import { resolveVariant } from '../../composables/useVariant'
 
 const props = defineProps({
   modelValue: { type: String, default: '' },
@@ -43,7 +44,13 @@ defineEmits(['update:modelValue'])
 const config = useIdesignConfig('Textarea', props)
 const currentSize = computed(() => config.resolvedSize.value || 'md')
 const currentRadius = computed(() => config.resolvedRadius.value || 'md')
-const currentVariant = computed(() => config.resolvedVariant.value || 'default')
+const currentVariant = computed(() => {
+  const raw = config.resolvedVariant.value || 'default'
+  return resolveVariant(raw, null, {
+    'no-outline': 'borderless',
+    'no-border': 'borderless'
+  })
+})
 
 const isFocused = ref(false)
 </script>
@@ -74,10 +81,16 @@ const isFocused = ref(false)
 .id-textarea::placeholder { color: var(--text-4); }
 
 .variant-glass .id-textarea {
-  background: rgba(255, 255, 255, 0.65); backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  background: var(--variant-glass-bg); backdrop-filter: var(--variant-glass-backdrop);
+  -webkit-backdrop-filter: var(--variant-glass-backdrop); border: var(--variant-glass-border);
 }
-:root.dark .variant-glass .id-textarea { background: rgba(28, 28, 30, 0.65); }
+
+.variant-outline .id-textarea { border: var(--variant-outline-border); background: transparent; }
+.variant-soft .id-textarea { background: var(--variant-soft-bg); border: none; color: var(--variant-soft-color); }
+.variant-subtle .id-textarea { background: var(--variant-subtle-bg); border: var(--variant-subtle-border); }
+.variant-ghost .id-textarea { background: transparent; border: none; }
+.variant-ghost .id-textarea:hover { background: var(--hover); }
+.variant-borderless .id-textarea { border: none !important; box-shadow: none !important; background: transparent; }
 
 .variant-error .id-textarea { border-color: #ff3b30; }
 

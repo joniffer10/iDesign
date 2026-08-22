@@ -141,8 +141,9 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, onMounted, nextTick } from 'vue'
+import { ref, computed, watch, nextTick, onMounted, onBeforeUnmount } from 'vue'
 import { useIdesignConfig } from '../../composables/useIdesignConfig'
+import { resolveVariant } from '../../composables/useVariant'
 
 const props = defineProps({
   modelValue: {
@@ -218,11 +219,12 @@ const emit = defineEmits(['update:modelValue', 'update:active', 'change', 'selec
 const config = useIdesignConfig('MobileNavbar', props)
 const currentSize = computed(() => config.resolvedSize.value || 'md')
 const currentVariant = computed(() => {
-  const v = config.resolvedVariant.value || 'glass'
-  if (v === 'elevated') return 'floating'
-  if (v === 'ghost') return 'minimal'
-  if (v === 'track') return 'flat'
-  return v
+  const raw = config.resolvedVariant.value || 'glass'
+  return resolveVariant(raw, null, {
+    'elevated': 'floating',
+    'ghost': 'minimal',
+    'track': 'flat'
+  })
 })
 const currentColor = computed(() => {
   const c = config.resolvedColor.value || 'blue'

@@ -1,5 +1,5 @@
 <template>
-  <div class="id-carousel-wrap">
+  <div :class="['id-carousel-wrap', `variant-${currentVariant}`, config.mergedUi.value.base]">
     <div ref="trackRef" class="carousel-track" @scroll="handleScroll">
       <slot />
     </div>
@@ -23,12 +23,19 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { useIdesignConfig } from '../../composables/useIdesignConfig'
+import { resolveVariant } from '../../composables/useVariant'
 
 const props = defineProps({
   showControls: { type: Boolean, default: true },
-  showDots: { type: Boolean, default: true }
+  showDots: { type: Boolean, default: true },
+  variant: { type: String, default: undefined },
+  ui: { type: Object, default: () => ({}) }
 })
+
+const config = useIdesignConfig('Carousel', props)
+const currentVariant = computed(() => resolveVariant(props.variant || config.resolvedVariant.value || 'default'))
 
 const trackRef = ref(null)
 const activeIndex = ref(0)

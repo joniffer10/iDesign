@@ -54,8 +54,8 @@
       <div
         :class="[
           'timeline-content',
-          { 'timeline-card': currentVariant === 'cards' },
-          currentVariant === 'cards' ? config.mergedUi.value.card : '',
+          { 'timeline-card': currentVariant === 'cards' || currentVariant === 'glass' || currentVariant === 'solid' || currentVariant === 'subtle' },
+          currentVariant === 'cards' || currentVariant === 'glass' || currentVariant === 'solid' || currentVariant === 'subtle' ? config.mergedUi.value.card : '',
           config.mergedUi.value.content
         ]"
       >
@@ -111,6 +111,7 @@
 <script setup>
 import { computed } from 'vue'
 import { useIdesignConfig } from '../../composables/useIdesignConfig'
+import { resolveVariant } from '../../composables/useVariant'
 
 const props = defineProps({
   items: {
@@ -139,7 +140,7 @@ defineEmits(['action', 'click-item'])
 
 const config = useIdesignConfig('Timeline', props)
 const currentSize = computed(() => config.resolvedSize.value || 'md')
-const currentVariant = computed(() => config.resolvedVariant.value || 'default')
+const currentVariant = computed(() => resolveVariant(props.variant || config.resolvedVariant.value || 'default'))
 
 const indicatorIconSize = computed(() => {
   const sz = currentSize.value

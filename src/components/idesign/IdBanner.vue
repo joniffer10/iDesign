@@ -47,6 +47,7 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { useIdesignConfig } from '../../composables/useIdesignConfig'
+import { resolveVariant } from '../../composables/useVariant'
 
 const props = defineProps({
   modelValue: {
@@ -90,10 +91,11 @@ const emit = defineEmits(['update:modelValue', 'dismiss', 'action'])
 
 const config = useIdesignConfig('Banner', props)
 const currentVariant = computed(() => {
-  const v = config.resolvedVariant.value || 'accent'
-  // Map color variant aliases
-  if (v === 'default' || v === 'primary') return 'accent'
-  return v
+  const raw = config.resolvedVariant.value || 'accent'
+  return resolveVariant(raw, null, {
+    'primary': 'solid',
+    'default': 'solid'
+  })
 })
 const currentSize = computed(() => config.resolvedSize.value || 'md')
 const currentRadius = computed(() => config.resolvedRadius.value || 'none')
@@ -143,10 +145,39 @@ const dismiss = () => {
   justify-content: flex-start;
 }
 
-/* Variant Accent */
-.variant-accent {
-  background: var(--accent);
+/* Variant Accent & Solid */
+.variant-accent,
+.variant-solid {
+  background: var(--variant-solid-bg);
+  color: var(--variant-solid-color);
+}
+.variant-accent .banner-action-btn,
+.variant-solid .banner-action-btn {
+  background: rgba(255, 255, 255, 0.2);
   color: #ffffff;
+}
+
+/* Variant Subtle */
+.variant-subtle {
+  background: var(--variant-subtle-bg);
+  color: var(--variant-subtle-color);
+  border-bottom: var(--variant-subtle-border);
+}
+
+/* Variant Outline */
+.variant-outline {
+  background: transparent;
+  color: var(--text);
+  border-bottom: var(--variant-outline-border);
+}
+
+/* Variant Glass */
+.variant-glass {
+  background: var(--variant-glass-bg);
+  backdrop-filter: var(--variant-glass-backdrop);
+  -webkit-backdrop-filter: var(--variant-glass-backdrop);
+  border-bottom: var(--variant-glass-border);
+  color: var(--text);
 }
 
 /* Variant Glass */

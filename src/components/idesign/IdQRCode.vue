@@ -138,8 +138,10 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { ref, computed } from 'vue'
+import { Download } from '@lucide/vue'
 import { useIdesignConfig } from '../../composables/useIdesignConfig'
+import { resolveVariant } from '../../composables/useVariant'
 import { generateQRCodeMatrix, generateSVGPaths } from '../../utils/qrCode'
 
 const props = defineProps({
@@ -269,7 +271,8 @@ const pixelSize = computed(() => {
 })
 
 const currentVariant = computed(() => {
-  return props.variant || config.resolvedVariant.value || 'default'
+  const raw = props.variant || config.resolvedVariant.value || 'default'
+  return resolveVariant(raw, ['default', 'rounded', 'minimal', 'glass'])
 })
 
 // Logo Detection

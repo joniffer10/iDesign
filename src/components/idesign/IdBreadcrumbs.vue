@@ -35,6 +35,7 @@
 import { computed } from 'vue'
 import { ChevronRight, Home, Folder, FileText } from '@lucide/vue'
 import { useIdesignConfig } from '../../composables/useIdesignConfig'
+import { resolveVariant } from '../../composables/useVariant'
 
 const props = defineProps({
   items: { type: Array, required: true },
@@ -48,7 +49,10 @@ defineEmits(['navigate'])
 
 const config = useIdesignConfig('Breadcrumbs', props)
 const currentSize = computed(() => config.resolvedSize.value || 'md')
-const currentVariant = computed(() => config.resolvedVariant.value || 'default')
+const currentVariant = computed(() => {
+  const raw = config.resolvedVariant.value || 'default'
+  return resolveVariant(raw)
+})
 const currentColor = computed(() => {
   const c = config.resolvedColor.value || 'blue'
   if (c === 'default' || c === 'primary') return 'blue'
@@ -74,10 +78,19 @@ const getFallbackIcon = (idx) => {
 
 .variant-glass {
   display: inline-block; padding: 6px 14px; border-radius: var(--r-pill);
-  background: rgba(255, 255, 255, 0.65); backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px); border: 1px solid var(--hairline); box-shadow: var(--sh-card);
+  background: var(--variant-glass-bg); backdrop-filter: var(--variant-glass-backdrop);
+  -webkit-backdrop-filter: var(--variant-glass-backdrop); border: var(--variant-glass-border); box-shadow: var(--sh-card);
 }
-:root.dark .variant-glass { background: rgba(28, 28, 30, 0.65); }
+
+.variant-soft {
+  display: inline-block; padding: 6px 14px; border-radius: var(--r-pill);
+  background: var(--variant-soft-bg);
+}
+
+.variant-subtle {
+  display: inline-block; padding: 6px 14px; border-radius: var(--r-pill);
+  background: var(--variant-subtle-bg); border: var(--variant-subtle-border);
+}
 
 .crumbs-list { display: flex; align-items: center; list-style: none; padding: 0; margin: 0; flex-wrap: wrap; gap: 2px; }
 .crumb-item { display: inline-flex; align-items: center; }

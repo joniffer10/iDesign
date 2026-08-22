@@ -228,6 +228,7 @@
 import { ref, computed, watch } from 'vue'
 import { ChevronDown, ChevronRight, ChevronLeft } from '@lucide/vue'
 import { useIdesignConfig } from '../../composables/useIdesignConfig'
+import { resolveVariant } from '../../composables/useVariant'
 
 const props = defineProps({
   modelValue: {
@@ -264,13 +265,11 @@ const props = defineProps({
   },
   variant: {
     type: String,
-    default: undefined,
-    validator: v => !v || ['default', 'glass', 'bordered', 'floating'].includes(v)
+    default: undefined
   },
   size: {
     type: String,
-    default: undefined,
-    validator: v => !v || ['sm', 'md', 'lg'].includes(v)
+    default: undefined
   },
   ui: {
     type: Object,
@@ -282,7 +281,13 @@ const emit = defineEmits(['update:modelValue', 'update:collapsed', 'select'])
 
 const config = useIdesignConfig('Sidebar', props)
 const currentSize = computed(() => config.resolvedSize.value || 'md')
-const resolvedVariant = computed(() => config.resolvedVariant.value || 'default')
+const resolvedVariant = computed(() => {
+  const raw = config.resolvedVariant.value || 'default'
+  return resolveVariant(raw, null, {
+    'no-dividers': 'seamless',
+    'no-divider': 'seamless'
+  })
+})
 
 // Collapse handling
 const localCollapsed = ref(false)
@@ -396,14 +401,40 @@ const isComponent = (val) => typeof val === 'object' || typeof val === 'function
    VARIANTS
    ────────────────────────────────────────────────────────── */
 .variant-glass {
-  background: rgba(255, 255, 255, 0.75);
-  backdrop-filter: saturate(180%) blur(20px);
-  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  background: var(--variant-glass-bg);
+  backdrop-filter: var(--variant-glass-backdrop);
+  -webkit-backdrop-filter: var(--variant-glass-backdrop);
   border-right: 1px solid var(--hairline);
 }
 :root.dark .variant-glass {
-  background: rgba(28, 28, 30, 0.75);
   border-right: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.variant-solid {
+  background: var(--accent);
+  border-right: none;
+}
+.variant-solid .brand-title,
+.variant-solid .sidebar-item,
+.variant-solid .group-title { color: rgba(255, 255, 255, 0.85); }
+.variant-solid .sidebar-item.is-active { background: rgba(255, 255, 255, 0.2); color: #ffffff; }
+.variant-solid .sidebar-item:hover:not(.is-disabled) { background: rgba(255, 255, 255, 0.12); color: #ffffff; }
+.variant-solid .sidebar-header { border-bottom-color: rgba(255, 255, 255, 0.15); }
+.variant-solid .sidebar-footer { border-top-color: rgba(255, 255, 255, 0.15); }
+
+.variant-subtle {
+  background: var(--variant-subtle-bg);
+  border-right: 1px solid var(--hairline);
+}
+
+.variant-seamless .sidebar-header {
+  border-bottom: none;
+}
+.variant-seamless .group-header {
+  border-bottom: none;
+}
+.variant-seamless .collapsed-divider {
+  display: none;
 }
 
 .variant-bordered {

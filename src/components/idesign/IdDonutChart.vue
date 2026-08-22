@@ -1,5 +1,5 @@
 <template>
-  <IdPieChart v-bind="$props">
+  <IdPieChart v-bind="$props" :variant="currentVariant">
     <!-- Forward all slots dynamically -->
     <template v-for="(_, slotName) in $slots" #[slotName]="slotProps">
       <slot :name="slotName" v-bind="slotProps || {}" />
@@ -8,9 +8,12 @@
 </template>
 
 <script setup>
+import { computed } from 'vue'
 import IdPieChart from './IdPieChart.vue'
+import { useIdesignConfig } from '../../composables/useIdesignConfig'
+import { resolveVariant } from '../../composables/useVariant'
 
-defineProps({
+const props = defineProps({
   modelValue: { type: [Number, String], default: undefined },
   value: { type: [Number, String], default: undefined },
   max: { type: Number, default: 100 },
@@ -32,5 +35,11 @@ defineProps({
   card: { type: Boolean, default: undefined },
   data: { type: Array, default: undefined },
   ui: { type: Object, default: () => ({}) }
+})
+
+const config = useIdesignConfig('DonutChart', props)
+const currentVariant = computed(() => {
+  const raw = props.variant || config.resolvedVariant.value || 'full'
+  return resolveVariant(raw)
 })
 </script>

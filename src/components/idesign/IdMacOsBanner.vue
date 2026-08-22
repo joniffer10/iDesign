@@ -1,6 +1,6 @@
 <template>
   <Transition name="banner-slide">
-    <div v-if="modelValue" class="macos-banner" role="alert" aria-live="polite">
+    <div v-if="modelValue" :class="['macos-banner', `variant-${currentVariant}`, config.mergedUi.value.base]" role="alert" aria-live="polite">
       <div class="banner-header">
         <div class="banner-app">
           <div class="app-icon" :style="iconBg ? { background: iconBg, color: '#fff' } : {}">
@@ -39,9 +39,12 @@
 </template>
 
 <script setup>
+import { computed } from 'vue'
 import { Bell } from '@lucide/vue'
+import { useIdesignConfig } from '../../composables/useIdesignConfig'
+import { resolveVariant } from '../../composables/useVariant'
 
-defineProps({
+const props = defineProps({
   modelValue: { type: Boolean, default: true },
   appName: { type: String, default: 'System Settings' },
   title: { type: String, default: 'Software Update Ready' },
@@ -51,10 +54,15 @@ defineProps({
   iconBg: String,
   actionLabel: String,
   secondaryActionLabel: String,
-  dismissible: { type: Boolean, default: true }
+  dismissible: { type: Boolean, default: true },
+  variant: { type: String, default: undefined },
+  ui: { type: Object, default: () => ({}) }
 })
 
 defineEmits(['update:modelValue', 'dismiss', 'action', 'secondary-action'])
+
+const config = useIdesignConfig('MacOsBanner', props)
+const currentVariant = computed(() => resolveVariant(props.variant || config.resolvedVariant.value || 'glass'))
 </script>
 
 <style scoped>

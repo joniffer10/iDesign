@@ -1,5 +1,5 @@
 <template>
-  <div class="id-file-tree" role="tree">
+  <div :class="['id-file-tree', `variant-${currentVariant}`, config.mergedUi.value.base]" role="tree">
     <div
       v-for="item in items"
       :key="item.id || item.name"
@@ -48,13 +48,22 @@
 </template>
 
 <script setup>
-defineProps({
+import { computed } from 'vue'
+import { useIdesignConfig } from '../../composables/useIdesignConfig'
+import { resolveVariant } from '../../composables/useVariant'
+
+const props = defineProps({
   items: { type: Array, required: true },
   selectedId: [String, Number],
-  expandedIds: { type: Array, default: () => [] }
+  expandedIds: { type: Array, default: () => [] },
+  variant: { type: String, default: undefined },
+  ui: { type: Object, default: () => ({}) }
 })
 
 const emit = defineEmits(['select', 'toggle-expand'])
+
+const config = useIdesignConfig('FileTree', props)
+const currentVariant = computed(() => resolveVariant(props.variant || config.resolvedVariant.value || 'default'))
 
 const handleSelect = (item) => {
   emit('select', item)
@@ -85,4 +94,19 @@ const toggleExpand = (id) => {
 .node-icon { font-size: 13px; display: flex; align-items: center; }
 .node-name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .tree-children { padding-left: 18px; border-left: 1px solid var(--hairline); margin-left: 17px; }
+
+.variant-glass {
+  background: var(--variant-glass-bg); backdrop-filter: var(--variant-glass-backdrop);
+  -webkit-backdrop-filter: var(--variant-glass-backdrop); border: var(--variant-glass-border);
+  padding: 8px; border-radius: var(--r-card);
+}
+
+.variant-subtle {
+  background: var(--variant-subtle-bg); border: var(--variant-subtle-border);
+  padding: 8px; border-radius: var(--r-card);
+}
+
+.variant-seamless .tree-children {
+  border-left: none;
+}
 </style>

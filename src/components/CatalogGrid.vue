@@ -214,6 +214,15 @@
             </div>
           </template>
 
+          <!-- Dotted Activity Chart Mini -->
+          <template v-else-if="item.id === 'dotted-activity'">
+            <div class="mini-dotted-activity-box">
+              <div class="mini-activity-grid">
+                <span v-for="i in 35" :key="i" :class="['m-act-dot', `lvl-${(i * 13 + 3) % 5}`]" />
+              </div>
+            </div>
+          </template>
+
           <!-- Input Mini -->
           <template v-else-if="item.id === 'input'">
             <div class="mini-input-box">
@@ -788,6 +797,24 @@
                 <span style="background:#ff9f0a;"></span>
                 <span style="background:#ff375f;"></span>
                 <span style="background:#5e5ce6;"></span>
+              </div>
+            </div>
+          </template>
+
+          <!-- Terminal Mini -->
+          <template v-else-if="item.id === 'terminal'">
+            <div class="mini-terminal-box">
+              <div class="m-term-header">
+                <div class="m-term-dots">
+                  <span class="m-tdot red"></span>
+                  <span class="m-tdot yellow"></span>
+                  <span class="m-tdot green"></span>
+                </div>
+                <div class="m-term-title">bash — idesign</div>
+              </div>
+              <div class="m-term-body">
+                <div class="m-term-line"><span class="m-term-prompt">$</span> pnpm add @idesign/vue</div>
+                <div class="m-term-line success">✓ Dependencies installed</div>
               </div>
             </div>
           </template>
@@ -1440,6 +1467,65 @@ const filteredComponents = computed(() => {
   color: var(--text);
 }
 
+/* Terminal Mini Preview */
+.mini-terminal-box {
+  width: 90%;
+  max-width: 220px;
+  background: #141416;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+  overflow: hidden;
+  font-family: var(--mono, monospace);
+  font-size: 10px;
+  line-height: 1.4;
+}
+.m-term-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 8px;
+  background: #1c1c1f;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+.m-term-dots {
+  display: flex;
+  gap: 4px;
+}
+.m-tdot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+.m-tdot.red { background: #ff5f56; }
+.m-tdot.yellow { background: #ffbd2e; }
+.m-tdot.green { background: #27c93f; }
+.m-term-title {
+  font-size: 9px;
+  color: #8e8e93;
+  margin-left: 2px;
+}
+.m-term-body {
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  color: #f5f5f7;
+}
+.m-term-line {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.m-term-prompt {
+  color: #0a84ff;
+  font-weight: bold;
+  margin-right: 2px;
+}
+.m-term-line.success {
+  color: #30d158;
+}
+
 .generic-preview { display: flex; flex-direction: column; align-items: center; gap: 6px; font-size: 13px; font-weight: 650; color: var(--text-2); }
 .m-icon-box { font-size: 24px; color: var(--accent); }
 
@@ -1462,6 +1548,35 @@ const filteredComponents = computed(() => {
 .empty-state { text-align: center; padding: 60px 20px; background: var(--surface); border-radius: var(--r-card); border: 1px dashed var(--hairline); }
 .empty-icon { font-size: 32px; margin-bottom: 12px; }
 .reset-btn { margin-top: 16px; background: var(--accent); color: #fff; border: none; padding: 8px 18px; border-radius: var(--r-pill); font-weight: 600; cursor: pointer; }
+
+/* Dotted Activity Mini Preview */
+.mini-dotted-activity-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+.mini-activity-grid {
+  display: grid;
+  grid-template-rows: repeat(5, 7px);
+  grid-template-columns: repeat(7, 7px);
+  gap: 3.5px;
+}
+
+.m-act-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 2px;
+}
+
+.m-act-dot.lvl-0 { background: rgba(0, 0, 0, 0.06); }
+:root.dark .m-act-dot.lvl-0 { background: rgba(255, 255, 255, 0.08); }
+.m-act-dot.lvl-1 { background: rgba(0, 113, 227, 0.25); }
+.m-act-dot.lvl-2 { background: rgba(0, 113, 227, 0.50); }
+.m-act-dot.lvl-3 { background: rgba(0, 113, 227, 0.75); }
+.m-act-dot.lvl-4 { background: #0071e3; }
 
 /* ── Responsive Media Queries ── */
 @media (max-width: 900px) {

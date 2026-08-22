@@ -3,6 +3,7 @@
     :class="[
       'id-form-group',
       `layout-${currentDirection}`,
+      `variant-${currentVariant}`,
       { 'is-inline': inline },
       config.mergedUi.value.base
     ]"
@@ -15,6 +16,7 @@
 <script setup>
 import { computed } from 'vue'
 import { useIdesignConfig } from '../../composables/useIdesignConfig'
+import { resolveVariant } from '../../composables/useVariant'
 
 const props = defineProps({
   direction: {
@@ -23,11 +25,16 @@ const props = defineProps({
   },
   inline: Boolean,
   columns: [Number, String],
+  variant: {
+    type: String,
+    default: undefined
+  },
   ui: { type: Object, default: () => ({}) }
 })
 
 const config = useIdesignConfig('FormGroup', props)
 const currentDirection = computed(() => config.resolvedDirection.value || 'vertical')
+const currentVariant = computed(() => resolveVariant(props.variant || config.resolvedVariant.value || 'default'))
 </script>
 
 <style scoped>

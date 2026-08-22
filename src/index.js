@@ -68,6 +68,17 @@ export { default as MobileNavbar } from './components/idesign/IdMobileNavbar.vue
 export { default as IdTour } from './components/idesign/IdTour.vue'
 export { default as IdQRCode } from './components/idesign/IdQRCode.vue'
 export { default as QRCode } from './components/idesign/IdQRCode.vue'
+export { default as IdTerminal } from './components/idesign/IdTerminal.vue'
+export { default as Terminal } from './components/idesign/IdTerminal.vue'
+export { default as IdDottedActivity } from './components/idesign/IdDottedActivity.vue'
+export { default as DottedActivity } from './components/idesign/IdDottedActivity.vue'
+export { default as IdMarquee } from './components/idesign/IdMarquee.vue'
+export { default as Marquee } from './components/idesign/IdMarquee.vue'
+export { default as IdDateRangePicker } from './components/idesign/IdDateRangePicker.vue'
+export { default as DateRangePicker } from './components/idesign/IdDateRangePicker.vue'
+
+
+
 
 
 // ── Compound Form System ──
@@ -135,6 +146,7 @@ export { useClipboard } from './composables/useClipboard'
 export { useBreakpoint, breakpoints } from './composables/useBreakpoint'
 export { useTheme } from './composables/useTheme'
 export { createIdesign, createUI, useIdesignConfig } from './composables/useIdesignConfig'
+export { resolveVariant, createVariantResolver, isGlassVariant, isSeamlessVariant, isBorderlessVariant, isPillVariant, CANONICAL_VARIANTS, VARIANT_ALIASES } from './composables/useVariant'
 
 
 // ── Default Plugin Installer ──
@@ -236,6 +248,10 @@ import IdRating from './components/idesign/IdRating.vue'
 import IdNumberInput from './components/idesign/IdNumberInput.vue'
 import IdColorPicker from './components/idesign/IdColorPicker.vue'
 import IdQRCode from './components/idesign/IdQRCode.vue'
+import IdTerminal from './components/idesign/IdTerminal.vue'
+import IdDottedActivity from './components/idesign/IdDottedActivity.vue'
+import IdMarquee from './components/idesign/IdMarquee.vue'
+import IdDateRangePicker from './components/idesign/IdDateRangePicker.vue'
 
 
 const allComponents = {
@@ -260,8 +276,12 @@ const allComponents = {
   IdWallpaper, Wallpaper: IdWallpaper,
   // Advanced Form Inputs
   IdPinInput, IdTimePicker, IdTagInput, IdRating, IdNumberInput, IdNumericStepper: IdNumberInput, IdColorPicker,
+  IdDateRangePicker, DateRangePicker: IdDateRangePicker,
   // Indicators & Data
-  IdQRCode, QRCode: IdQRCode
+  IdQRCode, QRCode: IdQRCode,
+  IdTerminal, Terminal: IdTerminal,
+  IdDottedActivity, DottedActivity: IdDottedActivity,
+  IdMarquee, Marquee: IdMarquee
 }
 
 export default {

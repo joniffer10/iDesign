@@ -3,6 +3,8 @@
    Vue 3 & Nuxt 3 Component Library
    ════════════════════════════════════════════════════════════════ */
 
+@import './variants.css';
+
 :root,
 html[data-theme="light"],
 :root.light {

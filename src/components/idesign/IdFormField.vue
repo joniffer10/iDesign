@@ -50,6 +50,7 @@ import IdFormLabel from './IdFormLabel.vue'
 import IdFormDescription from './IdFormDescription.vue'
 import IdFormMessage from './IdFormMessage.vue'
 import { useIdesignConfig } from '../../composables/useIdesignConfig'
+import { resolveVariant } from '../../composables/useVariant'
 
 const props = defineProps({
   name: String,
@@ -62,10 +63,12 @@ const props = defineProps({
   warning: [Boolean, String],
   required: Boolean,
   disabled: Boolean,
+  variant: String,
   ui: { type: Object, default: () => ({}) }
 })
 
 const config = useIdesignConfig('FormField', props)
+const currentVariant = computed(() => resolveVariant(props.variant || config.resolvedVariant.value || 'default'))
 
 provide('id-form-field-context', {
   name: computed(() => props.name),

@@ -290,6 +290,7 @@
 import { ref, computed, watch, onBeforeUnmount, nextTick, inject } from 'vue'
 import { Plus, Minus, ChevronUp, ChevronDown, Clock, Loader2 } from '@lucide/vue'
 import { useIdesignConfig } from '../../composables/useIdesignConfig'
+import { resolveVariant } from '../../composables/useVariant'
 
 let instanceCounter = 0
 
@@ -336,7 +337,10 @@ const formFieldContext = inject('id-form-field-context', null)
 const config = useIdesignConfig('TimePicker', props)
 const currentSize = computed(() => config.resolvedSize.value || 'md')
 const currentRadius = computed(() => config.resolvedRadius.value || 'pill')
-const currentVariant = computed(() => config.resolvedVariant.value || 'default')
+const currentVariant = computed(() => {
+  const raw = config.resolvedVariant.value || 'default'
+  return resolveVariant(raw)
+})
 const currentColor = computed(() => config.resolvedColor.value || 'default')
 const currentDirection = computed(() => props.direction || 'horizontal')
 

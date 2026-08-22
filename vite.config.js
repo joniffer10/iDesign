@@ -30,7 +30,8 @@ export default defineConfig(({ mode }) => {
               external: ['vue'],
               output: {
                 globals: { vue: 'Vue' },
-                assetFileNames: 'idesign.[ext]'
+                assetFileNames: 'idesign.[ext]',
+                exports: 'named'
               }
             }
           }

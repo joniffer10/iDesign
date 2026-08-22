@@ -1,10 +1,10 @@
 <template>
-  <div class="id-sparkline" :style="{ width: `${width}px`, height: `${height}px` }">
+  <div :class="['id-sparkline', `variant-${currentVariant}`, config.mergedUi.value.base]" :style="{ width: `${width}px`, height: `${height}px` }">
     <svg :width="width" :height="height" viewBox="0 0 100 40" preserveAspectRatio="none">
       <defs v-if="fill">
         <linearGradient :id="gradientId" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" :stop-color="color" stop-opacity="0.3" />
-          <stop offset="100%" :stop-color="color" stop-opacity="0" />
+          <stop offset="0%" :stop-color="effectiveColor" stop-opacity="0.3" />
+          <stop offset="100%" :stop-color="effectiveColor" stop-opacity="0" />
         </linearGradient>
       </defs>
 
@@ -12,23 +12,30 @@
       <path v-if="fill" :d="fillPath" :fill="`url(#${gradientId})`" />
 
       <!-- Sparkline Stroke Path -->
-      <path :d="linePath" fill="none" :stroke="color" :stroke-width="strokeWidth" stroke-linecap="round" stroke-linejoin="round" />
+      <path :d="linePath" fill="none" :stroke="effectiveColor" :stroke-width="strokeWidth" stroke-linecap="round" stroke-linejoin="round" />
     </svg>
   </div>
 </template>
 
 <script setup>
 import { computed } from 'vue'
+import { useIdesignConfig } from '../../composables/useIdesignConfig'
+import { resolveVariant } from '../../composables/useVariant'
 
 const props = defineProps({
   data: { type: Array, default: () => [10, 25, 18, 35, 28, 45, 40, 60] },
-  color: { type: String, default: '#0071e3' },
+  color: { type: String, default: undefined },
   fill: { type: Boolean, default: true },
   width: { type: Number, default: 120 },
   height: { type: Number, default: 36 },
-  strokeWidth: { type: Number, default: 2.5 }
+  strokeWidth: { type: Number, default: 2.5 },
+  variant: { type: String, default: undefined },
+  ui: { type: Object, default: () => ({}) }
 })
 
+const config = useIdesignConfig('Sparkline', props)
+const currentVariant = computed(() => resolveVariant(props.variant || config.resolvedVariant.value || 'default'))
+const effectiveColor = computed(() => props.color || (config.resolvedColor.value && config.resolvedColor.value !== 'default' ? config.resolvedColor.value : '#0071e3'))
 const gradientId = computed(() => `spark-grad-${Math.random().toString(36).substr(2, 9)}`)
 
 const points = computed(() => {

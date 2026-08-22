@@ -4,6 +4,7 @@
       'id-tag-input',
       `size-${currentSize}`,
       `radius-${currentRadius}`,
+      `variant-${currentVariant}`,
       {
         'is-disabled': disabled,
         'is-readonly': readonly,
@@ -177,9 +178,10 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
-import { X, Loader2 } from '@lucide/vue'
+import { ref, computed, watch, inject } from 'vue'
+import { Tag as TagIcon, X, AlertCircle, CheckCircle2, AlertTriangle, Loader2 } from '@lucide/vue'
 import { useIdesignConfig } from '../../composables/useIdesignConfig'
+import { resolveVariant } from '../../composables/useVariant'
 
 const props = defineProps({
   modelValue: {
@@ -283,9 +285,16 @@ const config = useIdesignConfig('TagInput', props)
 
 const currentSize = computed(() => config.resolvedSize.value || 'md')
 const currentRadius = computed(() => config.resolvedRadius.value || 'md')
+const currentVariant = computed(() => {
+  const raw = config.resolvedVariant.value || 'default'
+  return resolveVariant(raw, null, {
+    'no-outline': 'borderless',
+    'no-border': 'borderless'
+  })
+})
 
 const resolvedTagVariant = computed(() => {
-  const v = props.tagVariant || props.variant || config.resolvedVariant.value || 'default'
+  const v = props.tagVariant || 'default'
   if (v === 'gray' || v === 'plain') return 'default'
   return v
 })
@@ -889,5 +898,34 @@ defineExpose({
   background: #ffffff;
   color: #000000;
   border-color: #ffffff;
+}
+
+/* Container Variant Styles */
+.id-tag-input.variant-glass .tag-input-box {
+  background: var(--variant-glass-bg);
+  backdrop-filter: var(--variant-glass-backdrop);
+  -webkit-backdrop-filter: var(--variant-glass-backdrop);
+  border: var(--variant-glass-border);
+}
+
+.id-tag-input.variant-outline .tag-input-box {
+  background: transparent;
+  border: var(--variant-outline-border);
+}
+
+.id-tag-input.variant-soft .tag-input-box {
+  background: var(--variant-soft-bg);
+  border: none;
+}
+
+.id-tag-input.variant-subtle .tag-input-box {
+  background: var(--variant-subtle-bg);
+  border: var(--variant-subtle-border);
+}
+
+.id-tag-input.variant-borderless .tag-input-box {
+  border: none;
+  box-shadow: none;
+  background: transparent;
 }
 </style>

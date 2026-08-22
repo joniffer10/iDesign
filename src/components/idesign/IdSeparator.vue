@@ -22,6 +22,7 @@
 <script setup>
 import { computed } from 'vue'
 import { useIdesignConfig } from '../../composables/useIdesignConfig'
+import { resolveVariant } from '../../composables/useVariant'
 
 const props = defineProps({
   orientation: {
@@ -45,7 +46,7 @@ const props = defineProps({
 
 const config = useIdesignConfig('Separator', props)
 const currentOrientation = computed(() => config.resolvedDirection.value || 'horizontal')
-const currentVariant = computed(() => config.resolvedVariant.value || 'hairline')
+const currentVariant = computed(() => resolveVariant(props.variant || config.resolvedVariant.value || 'hairline'))
 const currentSize = computed(() => config.resolvedSize.value || props.spacing || 'md')
 </script>
 

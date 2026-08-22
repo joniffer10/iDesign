@@ -1,0 +1,183 @@
+/* ════════════════════════════════════════════════════════════════
+   Idesign — Shared Variant Recipes
+   Canonical visual treatments for the unified variant system.
+   
+   Components consume these via their scoped CSS, referencing the
+   shared CSS custom properties defined here. This ensures every
+   component that supports a given variant shares identical visual
+   fundamentals (surface, border, shadow, backdrop, dark mode).
+   
+   Philosophy:
+   - The recipe defines the variant's fundamental characteristics.
+   - Components adapt the recipe through their own geometry, layout,
+     radius tier, spacing, and positioning.
+   - Components must NOT redefine the variant itself.
+   ════════════════════════════════════════════════════════════════ */
+
+/* ═══════════════════════════════════════════
+   Variant Recipe Tokens (Light)
+   ═══════════════════════════════════════════ */
+:root,
+html[data-theme="light"],
+:root.light {
+  /* ── Glass Material ── */
+  --variant-glass-bg:            rgba(255, 255, 255, 0.78);
+  --variant-glass-border:        1px solid rgba(255, 255, 255, 0.5);
+  --variant-glass-backdrop:      saturate(180%) blur(20px);
+  --variant-glass-shadow:        var(--sh-overlay, 0 2px 8px rgba(0,0,0,0.10), 0 30px 80px rgba(0,0,0,0.24)), inset 0 0 0 1px rgba(255, 255, 255, 0.3);
+  --variant-glass-shadow-subtle: var(--sh-card, 0 1px 2px rgba(0,0,0,0.04), 0 8px 24px rgba(0,0,0,0.05)), inset 0 0 0 1px rgba(255, 255, 255, 0.2);
+
+  /* ── Solid (Filled accent surface) ── */
+  --variant-solid-bg:            var(--accent, #0071e3);
+  --variant-solid-bg-hover:      var(--accent-hover, #0062c4);
+  --variant-solid-color:         #ffffff;
+  --variant-solid-border:        none;
+
+  /* ── Outline (Hairline border, transparent fill) ── */
+  --variant-outline-bg:          transparent;
+  --variant-outline-border:      1.5px solid var(--hairline, rgba(0, 0, 0, 0.07));
+  --variant-outline-color:       var(--text, #1d1d1f);
+  --variant-outline-border-accent: 1.5px solid var(--accent, #0071e3);
+  --variant-outline-color-accent:  var(--accent, #0071e3);
+
+  /* ── Soft (Lightly tinted accent surface) ── */
+  --variant-soft-bg:             rgba(0, 113, 227, 0.08);
+  --variant-soft-bg-hover:       rgba(0, 113, 227, 0.15);
+  --variant-soft-color:          var(--accent, #0071e3);
+  --variant-soft-border:         none;
+
+  /* ── Subtle (Minimal emphasis, neutral surface) ── */
+  --variant-subtle-bg:           var(--hover, #fbfbfd);
+  --variant-subtle-bg-hover:     var(--track, #e8e8ed);
+  --variant-subtle-color:        var(--text-2, #6e6e73);
+  --variant-subtle-border:       1px solid var(--hairline, rgba(0, 0, 0, 0.07));
+
+  /* ── Ghost (Transparent until interaction) ── */
+  --variant-ghost-bg:            transparent;
+  --variant-ghost-bg-hover:      var(--hover, #fbfbfd);
+  --variant-ghost-color:         var(--text-2, #6e6e73);
+  --variant-ghost-color-hover:   var(--text, #1d1d1f);
+  --variant-ghost-border:        none;
+
+  /* ── Borderless (No outer border) ── */
+  --variant-borderless-border:   none;
+  --variant-borderless-shadow:   none;
+
+  /* ── Seamless (No internal dividers) ── */
+  --variant-seamless-divider:    none;
+
+  /* ── Hero (Gradient border, CTA prominence) ── */
+  --variant-hero-bg:             linear-gradient(var(--surface, #ffffff), var(--surface, #ffffff)) padding-box, var(--grad-cta, linear-gradient(135deg, #0071e3 0%, #5e5ce6 100%)) border-box;
+  --variant-hero-border:         1px solid transparent;
+  --variant-hero-shadow:         var(--sh-cta, 0 20px 54px rgba(0,113,227,0.24));
+}
+
+/* ═══════════════════════════════════════════
+   Variant Recipe Tokens (Dark)
+   ═══════════════════════════════════════════ */
+:root.dark,
+html[data-theme="dark"],
+[data-theme="dark"] {
+  /* ── Glass Material (Dark) ── */
+  --variant-glass-bg:            rgba(28, 28, 30, 0.82);
+  --variant-glass-border:        1px solid rgba(255, 255, 255, 0.12);
+  --variant-glass-shadow:        var(--sh-overlay), inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+  --variant-glass-shadow-subtle: var(--sh-card), inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+
+  /* ── Solid (Dark) ── */
+  --variant-solid-bg:            var(--accent, #0a84ff);
+  --variant-solid-bg-hover:      #0071e3;
+
+  /* ── Outline (Dark) ── */
+  --variant-outline-border:      1.5px solid var(--hairline, rgba(255, 255, 255, 0.12));
+  --variant-outline-color:       var(--text, #f5f5f7);
+  --variant-outline-border-accent: 1.5px solid #2997ff;
+  --variant-outline-color-accent:  #2997ff;
+
+  /* ── Soft (Dark) ── */
+  --variant-soft-bg:             rgba(10, 132, 255, 0.15);
+  --variant-soft-bg-hover:       rgba(10, 132, 255, 0.25);
+  --variant-soft-color:          #0a84ff;
+
+  /* ── Subtle (Dark) ── */
+  --variant-subtle-bg:           var(--hover, #2c2c2e);
+  --variant-subtle-bg-hover:     var(--track, #3a3a3c);
+  --variant-subtle-color:        var(--text-2, #98989d);
+
+  /* ── Ghost (Dark) ── */
+  --variant-ghost-bg-hover:      var(--hover, #2c2c2e);
+  --variant-ghost-color:         var(--text-2, #98989d);
+  --variant-ghost-color-hover:   var(--text, #f5f5f7);
+
+  /* ── Hero (Dark) ── */
+  --variant-hero-bg:             linear-gradient(var(--surface, #1c1c1e), var(--surface, #1c1c1e)) padding-box, var(--grad-cta) border-box;
+  --variant-hero-shadow:         var(--sh-cta);
+}
+
+/* Also handle prefers-color-scheme dark for auto mode */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]):not(.light) {
+    --variant-glass-bg:            rgba(28, 28, 30, 0.82);
+    --variant-glass-border:        1px solid rgba(255, 255, 255, 0.12);
+    --variant-glass-shadow:        var(--sh-overlay), inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+    --variant-glass-shadow-subtle: var(--sh-card), inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+
+    --variant-solid-bg:            var(--accent, #0a84ff);
+    --variant-solid-bg-hover:      #0071e3;
+
+    --variant-outline-border:      1.5px solid var(--hairline, rgba(255, 255, 255, 0.12));
+    --variant-outline-color:       var(--text, #f5f5f7);
+    --variant-outline-border-accent: 1.5px solid #2997ff;
+    --variant-outline-color-accent:  #2997ff;
+
+    --variant-soft-bg:             rgba(10, 132, 255, 0.15);
+    --variant-soft-bg-hover:       rgba(10, 132, 255, 0.25);
+    --variant-soft-color:          #0a84ff;
+
+    --variant-subtle-bg:           var(--hover, #2c2c2e);
+    --variant-subtle-bg-hover:     var(--track, #3a3a3c);
+    --variant-subtle-color:        var(--text-2, #98989d);
+
+    --variant-ghost-bg-hover:      var(--hover, #2c2c2e);
+    --variant-ghost-color:         var(--text-2, #98989d);
+    --variant-ghost-color-hover:   var(--text, #f5f5f7);
+
+    --variant-hero-bg:             linear-gradient(var(--surface, #1c1c1e), var(--surface, #1c1c1e)) padding-box, var(--grad-cta) border-box;
+    --variant-hero-shadow:         var(--sh-cta);
+  }
+}
+
+/* ═══════════════════════════════════════════
+   Accessibility Overrides
+   ═══════════════════════════════════════════ */
+
+/* Reduced Transparency: glass falls back to solid surface */
+@media (prefers-reduced-transparency: reduce) {
+  :root {
+    --variant-glass-bg: var(--surface, #ffffff);
+    --variant-glass-backdrop: none;
+    --variant-glass-shadow: var(--sh-overlay);
+    --variant-glass-shadow-subtle: var(--sh-card);
+  }
+  :root.dark,
+  html[data-theme="dark"],
+  [data-theme="dark"] {
+    --variant-glass-bg: var(--surface, #1c1c1e);
+  }
+}
+
+/* High Contrast: strengthen borders */
+@media (prefers-contrast: more) {
+  :root {
+    --variant-outline-border: 2px solid var(--text, #000000);
+    --variant-subtle-border: 2px solid var(--text, #000000);
+    --variant-glass-border: 2px solid var(--text, #000000);
+  }
+  :root.dark,
+  html[data-theme="dark"],
+  [data-theme="dark"] {
+    --variant-outline-border: 2px solid #ffffff;
+    --variant-subtle-border: 2px solid #ffffff;
+    --variant-glass-border: 2px solid #ffffff;
+  }
+}

@@ -1,5 +1,5 @@
 <template>
-  <div class="id-bar-chart" :style="{ height: typeof height === 'number' ? `${height}px` : height }">
+  <div :class="['id-bar-chart', `variant-${currentVariant}`, config.mergedUi.value.base]" :style="{ height: typeof height === 'number' ? `${height}px` : height }">
     <div class="bars-container">
       <div
         v-for="(item, idx) in data"
@@ -25,6 +25,8 @@
 
 <script setup>
 import { computed } from 'vue'
+import { useIdesignConfig } from '../../composables/useIdesignConfig'
+import { resolveVariant } from '../../composables/useVariant'
 
 const props = defineProps({
   data: {
@@ -36,8 +38,13 @@ const props = defineProps({
     default: 180
   },
   color: String,
-  max: Number
+  max: Number,
+  variant: { type: String, default: undefined },
+  ui: { type: Object, default: () => ({}) }
 })
+
+const config = useIdesignConfig('BarChart', props)
+const currentVariant = computed(() => resolveVariant(props.variant || config.resolvedVariant.value || 'default'))
 
 const maxVal = computed(() => {
   if (props.max) return props.max

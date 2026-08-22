@@ -138,16 +138,17 @@
       </span>
     </div>
 
-    <span v-if="showLabel && variant !== 'icon'" class="toggle-label-text">
+    <span v-if="showLabel && currentVariant !== 'icon'" class="toggle-label-text">
       {{ isDark ? lightLabel : darkLabel }}
     </span>
   </button>
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { ref, computed } from 'vue'
 import { useIdesignConfig } from '../../composables/useIdesignConfig'
 import { useTheme } from '../../composables/useTheme'
+import { resolveVariant } from '../../composables/useVariant'
 
 const props = defineProps({
   modelValue: {
@@ -202,6 +203,7 @@ const props = defineProps({
 const emit = defineEmits(['update:modelValue', 'change'])
 
 const config = useIdesignConfig('ThemeToggle', props)
+const currentVariant = computed(() => resolveVariant(props.variant || config.resolvedVariant.value || 'button'))
 const globalTheme = useTheme()
 
 // Determine if controlled or uncontrolled

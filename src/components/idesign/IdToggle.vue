@@ -1,5 +1,5 @@
 <template>
-  <div :class="['id-toggle-container', `size-${currentSize}`, { 'is-disabled': disabled }, config.mergedUi.value.base]">
+  <div :class="['id-toggle-container', `size-${currentSize}`, `variant-${currentVariant}`, { 'is-disabled': disabled }, config.mergedUi.value.base]">
     <span v-if="label" :class="['toggle-label', config.mergedUi.value.label]">{{ label }}</span>
     <button
       type="button"
@@ -17,6 +17,7 @@
 <script setup>
 import { computed } from 'vue'
 import { useIdesignConfig } from '../../composables/useIdesignConfig'
+import { resolveVariant } from '../../composables/useVariant'
 
 const props = defineProps({
   modelValue: {
@@ -47,6 +48,7 @@ defineEmits(['update:modelValue'])
 
 const config = useIdesignConfig('Toggle', props)
 const currentSize = computed(() => config.resolvedSize.value || 'md')
+const currentVariant = computed(() => resolveVariant(props.variant || config.resolvedVariant.value || 'default'))
 const currentColor = computed(() => {
   const c = props.color || config.resolvedColor.value || props.variant || 'success'
   if (c === 'default') return 'success'

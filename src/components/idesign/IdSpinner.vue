@@ -1,5 +1,5 @@
 <template>
-  <div :class="['id-spinner', `size-${currentSize}`, `color-${currentColor}`, config.mergedUi.value.base]" role="status" aria-label="Loading">
+  <div :class="['id-spinner', `size-${currentSize}`, `variant-${currentVariant}`, `color-${currentColor}`, config.mergedUi.value.base]" role="status" aria-label="Loading">
     <svg viewBox="0 0 24 24" fill="none" :class="['spinner-svg', config.mergedUi.value.svg]">
       <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" opacity="0.2" />
       <path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" stroke-width="3" stroke-linecap="round" />
@@ -11,16 +11,19 @@
 <script setup>
 import { computed } from 'vue'
 import { useIdesignConfig } from '../../composables/useIdesignConfig'
+import { resolveVariant } from '../../composables/useVariant'
 
 const props = defineProps({
   size: { type: String, default: undefined },
   color: { type: String, default: undefined },
+  variant: { type: String, default: undefined },
   label: String,
   ui: { type: Object, default: () => ({}) }
 })
 
 const config = useIdesignConfig('Spinner', props)
 const currentSize = computed(() => config.resolvedSize.value || 'md')
+const currentVariant = computed(() => resolveVariant(props.variant || config.resolvedVariant.value || 'default'))
 const currentColor = computed(() => {
   const c = config.resolvedColor.value || 'blue'
   if (c === 'default' || c === 'primary') return 'blue'

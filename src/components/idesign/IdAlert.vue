@@ -2,6 +2,7 @@
   <div
     :class="[
       'id-alert',
+      `variant-${currentVariant}`,
       `alert-variant-${resolvedVariant}`,
       `alert-color-${resolvedTone}`,
       `size-${currentSize}`,
@@ -74,6 +75,7 @@
 import { computed } from 'vue'
 import { Info, CheckCircle2, AlertTriangle, AlertCircle, X } from '@lucide/vue'
 import { useIdesignConfig } from '../../composables/useIdesignConfig'
+import { resolveVariant } from '../../composables/useVariant'
 
 const props = defineProps({
   variant: {
@@ -128,13 +130,12 @@ const resolvedTone = computed(() => {
 })
 
 // Determine surface presentation style
-const resolvedVariant = computed(() => {
-  const v = props.variant || config.resolvedVariant.value
-  if (v === 'glass') return 'glass'
-  if (v === 'solid') return 'solid'
-  if (v === 'outline') return 'outline'
-  return 'subtle'
+const currentVariant = computed(() => {
+  const v = props.variant || config.resolvedVariant.value || 'subtle'
+  return resolveVariant(v, ['subtle', 'solid', 'glass', 'outline'])
 })
+
+const resolvedVariant = computed(() => currentVariant.value)
 
 const iconSize = computed(() => {
   const sz = currentSize.value

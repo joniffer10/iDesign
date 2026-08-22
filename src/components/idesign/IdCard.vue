@@ -53,6 +53,7 @@
 <script setup>
 import { computed } from 'vue'
 import { useIdesignConfig } from '../../composables/useIdesignConfig'
+import { resolveVariant } from '../../composables/useVariant'
 
 const DEFAULT_DEMO_IMG = 'https://images.unsplash.com/photo-1593508512255-86ab42a8e620?auto=format&fit=crop&w=800&q=80'
 
@@ -101,7 +102,13 @@ defineEmits(['click'])
 const config = useIdesignConfig('Card', props)
 const currentPadding = computed(() => props.padding || props.size || config.resolvedSize.value || 'md')
 const currentRadius = computed(() => config.resolvedRadius.value || 'lg')
-const currentVariant = computed(() => config.resolvedVariant.value || 'default')
+const currentVariant = computed(() => {
+  const raw = config.resolvedVariant.value || 'default'
+  return resolveVariant(raw, null, {
+    'no-border': 'borderless',
+    'no-dividers': 'seamless'
+  })
+})
 </script>
 
 <style scoped>
@@ -150,9 +157,32 @@ const currentVariant = computed(() => config.resolvedVariant.value || 'default')
 }
 
 .variant-hero {
-  border: 1px solid transparent; background: linear-gradient(var(--surface), var(--surface)) padding-box,
-              var(--grad-cta) border-box;
+  border: var(--variant-hero-border); background: var(--variant-hero-bg);
+  box-shadow: var(--variant-hero-shadow);
 }
+
+.variant-solid {
+  background: var(--variant-solid-bg); color: var(--variant-solid-color); border: var(--variant-solid-border);
+}
+.variant-solid .card-title,
+.variant-solid .card-subtitle,
+.variant-solid .card-body { color: rgba(255, 255, 255, 0.95); }
+.variant-solid .card-tag { color: rgba(255, 255, 255, 0.7); }
+.variant-solid .card-footer { border-top-color: rgba(255, 255, 255, 0.2); }
+
+.variant-subtle {
+  background: var(--variant-subtle-bg); border: var(--variant-subtle-border);
+  box-shadow: none;
+}
+
+.variant-borderless {
+  border: none !important; box-shadow: none !important; background: var(--surface);
+}
+
+.variant-seamless {
+  background: var(--surface); border: 1px solid var(--hairline); box-shadow: var(--sh-card);
+}
+.variant-seamless .card-footer { border-top: none; }
 
 /* Image Top & Banner styling */
 .variant-image-top .card-media,

@@ -78,15 +78,10 @@ const { toasts, remove } = useToast()
 .id-toast-item {
   pointer-events: auto; display: flex; align-items: center; gap: 12px;
   padding: 12px 18px; border-radius: var(--r-pill); font-family: var(--font);
-  background: rgba(29, 29, 31, 0.92); color: #ffffff;
-  backdrop-filter: saturate(180%) blur(20px); -webkit-backdrop-filter: saturate(180%) blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.18); box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+  background: var(--variant-glass-bg); color: var(--text);
+  backdrop-filter: var(--variant-glass-backdrop); -webkit-backdrop-filter: var(--variant-glass-backdrop);
+  border: var(--variant-glass-border); box-shadow: var(--sh-overlay);
   max-width: 420px; min-width: 240px; transition: all 0.3s var(--ease-out-quart);
-}
-
-:root:not(.dark) .id-toast-item {
-  background: rgba(255, 255, 255, 0.92); color: var(--text);
-  border-color: rgba(0, 0, 0, 0.12); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
 }
 
 .toast-icon { display: flex; align-items: center; flex-shrink: 0; }

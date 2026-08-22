@@ -849,9 +849,9 @@ const items = [
     tags: ['button', 'pill', 'primary', 'secondary', 'outline', 'color', 'icon', 'disabled'],
     props: {
       label: { type: 'text', default: 'Continue', description: 'Button text content.' },
-      variant: { type: 'select', options: ['primary', 'secondary', 'outline', 'glass', 'dark', 'ghost', 'danger'], default: 'primary', description: 'Visual style variant.' },
-      color: { type: 'select', options: ['blue', 'green', 'purple', 'orange', 'red', 'black'], default: 'blue', description: 'Accent background or outline color theme.' },
-      size: { type: 'select', options: ['sm', 'md', 'lg'], default: 'md', description: 'Size scale (sm: 34px, md: 42px, lg: 48px height).' },
+      variant: { type: 'select', options: ['solid', 'soft', 'subtle', 'outline', 'ghost', 'glass', 'hero', 'pill'], default: 'solid', description: 'Canonical visual style variant.' },
+      color: { type: 'select', options: ['blue', 'indigo', 'green', 'orange', 'red', 'purple', 'teal', 'gray', 'black'], default: 'blue', description: 'Accent background or outline color theme.' },
+      size: { type: 'select', options: ['xs', 'sm', 'md', 'lg', 'xl'], default: 'md', description: 'Size scale (xs: 28px, sm: 34px, md: 42px, lg: 48px, xl: 54px).' },
       iconLeft: { type: 'text', default: '⚡', description: 'Left icon component name or emoji.' },
       iconRight: { type: 'text', default: '→', description: 'Right icon component name or emoji.' },
       disabled: { type: 'boolean', default: false, description: 'Disables user interactions and applies muted styling.' },
@@ -1040,10 +1040,10 @@ const items = [
       subtitle: { type: 'text', default: 'Spatial Computing UI', description: 'Subtitle metadata label.' },
       description: { type: 'text', default: 'Welcome to the era of spatial computing.', description: 'Body text content.' },
       tag: { type: 'text', default: 'FEATURED', description: 'Header tag pill text.' },
-      variant: { type: 'select', options: ['default', 'framed', 'glass', 'hero', 'image-top', 'image-bg'], default: 'default', description: 'Card visual container style.' },
+      variant: { type: 'select', options: ['default', 'solid', 'subtle', 'borderless', 'seamless', 'glass', 'hero'], default: 'default', description: 'Card visual container style.' },
       image: { type: 'text', default: '', description: 'Optional header banner image URL.' },
       showActions: { type: 'boolean', default: true, description: 'Controls rendering of footer action buttons slot.' },
-      padding: { type: 'select', options: ['sm', 'md', 'lg'], default: 'md', description: 'Card internal padding size.' },
+      padding: { type: 'select', options: ['none', 'sm', 'md', 'lg'], default: 'md', description: 'Card internal padding size.' },
       interactive: { type: 'boolean', default: false, description: 'Enables hover elevation physics animation.' }
     },
     vueCode: (p) => `<script setup>
@@ -1099,10 +1099,11 @@ import { IdCard, IdButton } from '@idesign/vue'
     props: {
       placeholder: { type: 'text', default: 'Enter text...', description: 'Input placeholder guidance text.' },
       label: { type: 'text', default: 'Label', description: 'Top label text.' },
-      variant: { type: 'select', options: ['default', 'search', 'error', 'success'], default: 'default', description: 'Input status or search variant.' },
+      variant: { type: 'select', options: ['outline', 'soft', 'subtle', 'ghost', 'borderless', 'pill'], default: 'outline', description: 'Input surface or container variant.' },
       size: { type: 'select', options: ['sm', 'md', 'lg'], default: 'md', description: 'Input height scale.' },
       masked: { type: 'boolean', default: false, description: 'Masks input content as a password with an eye reveal toggle.' },
       clearable: { type: 'boolean', default: true, description: 'Displays an (x) clear button when text is present.' },
+      disabled: { type: 'boolean', default: false, description: 'Disables input.' },
       trailingText: { type: 'text', default: '', description: 'Trailing text unit badge (e.g. "USD").' }
     },
     vueCode: (p) => `<script setup>
@@ -1154,7 +1155,8 @@ const textValue = ref('')
     props: {
       label: { type: 'text', default: 'Description', description: 'Header label text.' },
       size: { type: 'select', options: ['sm', 'md', 'lg'], default: 'md', description: 'Textarea padding and font scale.' },
-      variant: { type: 'select', options: ['default', 'glass', 'error'], default: 'default', description: 'Surface glass or error border style.' },
+      variant: { type: 'select', options: ['outline', 'soft', 'subtle', 'ghost', 'borderless', 'glass'], default: 'outline', description: 'Surface glass or container style.' },
+      disabled: { type: 'boolean', default: false, description: 'Disables textarea.' },
       maxlength: { type: 'number', default: 200, description: 'Maximum allowed characters.' }
     },
     vueCode: (p) => `<script setup>
@@ -1199,8 +1201,9 @@ const message = ref('')
       label: { type: 'text', default: 'Framework', description: 'Label text above dropdown trigger.' },
       searchable: { type: 'boolean', default: true, description: 'Enables real-time search filter input inside dropdown.' },
       clearable: { type: 'boolean', default: true, description: 'Shows clear icon button when value is selected.' },
+      disabled: { type: 'boolean', default: false, description: 'Disables select dropdown.' },
       size: { type: 'select', options: ['sm', 'md', 'lg'], default: 'md', description: 'Height and font size scale.' },
-      variant: { type: 'select', options: ['default', 'no-divider', 'glass'], default: 'default', description: 'Dropdown item divider visual style.' }
+      variant: { type: 'select', options: ['outline', 'soft', 'subtle', 'borderless', 'glass'], default: 'outline', description: 'Dropdown surface and border visual style.' }
     },
     vueCode: (p) => `<script setup>
 import { ref } from 'vue'
@@ -1575,7 +1578,10 @@ const avatarUrl = ref('')
     category: 'overlays',
     description: 'Spotlight-style command palette modal with global ⌘K shortcut and keyboard nav.',
     tags: ['command', 'palette', 'shortcut', 'spotlight'],
-    props: {},
+    props: {
+      variant: { type: 'select', options: ['solid', 'seamless', 'glass'], default: 'solid', description: 'Command palette surface material variant.' },
+      placeholder: { type: 'text', default: 'Type a command or search...', description: 'Search input placeholder text.' }
+    },
     vueCode: (p) => `<script setup>
 import { ref } from 'vue'
 import { IdCommandPalette } from '@idesign/vue'
@@ -1615,7 +1621,7 @@ const groups = [
       title: { type: 'text', default: 'Save Workspace Changes', description: 'Modal header title.' },
       description: { type: 'text', default: 'Your changes will be synced across all connected devices.', description: 'Header description text.' },
       content: { type: 'text', default: 'Review your team settings before publishing. All active sessions will automatically receive the updated profile.', description: 'Body text content.' },
-      variant: { type: 'select', options: ['glass', 'seamless', 'clean', 'plain', 'default', 'alert'], default: 'glass', description: 'Modal surface visual style (glass frosted, clean solid with no dividers, default, or alert).' },
+      variant: { type: 'select', options: ['default', 'solid', 'seamless', 'borderless', 'glass'], default: 'glass', description: 'Modal surface visual style.' },
       size: { type: 'select', options: ['sm', 'md', 'lg', 'xl'], default: 'md', description: 'Modal width scale.' },
       closeOnOutsideClick: { type: 'boolean', default: true, description: 'Dismiss when clicking outside modal.' },
       closeOnEscape: { type: 'boolean', default: true, description: 'Dismiss when pressing Escape key.' },
@@ -2437,7 +2443,14 @@ import { IdGrid, IdCard } from '@idesign/vue'
     category: 'inputs',
     description: 'Drag & drop file upload zone with file list preview and size formatting.',
     tags: ['upload', 'file', 'drag'],
-    props: {},
+    props: {
+      variant: { type: 'select', options: ['default', 'glass', 'subtle', 'outline'], default: 'default', description: 'Dropzone border and surface style.' },
+      title: { type: 'text', default: 'Upload your photo or file', description: 'Primary dropzone heading text.' },
+      hint: { type: 'text', default: 'PNG, JPG, WebP up to 25MB', description: 'Helper file format and size guidance.' },
+      buttonLabel: { type: 'text', default: 'Choose File', description: 'Browse button text.' },
+      multiple: { type: 'boolean', default: true, description: 'Allows selecting multiple files.' },
+      disabled: { type: 'boolean', default: false, description: 'Disables drag and drop interactions.' }
+    },
     vueCode: (p) => `<script setup>
 import { IdFileUpload } from '@idesign/vue'
 </script>
@@ -2605,7 +2618,10 @@ import { IdMacOsBanner } from '@idesign/vue'
     category: 'data',
     description: 'macOS Finder style expandable directory tree view with file/folder icons.',
     tags: ['tree', 'finder', 'files', 'directory'],
-    props: {},
+    props: {
+      variant: { type: 'select', options: ['default', 'glass', 'subtle', 'seamless'], default: 'default', description: 'Tree surface and divider visual style.' },
+      size: { type: 'select', options: ['sm', 'md', 'lg'], default: 'md', description: 'Item row height and text scale.' }
+    },
     vueCode: (p) => `<script setup>
 import { IdFileTree } from '@idesign/vue'
 
@@ -2691,7 +2707,10 @@ import { IdPopover, IdButton } from '@idesign/vue'
     category: 'mobile',
     description: 'Device frame with Dynamic Island, status bar, and home indicator.',
     tags: ['iphone', 'mobile', 'ios'],
-    props: {},
+    props: {
+      model: { type: 'select', options: ['16-pro', '15', '14'], default: '16-pro', description: 'iPhone chassis hardware generation.' },
+      color: { type: 'select', options: ['natural-titanium', 'black-titanium', 'white-titanium', 'blue-titanium'], default: 'natural-titanium', description: 'Titanium finish tone.' }
+    },
     vueCode: (p) => `<script setup>
 import { IdIphoneFrame } from '@idesign/vue'
 </script>
@@ -3664,7 +3683,271 @@ import { IdQRCode } from '@idesign/vue'
     <span class="qr-caption-text">${p.caption || 'Point your camera'}</span>
   </div>
 </div>`
+  },
+
+  {
+    id: 'terminal',
+    name: 'Terminal & CLI Window',
+    category: 'data',
+    description: 'Apple-grade, restrained Liquid Glass terminal and code output window with macOS window controls, syntax token highlighting, ANSI color decoding, line numbering, interactive command input, copy-all feedback, and dark/light mode.',
+    tags: ['terminal', 'cli', 'console', 'bash', 'zsh', 'code', 'command', 'output', 'logs', 'shell', 'prompt', 'developer'],
+    props: {
+      title: { type: 'text', default: 'bash — 80×24', description: 'Window title bar label.' },
+      subtitle: { type: 'text', default: '~/projects/idesign', description: 'Directory badge / path context.' },
+      variant: { type: 'select', options: ['default', 'minimal', 'macos', 'glass'], default: 'default', description: 'Window aesthetic variant (default solid, minimal borderless, authentic macos chrome, or liquid glass).' },
+      size: { type: 'select', options: ['xs', 'sm', 'md', 'lg', 'xl'], default: 'md', description: 'Proportional sizing scale tier for typography, padding, and window controls.' },
+      theme: { type: 'select', options: ['dark', 'light', 'auto'], default: 'dark', description: 'Surface color theme mode.' },
+      prompt: { type: 'text', default: '$', description: 'Custom prompt symbol ($ / ➜ / ~ / ❯).' },
+      showLineNumbers: { type: 'boolean', default: false, description: 'Display tabular-nums line numbering gutter.' },
+      showCopy: { type: 'boolean', default: true, description: 'Display copy-all button in window header.' },
+      showClear: { type: 'boolean', default: true, description: 'Display clear-output button in window header.' },
+      interactive: { type: 'boolean', default: true, description: 'Enable interactive bottom command input prompt.' },
+      loading: { type: 'boolean', default: false, description: 'Display active execution spinner banner.' },
+      status: { type: 'select', options: ['idle', 'running', 'success', 'error', 'warning'], default: 'idle', description: 'Terminal process status badge.' }
+    },
+    vueCode: (p) => `<script setup>
+import { ref } from 'vue'
+import { IdTerminal } from '@idesign/vue'
+
+const lines = ref([
+  '$ pnpm add @idesign/vue',
+  'Packages: +42',
+  '++++++++++++++++++++++++++++++++++++++++++',
+  'Progress: resolved 120, reused 115, downloaded 5, added 42, done',
+  '✓ Dependencies installed in 1.4s',
+  '$ npx idesign init',
+  '✓ Created tokens.css',
+  '✓ Liquid Glass design system ready'
+])
+
+const handleCommand = (cmd) => {
+  lines.value.push(\`$ \${cmd}\`)
+  if (cmd === 'clear') {
+    lines.value = []
+  } else if (cmd.includes('test')) {
+    lines.value.push('✓ 42 tests passed (100%)')
+  } else {
+    lines.value.push(\`[OK] Executed: \${cmd}\`)
+  }
+}
+<\/script>
+
+<template>
+  <IdTerminal
+    v-model="lines"
+    title="${p.title || 'Terminal'}"
+    subtitle="${p.subtitle || '~/projects/idesign'}"
+    variant="${p.variant || 'default'}"
+    size="${p.size || 'md'}"
+    theme="${p.theme || 'dark'}"
+    prompt="${p.prompt || '$'}"${p.showLineNumbers ? `\n    :show-line-numbers="true"` : ''}${p.showCopy !== false ? `\n    :show-copy="true"` : ''}${p.showClear ? `\n    :show-clear="true"` : ''}${p.interactive ? `\n    :interactive="true"` : ''}${p.loading ? `\n    :loading="true"` : ''}${p.status && p.status !== 'idle' ? `\n    status="${p.status}"` : ''}
+    @command="handleCommand"
+  />
+</template>`,
+    nuxtCode: (p) => `<!-- Nuxt 3 Auto-Import (pages/cli.vue) -->
+<script setup>
+const terminalOutput = ref([
+  '$ npx nuxi dev',
+  'ℹ Nuxt 3.12.0 with Nitro 2.9.6',
+  '➜ Local:   http://localhost:3000/',
+  '✓ Vite server built in 240ms'
+])
+<\/script>
+
+<template>
+  <IdTerminal
+    v-model="terminalOutput"
+    title="${p.title || 'bash'}"
+    subtitle="${p.subtitle || '~/my-app'}"
+    variant="${p.variant || 'macos'}"
+    :interactive="true"
+  />
+</template>`,
+    htmlCode: (p) => `<div class="id-terminal variant-${p.variant || 'default'} size-${p.size || 'md'} theme-${p.theme || 'dark'}" role="region" aria-label="${p.title || 'Terminal'}">
+  <header class="terminal-header">
+    <div class="terminal-controls">
+      <span class="terminal-dot dot-close"></span>
+      <span class="terminal-dot dot-minimize"></span>
+      <span class="terminal-dot dot-maximize"></span>
+    </div>
+    <div class="terminal-title-text">${p.title || 'Terminal'}</div>
+    <button class="terminal-action-btn">Copy</button>
+  </header>
+  <div class="terminal-body">
+    <div class="terminal-line"><span class="line-prompt">$</span> npm install</div>
+    <div class="terminal-line status-success">✓ 42 packages installed</div>
+  </div>
+</div>`
+  },
+
+  {
+    id: 'dotted-activity',
+    name: 'Dotted Activity Chart',
+    category: 'data',
+    description: 'Clean activity dot matrix inspired by contribution charts. Communicates activity intensity over time through subtle Liquid Glass color scaling.',
+    tags: ['dotted', 'activity', 'contribution', 'grid', 'chart', 'matrix', 'github', 'dots', 'heat', 'data'],
+    props: {
+      variant: { type: 'select', options: ['default', 'rounded', 'square', 'minimal'], default: 'default', description: 'Visual container style & dot shape variant.' },
+      color: { type: 'select', options: ['accent', 'heat', 'success', 'mono'], default: 'accent', description: 'Theme color hue for activity intensity.' },
+      size: { type: 'select', options: ['sm', 'md', 'lg'], default: 'md', description: 'Dot size dimensions.' },
+      gap: { type: 'select', options: ['xs', 'sm', 'md'], default: 'xs', description: 'Gap spacing between dots.' },
+      rows: { type: 'number', default: 7, description: 'Number of rows in the grid.' },
+      cols: { type: 'number', default: 52, description: 'Number of columns (default 52 for a full 1-year calendar).' },
+      showLegend: { type: 'boolean', default: true, description: 'Display activity level intensity legend.' },
+      showLabels: { type: 'boolean', default: true, description: 'Display day and month axis labels.' },
+      showStats: { type: 'boolean', default: true, description: 'Display total count header in default panel variant.' },
+      disabled: { type: 'boolean', default: false, description: 'Disable dot interactions.' },
+      readonly: { type: 'boolean', default: false, description: 'Readonly mode allowing hover tooltip without selection.' }
+    },
+    vueCode: (p) => `<script setup>
+import { IdDottedActivity } from '@idesign/vue'
+</script>
+
+<template>
+  <IdDottedActivity
+    variant="${p.variant || 'default'}"
+    color="${p.color || 'accent'}"
+    size="${p.size || 'md'}"
+    gap="${p.gap || 'xs'}"${p.rows !== 7 ? `\n    :rows="${p.rows}"` : ''}${p.showLegend === false ? `\n    :show-legend="false"` : ''}${p.showLabels === false ? `\n    :show-labels="false"` : ''}${p.showStats === false ? `\n    :show-stats="false"` : ''}${p.disabled ? `\n    :disabled="true"` : ''}${p.readonly ? `\n    :readonly="true"` : ''}
+  />
+</template>`,
+    nuxtCode: (p) => `<!-- Nuxt 3 Auto-Import (components/ActivityGraph.vue) -->
+<template>
+  <IdDottedActivity
+    variant="${p.variant || 'default'}"
+    color="${p.color || 'accent'}"
+    size="${p.size || 'md'}"
+  />
+</template>`,
+    htmlCode: (p) => `<div class="id-dotted-activity variant-${p.variant || 'default'} color-${p.color || 'accent'}">
+  <div class="activity-header">
+    <span class="total-count">248</span> <span class="total-label">activities in total</span>
+  </div>
+  <div class="dots-grid" role="grid">
+    <span class="activity-dot intensity-0" role="gridcell"></span>
+    <span class="activity-dot intensity-2" role="gridcell"></span>
+    <span class="activity-dot intensity-4" role="gridcell"></span>
+  </div>
+</div>`
+  },
+
+  {
+    id: 'marquee',
+    name: 'Marquee',
+    category: 'layout',
+    description: 'Polished continuous scrolling marquee for logo showcases, tech stacks, announcements, and features. Smooth imperceptible looping with pause-on-hover and edge fade masks.',
+    tags: ['marquee', 'scroll', 'infinite', 'loop', 'ticker', 'showcase', 'logos', 'banner', 'strip', 'layout'],
+    props: {
+      variant: { type: 'select', options: ['default', 'subtle', 'soft', 'glass', 'hero'], default: 'default', description: 'Visual surface variant.' },
+      size: { type: 'select', options: ['sm', 'md', 'lg'], default: 'md', description: 'Padding and content sizing scale.' },
+      direction: { type: 'select', options: ['left', 'right', 'up', 'down'], default: 'left', description: 'Scrolling animation direction.' },
+      speed: { type: 'select', options: ['slow', 'normal', 'fast'], default: 'normal', description: 'Preset speed rate of continuous scrolling.' },
+      gap: { type: 'select', options: ['xs', 'sm', 'md', 'lg', 'xl'], default: 'md', description: 'Spacing gap between marquee items.' },
+      vertical: { type: 'boolean', default: false, description: 'Vertical scrolling orientation mode.' },
+      reverse: { type: 'boolean', default: false, description: 'Reverse scrolling animation direction.' },
+      fade: { type: 'boolean', default: true, description: 'Soft gradient fade mask at entering and exiting viewport edges.' },
+      pauseOnHover: { type: 'boolean', default: true, description: 'Smoothly pause scrolling animation on mouse hover.' },
+      pauseOnInteraction: { type: 'boolean', default: false, description: 'Pause animation when interactive children are focused.' },
+      disabled: { type: 'boolean', default: false, description: 'Disable continuous animation and present static content.' }
+    },
+    vueCode: (p) => `<script setup>
+import { IdMarquee, IdBadge, IdTag } from '@idesign/vue'
+</script>
+
+<template>
+  <IdMarquee
+    variant="${p.variant || 'default'}"
+    size="${p.size || 'md'}"
+    direction="${p.direction || 'left'}"
+    speed="${p.speed || 'normal'}"
+    gap="${p.gap || 'md'}"${p.vertical ? '\n    :vertical="true"' : ''}${p.reverse ? '\n    :reverse="true"' : ''}${p.fade !== undefined && !p.fade ? '\n    :fade="false"' : '\n    :fade="true"'}${p.pauseOnHover === false ? '\n    :pause-on-hover="false"' : ''}${p.pauseOnInteraction ? '\n    :pause-on-interaction="true"' : ''}${p.disabled ? '\n    :disabled="true"' : ''}
+  >
+    <IdTag variant="accent">Vue 3</IdTag>
+    <IdTag variant="heat">Nuxt 3</IdTag>
+    <IdTag variant="indigo">TypeScript</IdTag>
+    <IdTag variant="live">Vite</IdTag>
+    <IdTag variant="subtle">Liquid Glass</IdTag>
+  </IdMarquee>
+</template>`,
+    nuxtCode: (p) => `<!-- Nuxt 3 Auto-Import (components/BrandShowcase.vue) -->
+<template>
+  <IdMarquee
+    variant="${p.variant || 'default'}"
+    speed="${p.speed || 'normal'}"
+    :fade="true"
+    :pause-on-hover="true"
+  >
+    <div class="brand-item">Apple</div>
+    <div class="brand-item">Vite</div>
+    <div class="brand-item">Vue</div>
+    <div class="brand-item">Nuxt</div>
+  </IdMarquee>
+</template>`,
+    htmlCode: (p) => `<div class="id-marquee variant-${p.variant || 'default'} size-${p.size || 'md'} direction-${p.direction || 'left'} ${p.fade ? 'has-fade' : ''}" role="region" aria-label="Scrolling content marquee">
+  <div class="marquee-track is-animating">
+    <div class="marquee-content">
+      <span class="marquee-item">Brand 1</span>
+      <span class="marquee-item">Brand 2</span>
+      <span class="marquee-item">Brand 3</span>
+    </div>
+    <div class="marquee-content" aria-hidden="true">
+      <span class="marquee-item">Brand 1</span>
+      <span class="marquee-item">Brand 2</span>
+      <span class="marquee-item">Brand 3</span>
+    </div>
+  </div>
+</div>`
+  },
+
+  {
+    id: 'date-range-picker',
+    name: 'Date Range Picker',
+    category: 'inputs',
+    description: 'Polished date-range selection component with interactive range hovering, intelligent start/end auto-swapping, continuous Liquid Glass ribbon highlighting, and dual-month mode.',
+    tags: ['date', 'range', 'picker', 'calendar', 'dates', 'booking', 'schedule', 'input', 'select'],
+    props: {
+      label: { type: 'text', default: 'Reservation Dates', description: 'Input form label string.' },
+      placeholder: { type: 'text', default: 'Select date range...', description: 'Placeholder string when no range is selected.' },
+      size: { type: 'select', options: ['sm', 'md', 'lg'], default: 'md', description: 'Input and popover size scale.' },
+      variant: { type: 'select', options: ['default', 'subtle', 'soft', 'glass', 'hero'], default: 'default', description: 'Visual surface style variant.' },
+      doubleMonth: { type: 'boolean', default: false, description: 'Display two adjacent months side-by-side.' },
+      disabled: { type: 'boolean', default: false, description: 'Disable picker input and popover.' },
+      readonly: { type: 'boolean', default: false, description: 'Readonly input mode.' }
+    },
+    vueCode: (p) => `<script setup>
+import { ref } from 'vue'
+import { IdDateRangePicker } from '@idesign/vue'
+
+const range = ref({ start: '2026-10-10', end: '2026-10-24' })
+</script>
+
+<template>
+  <IdDateRangePicker
+    v-model="range"
+    label="${p.label || 'Reservation Dates'}"
+    placeholder="${p.placeholder || 'Select date range...'}"
+    size="${p.size || 'md'}"
+    variant="${p.variant || 'default'}"${p.doubleMonth ? '\n    :double-month="true"' : ''}${p.disabled ? '\n    :disabled="true"' : ''}
+  />
+</template>`,
+    nuxtCode: (p) => `<!-- Nuxt 3 Auto-Import (pages/booking.vue) -->
+<template>
+  <IdDateRangePicker
+    v-model="bookingRange"
+    label="Travel Dates"
+    :double-month="true"
+  />
+</template>`,
+    htmlCode: (p) => `<div class="id-date-range-picker size-${p.size || 'md'} variant-${p.variant || 'default'}">
+  <label class="picker-label">${p.label || 'Reservation Dates'}</label>
+  <div class="picker-input" role="combobox" aria-haspopup="dialog">
+    <span class="picker-value">Oct 10 – 24, 2026</span>
+  </div>
+</div>`
   }
 ]
+
+
+
 
 

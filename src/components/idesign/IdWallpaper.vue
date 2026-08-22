@@ -136,8 +136,9 @@
 </template>
 
 <script setup>
-import { computed, useSlots } from 'vue'
+import { ref, computed, useSlots } from 'vue'
 import { useIdesignConfig } from '../../composables/useIdesignConfig'
+import { resolveVariant } from '../../composables/useVariant'
 
 const props = defineProps({
   variant: {
@@ -280,10 +281,9 @@ const isDark = computed(() => {
   return activeTheme === 'dark'
 })
 
-// Variant / Preset Resolution
 const currentVariant = computed(() => {
   const v = (isDark.value && props.darkVariant) || props.preset || props.variant || config.resolvedVariant.value || 'gradient'
-  return ['solid', 'gradient', 'mesh', 'radial', 'aurora', 'glow', 'noise', 'image'].includes(v) ? v : 'gradient'
+  return resolveVariant(v)
 })
 
 // Intensity factor

@@ -1,5 +1,5 @@
 <template>
-  <div :class="['id-pin-input', `size-${size}`, { 'is-disabled': disabled, 'is-readonly': readonly, 'has-error': error || !!errorText }]" :style="ui?.root">
+  <div :class="['id-pin-input', `size-${size}`, `variant-${currentVariant}`, { 'is-disabled': disabled, 'is-readonly': readonly, 'has-error': error || !!errorText }]" :style="ui?.root">
     <div v-if="label || $slots.label" class="pin-label-row">
       <label v-if="label" class="pin-label">{{ label }}</label>
       <slot name="label" />
@@ -44,6 +44,8 @@
 
 <script setup>
 import { ref, computed, watch, nextTick, onMounted } from 'vue'
+import { useIdesignConfig } from '../../composables/useIdesignConfig'
+import { resolveVariant } from '../../composables/useVariant'
 
 const props = defineProps({
   modelValue: {
@@ -116,6 +118,10 @@ const props = defineProps({
     type: String,
     default: ''
   },
+  variant: {
+    type: String,
+    default: undefined
+  },
   ui: {
     type: Object,
     default: () => ({})
@@ -123,6 +129,9 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['update:modelValue', 'complete', 'change', 'clear', 'focus', 'blur'])
+
+const config = useIdesignConfig('PinInput', props)
+const currentVariant = computed(() => resolveVariant(props.variant || config.resolvedVariant.value || 'default'))
 
 const inputRefs = ref([])
 const internalDigits = ref(new Array(props.length).fill(''))
@@ -495,5 +504,34 @@ defineExpose({
 .is-disabled {
   opacity: 0.5;
   pointer-events: none;
+}
+
+/* Variant Styles */
+.variant-glass .pin-digit-input {
+  background: var(--variant-glass-bg);
+  backdrop-filter: var(--variant-glass-backdrop);
+  -webkit-backdrop-filter: var(--variant-glass-backdrop);
+  border: var(--variant-glass-border);
+}
+
+.variant-soft .pin-digit-input {
+  background: var(--variant-soft-bg);
+  border: none;
+  color: var(--variant-soft-color);
+}
+
+.variant-subtle .pin-digit-input {
+  background: var(--variant-subtle-bg);
+  border: var(--variant-subtle-border);
+}
+
+.variant-outline .pin-digit-input {
+  background: transparent;
+  border: var(--variant-outline-border);
+}
+
+.variant-borderless .pin-digit-input {
+  border: none;
+  background: transparent;
 }
 </style>

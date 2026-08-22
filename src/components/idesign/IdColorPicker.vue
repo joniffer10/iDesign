@@ -858,6 +858,7 @@ import {
   Palette
 } from '@lucide/vue'
 import { useIdesignConfig } from '../../composables/useIdesignConfig'
+import { resolveVariant } from '../../composables/useVariant'
 
 // ─────────────────────────────────────────────────────────────
 // PROPS DEFINITION
@@ -1000,7 +1001,7 @@ const emit = defineEmits([
 const config = useIdesignConfig('ColorPicker', props)
 const currentSize = computed(() => config.resolvedSize.value || 'md')
 const currentRadius = computed(() => config.resolvedRadius.value || 'md')
-const currentVariant = computed(() => config.resolvedVariant.value || 'default')
+const currentVariant = computed(() => resolveVariant(props.variant || config.resolvedVariant.value || 'default'))
 
 const displayHint = computed(() => props.hint || props.description || '')
 

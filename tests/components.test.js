@@ -84,6 +84,14 @@ import IdPieChart from '../src/components/idesign/IdPieChart.vue'
 import IdDonutChart from '../src/components/idesign/IdDonutChart.vue'
 import IdQRCode from '../src/components/idesign/IdQRCode.vue'
 const QRCode = IdQRCode
+import IdTerminal from '../src/components/idesign/IdTerminal.vue'
+const Terminal = IdTerminal
+import IdMarquee from '../src/components/idesign/IdMarquee.vue'
+const Marquee = IdMarquee
+import IdDateRangePicker from '../src/components/idesign/IdDateRangePicker.vue'
+const DateRangePicker = IdDateRangePicker
+
+
 
 
 
@@ -2305,7 +2313,273 @@ describe('Idesign Component Suite — Comprehensive Tests', () => {
     expect(wrapper.find('.qr-label-box').classes()).toContain('my-custom-qr-label')
     expect(wrapper.find('.qr-caption-box').classes()).toContain('my-custom-qr-caption')
   })
+
+  // ── 23. Terminal UI Component ──
+  it('renders IdTerminal with title, macOS controls, and parsed command lines', () => {
+    const wrapper = mount(IdTerminal, {
+      props: {
+        title: 'zsh — build',
+        subtitle: '~/projects/idesign',
+        variant: 'macos',
+        size: 'lg',
+        lines: [
+          '$ pnpm test',
+          '✓ 42 tests passed'
+        ]
+      }
+    })
+
+    expect(wrapper.classes()).toContain('id-terminal')
+    expect(wrapper.classes()).toContain('variant-macos')
+    expect(wrapper.classes()).toContain('size-lg')
+    expect(wrapper.find('.terminal-title-text').text()).toBe('zsh — build')
+    expect(wrapper.find('.terminal-subtitle-badge').text()).toBe('~/projects/idesign')
+    expect(wrapper.findAll('.terminal-dot').length).toBe(3)
+    expect(wrapper.findAll('.terminal-line').length).toBe(2)
+  })
+
+  it('supports simple slotted usage for IdTerminal', () => {
+    const wrapper = mount(IdTerminal, {
+      slots: {
+        default: '<span class="custom-cmd">$ pnpm install</span>'
+      }
+    })
+
+    expect(wrapper.find('.terminal-raw-slot').exists()).toBe(true)
+    expect(wrapper.find('.custom-cmd').text()).toBe('$ pnpm install')
+  })
+
+  it('supports interactive command submission and event emission', async () => {
+    const wrapper = mount(IdTerminal, {
+      props: {
+        interactive: true,
+        prompt: '$'
+      }
+    })
+
+    const input = wrapper.find('.interactive-cmd-input')
+    expect(input.exists()).toBe(true)
+
+    await input.setValue('npx idesign add button')
+    await wrapper.find('.terminal-interactive-line').trigger('submit')
+
+    expect(wrapper.emitted('command')).toBeTruthy()
+    expect(wrapper.emitted('command')[0]).toEqual(['npx idesign add button'])
+    expect(wrapper.emitted('submit')).toBeTruthy()
+  })
+
+  it('supports custom ui prop overrides and Terminal alias', () => {
+    const wrapper = mount(Terminal, {
+      props: {
+        title: 'Shell',
+        lines: ['$ ls -la'],
+        ui: {
+          base: 'custom-term-base',
+          header: 'custom-term-header',
+          body: 'custom-term-body',
+          prompt: 'custom-term-prompt'
+        }
+      }
+    })
+
+    expect(wrapper.classes()).toContain('custom-term-base')
+    expect(wrapper.find('.terminal-header').classes()).toContain('custom-term-header')
+    expect(wrapper.find('.terminal-body').classes()).toContain('custom-term-body')
+    expect(wrapper.find('.line-prompt').classes()).toContain('custom-term-prompt')
+  })
+
+  // ── 24. Marquee UI Component ──
+  it('renders IdMarquee with default props and slot content duplicated for seamless looping', () => {
+    const wrapper = mount(IdMarquee, {
+      slots: {
+        default: '<span class="logo-item">Apple</span>'
+      }
+    })
+
+    expect(wrapper.classes()).toContain('id-marquee')
+    expect(wrapper.classes()).toContain('variant-default')
+    expect(wrapper.classes()).toContain('size-md')
+    expect(wrapper.classes()).toContain('direction-left')
+
+    const tracks = wrapper.findAll('.marquee-content')
+    // Default repeat count is 2
+    expect(tracks.length).toBe(2)
+    // First track is visible, cloned tracks are aria-hidden for a11y
+    expect(tracks[0].attributes('aria-hidden')).toBeUndefined()
+    expect(tracks[1].attributes('aria-hidden')).toBe('true')
+
+    expect(wrapper.text()).toContain('Apple')
+  })
+
+  it('supports vertical, reverse, speed, gap, and edge fade props', () => {
+    const wrapper = mount(IdMarquee, {
+      props: {
+        vertical: true,
+        reverse: true,
+        speed: 'fast',
+        gap: 'lg',
+        fade: true,
+        variant: 'glass',
+        size: 'lg'
+      },
+      slots: {
+        default: '<div>Vertical Item</div>'
+      }
+    })
+
+    expect(wrapper.classes()).toContain('is-vertical')
+    expect(wrapper.classes()).toContain('direction-down')
+    expect(wrapper.classes()).toContain('variant-glass')
+    expect(wrapper.classes()).toContain('size-lg')
+    expect(wrapper.classes()).toContain('has-fade')
+
+    const overlays = wrapper.findAll('.marquee-fade-overlay')
+    expect(overlays.length).toBe(2)
+  })
+
+  it('handles pauseOnHover and pauseOnInteraction mouse/focus events', async () => {
+    const wrapper = mount(IdMarquee, {
+      props: {
+        pauseOnHover: true,
+        pauseOnInteraction: true
+      },
+      slots: {
+        default: '<button class="test-btn">Interactive Link</button>'
+      }
+    })
+
+    expect(wrapper.classes()).not.toContain('is-paused')
+
+    // Hover triggers pause
+    await wrapper.trigger('mouseenter')
+    expect(wrapper.classes()).toContain('is-paused')
+
+    await wrapper.trigger('mouseleave')
+    expect(wrapper.classes()).not.toContain('is-paused')
+
+    // Focus triggers pause
+    await wrapper.trigger('focusin')
+    expect(wrapper.classes()).toContain('is-paused')
+
+    await wrapper.trigger('focusout')
+    expect(wrapper.classes()).not.toContain('is-paused')
+  })
+
+  it('supports custom repeat count and ui prop overrides using Marquee alias', () => {
+    const wrapper = mount(Marquee, {
+      props: {
+        repeat: 3,
+        variant: 'hero',
+        disabled: true,
+        ui: {
+          base: 'custom-marquee-base',
+          track: 'custom-marquee-track',
+          content: 'custom-marquee-content'
+        }
+      },
+      slots: {
+        default: '<span>Tag</span>'
+      }
+    })
+
+    expect(wrapper.classes()).toContain('custom-marquee-base')
+    expect(wrapper.classes()).toContain('variant-hero')
+    expect(wrapper.classes()).toContain('is-disabled')
+
+    const contents = wrapper.findAll('.marquee-content')
+    expect(contents.length).toBe(3)
+    expect(contents[0].classes()).toContain('custom-marquee-content')
+    expect(wrapper.find('.marquee-track').classes()).toContain('custom-marquee-track')
+  })
+
+  // ── 25. Date Range Picker UI Component ──
+  it('renders IdDateRangePicker with default props, label, and formatted range display', () => {
+    const wrapper = mount(IdDateRangePicker, {
+      props: {
+        label: 'Booking Window',
+        modelValue: { start: '2026-10-10', end: '2026-10-24' }
+      }
+    })
+
+    expect(wrapper.classes()).toContain('id-date-range-picker')
+    expect(wrapper.find('.picker-label').text()).toBe('Booking Window')
+    expect(wrapper.find('.picker-value').text()).toContain('Oct 10 – 24, 2026')
+  })
+
+  it('opens popover dialog and renders calendar days grid when clicked', async () => {
+    const wrapper = mount(IdDateRangePicker, {
+      props: {
+        modelValue: { start: '2026-08-01', end: '2026-08-15' }
+      }
+    })
+
+    expect(wrapper.find('.picker-popover').exists()).toBe(false)
+    await wrapper.find('.picker-input').trigger('click')
+    expect(wrapper.find('.picker-popover').exists()).toBe(true)
+    expect(wrapper.findAll('.day-cell').length).toBeGreaterThanOrEqual(28)
+  })
+
+  it('handles intelligent non-chronological start/end range selection and emits update events', async () => {
+    const wrapper = mount(IdDateRangePicker, {
+      props: {
+        modelValue: { start: '', end: '' }
+      }
+    })
+
+    await wrapper.find('.picker-input').trigger('click')
+    const activeDayCells = wrapper.findAll('.day-cell:not(:disabled)')
+
+    // 1. Select initial date (e.g. 15th active day in month)
+    await activeDayCells[15].trigger('click')
+    expect(wrapper.emitted('select-start')).toBeTruthy()
+
+    // 2. Select earlier date (e.g. 5th active day in month) — should auto-swap start & end!
+    await activeDayCells[5].trigger('click')
+    expect(wrapper.emitted('select-end')).toBeTruthy()
+
+    const emittedRange = wrapper.emitted('update:modelValue')
+    expect(emittedRange).toBeTruthy()
+    const lastEmitted = emittedRange[emittedRange.length - 1][0]
+    expect(lastEmitted.start <= lastEmitted.end).toBe(true)
+
+
+  })
+
+  it('supports doubleMonth mode and DateRangePicker alias', async () => {
+    const wrapper = mount(DateRangePicker, {
+      props: {
+        doubleMonth: true,
+        startDate: '2026-12-01',
+        endDate: '2026-12-25'
+      }
+    })
+
+    expect(wrapper.classes()).toContain('is-double-month')
+
+    await wrapper.find('.picker-input').trigger('click')
+    expect(wrapper.find('.picker-popover').classes()).toContain('is-double')
+    expect(wrapper.findAll('.calendar-pane').length).toBe(2)
+  })
+
+  it('clears range via input clear button and footer clear button', async () => {
+    const wrapper = mount(IdDateRangePicker, {
+      props: {
+        startDate: '2026-05-01',
+        endDate: '2026-05-10'
+      }
+    })
+
+    const clearBtn = wrapper.find('.clear-input-btn')
+    expect(clearBtn.exists()).toBe(true)
+    await clearBtn.trigger('click')
+
+    expect(wrapper.emitted('clear')).toBeTruthy()
+    expect(wrapper.emitted('update:startDate')[0]).toEqual([''])
+    expect(wrapper.emitted('update:endDate')[0]).toEqual([''])
+  })
 })
+
+
 
 
 

@@ -20,6 +20,7 @@
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { useIdesignConfig } from '../../composables/useIdesignConfig'
+import { resolveVariant } from '../../composables/useVariant'
 
 const props = defineProps({
   position: { type: String, default: 'bottom' },
@@ -34,7 +35,10 @@ const props = defineProps({
 
 const config = useIdesignConfig('Popover', props)
 const currentSize = computed(() => config.resolvedSize.value || 'md')
-const currentVariant = computed(() => config.resolvedVariant.value || 'default')
+const currentVariant = computed(() => {
+  const raw = config.resolvedVariant.value || 'default'
+  return resolveVariant(raw)
+})
 const currentPosition = computed(() => props.position || 'bottom')
 
 const isOpen = ref(false)
@@ -65,10 +69,18 @@ onBeforeUnmount(() => document.removeEventListener('click', handleOutside))
 }
 
 .variant-glass {
-  background: rgba(255, 255, 255, 0.78); backdrop-filter: saturate(180%) blur(20px);
-  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  background: var(--variant-glass-bg); backdrop-filter: var(--variant-glass-backdrop);
+  -webkit-backdrop-filter: var(--variant-glass-backdrop);
+  border: var(--variant-glass-border);
 }
-:root.dark .variant-glass { background: rgba(28, 28, 30, 0.82); }
+
+.variant-solid {
+  background: var(--variant-solid-bg); color: var(--variant-solid-color);
+  border: none;
+}
+.variant-solid .popover-title { color: #ffffff; }
+.variant-solid .popover-subtitle { color: rgba(255, 255, 255, 0.65); }
+.variant-solid .popover-body { color: rgba(255, 255, 255, 0.85); }
 
 .position-bottom { top: calc(100% + 8px); left: 50%; transform: translateX(-50%); }
 .position-top { bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%); }

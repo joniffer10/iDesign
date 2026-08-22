@@ -4,6 +4,7 @@
       'id-input-group',
       `size-${currentSize}`,
       `radius-${currentRadius}`,
+      `variant-${currentVariant}`,
       {
         'has-error': currentVariant === 'error' || hasError,
         'has-success': currentVariant === 'success' || hasSuccess,
@@ -121,6 +122,7 @@
 import { ref, computed, inject } from 'vue'
 import { Search, X, Loader2, Eye, EyeOff } from '@lucide/vue'
 import { useIdesignConfig } from '../../composables/useIdesignConfig'
+import { resolveVariant } from '../../composables/useVariant'
 
 const props = defineProps({
   modelValue: { type: [String, Number], default: '' },
@@ -157,8 +159,22 @@ const formFieldContext = inject('id-form-field-context', null)
 
 const config = useIdesignConfig('Input', props)
 const currentSize = computed(() => config.resolvedSize.value || 'md')
-const currentRadius = computed(() => config.resolvedRadius.value || 'md')
-const currentVariant = computed(() => config.resolvedVariant.value || 'default')
+
+const currentRadius = computed(() => {
+  const v = resolvedVariantRaw.value
+  if (v === 'pill') return 'full'
+  return config.resolvedRadius.value || 'md'
+})
+
+const resolvedVariantRaw = computed(() => {
+  const raw = config.resolvedVariant.value || 'default'
+  return resolveVariant(raw, null, {
+    'no-outline': 'borderless',
+    'no-border': 'borderless'
+  })
+})
+
+const currentVariant = computed(() => resolvedVariantRaw.value)
 
 const isFocused = ref(false)
 const inputRef = ref(null)
@@ -320,4 +336,60 @@ defineExpose({
 
 .is-disabled { opacity: .5; pointer-events: none; }
 .is-readonly .input-wrapper { background: var(--bg); border-style: dashed; }
+
+/* ── Variant: outline (explicit border emphasis) ── */
+.id-input-group[data-variant="outline"] .input-wrapper,
+.id-input-group.variant-outline .input-wrapper {
+  border: var(--variant-outline-border);
+  background: transparent;
+}
+
+/* ── Variant: soft (accent tinted background) ── */
+.id-input-group[data-variant="soft"] .input-wrapper,
+.id-input-group.variant-soft .input-wrapper {
+  background: var(--variant-soft-bg);
+  border: none;
+}
+.id-input-group[data-variant="soft"] .input-wrapper.is-focused,
+.id-input-group.variant-soft .input-wrapper.is-focused {
+  border: 1.5px solid var(--accent);
+  box-shadow: 0 0 0 3px var(--color-ring);
+}
+
+/* ── Variant: subtle (neutral low-emphasis) ── */
+.id-input-group[data-variant="subtle"] .input-wrapper,
+.id-input-group.variant-subtle .input-wrapper {
+  background: var(--variant-subtle-bg);
+  border: var(--variant-subtle-border);
+}
+
+/* ── Variant: ghost (transparent until focus) ── */
+.id-input-group[data-variant="ghost"] .input-wrapper,
+.id-input-group.variant-ghost .input-wrapper {
+  background: var(--variant-ghost-bg);
+  border: none;
+}
+.id-input-group[data-variant="ghost"] .input-wrapper:hover,
+.id-input-group.variant-ghost .input-wrapper:hover {
+  background: var(--variant-ghost-bg-hover);
+}
+.id-input-group[data-variant="ghost"] .input-wrapper.is-focused,
+.id-input-group.variant-ghost .input-wrapper.is-focused {
+  background: var(--color-input, var(--surface));
+  border: 1px solid var(--accent);
+  box-shadow: 0 0 0 3px var(--color-ring);
+}
+
+/* ── Variant: borderless (no visible border or shadow) ── */
+.id-input-group[data-variant="borderless"] .input-wrapper,
+.id-input-group.variant-borderless .input-wrapper {
+  border: none;
+  box-shadow: none;
+  background: transparent;
+}
+.id-input-group[data-variant="borderless"] .input-wrapper.is-focused,
+.id-input-group.variant-borderless .input-wrapper.is-focused {
+  box-shadow: none;
+  border: none;
+}
 </style>

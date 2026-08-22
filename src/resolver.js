@@ -21,8 +21,8 @@ export function IdesignResolver(options = {}) {
   return {
     type: 'component',
     resolve: (name) => {
-      // Matches IdButton, IdPinInput, IdCard, IdSegmentedControl, etc.
-      if (name.startsWith(prefix) || name === 'MobileNavbar' || name.endsWith('Template')) {
+      // Matches IdButton, IdTerminal, IdPinInput, etc., or aliases like Terminal, QRCode, MobileNavbar
+      if (name.startsWith(prefix) || name === 'Terminal' || name === 'QRCode' || name === 'MobileNavbar' || name === 'Wallpaper' || name === 'DottedActivity' || name.endsWith('Template')) {
         const sideEffects = importStyle ? ['@idesign/vue/tokens'] : undefined
 
         return {

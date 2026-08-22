@@ -180,8 +180,9 @@
 </template>
 
 <script setup>
-import { ref, computed, reactive, onMounted, onBeforeUnmount } from 'vue'
+import { ref, reactive, computed, watch, onMounted, onBeforeUnmount, nextTick } from 'vue'
 import { useIdesignConfig } from '../../composables/useIdesignConfig'
+import { resolveVariant } from '../../composables/useVariant'
 
 const props = defineProps({
   items: {
@@ -260,8 +261,8 @@ const emit = defineEmits(['select', 'update:activeId', 'update:modelValue'])
 const config = useIdesignConfig('Dock', props)
 const currentSize = computed(() => config.resolvedSize.value || props.size || 'md')
 const currentVariant = computed(() => {
-  const v = config.resolvedVariant.value || props.variant || 'glass'
-  return v === 'default' ? 'glass' : v
+  const raw = config.resolvedVariant.value || props.variant || 'glass'
+  return resolveVariant(raw)
 })
 const currentColor = computed(() => {
   const c = config.resolvedColor.value || props.color || 'blue'

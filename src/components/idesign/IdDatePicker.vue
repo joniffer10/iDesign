@@ -170,6 +170,7 @@
 import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue'
 import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, ChevronDown } from '@lucide/vue'
 import { useIdesignConfig } from '../../composables/useIdesignConfig'
+import { resolveVariant } from '../../composables/useVariant'
 
 const props = defineProps({
   modelValue: { type: String, default: '' }, // YYYY-MM-DD
@@ -187,7 +188,13 @@ const emit = defineEmits(['update:modelValue', 'change'])
 
 const config = useIdesignConfig('DatePicker', props)
 const currentSize = computed(() => config.resolvedSize.value || 'md')
-const currentVariant = computed(() => config.resolvedVariant.value || 'default')
+const currentVariant = computed(() => {
+  const raw = config.resolvedVariant.value || 'default'
+  return resolveVariant(raw, null, {
+    'no-outline': 'borderless',
+    'no-border': 'borderless'
+  })
+})
 
 const wrapperRef = ref(null)
 const isOpen = ref(false)
@@ -426,6 +433,37 @@ onBeforeUnmount(() => document.removeEventListener('click', handleOutside))
 .picker-input.is-open {
   border-color: var(--accent);
   box-shadow: 0 0 0 3.5px rgba(0, 113, 227, 0.16);
+}
+
+/* Variant Styles for Input and Popover */
+.variant-glass .picker-input,
+.variant-glass .picker-popover {
+  background: var(--variant-glass-bg);
+  backdrop-filter: var(--variant-glass-backdrop);
+  -webkit-backdrop-filter: var(--variant-glass-backdrop);
+  border: var(--variant-glass-border);
+}
+
+.variant-outline .picker-input {
+  border: var(--variant-outline-border);
+  background: transparent;
+}
+
+.variant-soft .picker-input {
+  background: var(--variant-soft-bg);
+  border: none;
+  color: var(--variant-soft-color);
+}
+
+.variant-subtle .picker-input {
+  background: var(--variant-subtle-bg);
+  border: var(--variant-subtle-border);
+}
+
+.variant-borderless .picker-input {
+  border: none;
+  box-shadow: none;
+  background: transparent;
 }
 
 .picker-input.is-disabled {

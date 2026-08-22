@@ -102,6 +102,7 @@
 import { ref, computed, watch, onMounted, onUnmounted, nextTick } from 'vue'
 import { X } from '@lucide/vue'
 import { useIdesignConfig } from '../../composables/useIdesignConfig'
+import { resolveVariant } from '../../composables/useVariant'
 
 let idCounter = 0
 
@@ -128,14 +129,21 @@ const emit = defineEmits(['update:modelValue', 'close', 'open'])
 
 const config = useIdesignConfig('Modal', props)
 const currentSize = computed(() => config.resolvedSize.value || 'md')
-const currentVariant = computed(() => config.resolvedVariant.value || 'default')
+
+const currentVariant = computed(() => {
+  const raw = config.resolvedVariant.value || 'default'
+  return resolveVariant(raw, null, {
+    'clean': 'seamless',
+    'plain': 'seamless',
+    'no-divider': 'seamless',
+    'nodivider': 'seamless',
+    'solid-seamless': 'seamless'
+  })
+})
 
 const isSeamless = computed(() => currentVariant.value === 'glass' || currentVariant.value === 'seamless')
-const isClean = computed(() => {
-  const v = currentVariant.value
-  return v === 'clean' || v === 'plain' || v === 'no-divider' || v === 'nodivider' || v === 'solid-seamless'
-})
-const hasNoDividers = computed(() => isSeamless.value || isClean.value)
+const isClean = computed(() => false) // clean now resolves to seamless
+const hasNoDividers = computed(() => isSeamless.value)
 
 const resolvedDescription = computed(() => props.description || props.subtitle || '')
 
@@ -314,11 +322,11 @@ onUnmounted(() => {
 .variant-glass,
 .variant-seamless,
 .is-seamless {
-  background: rgba(255, 255, 255, 0.82);
-  backdrop-filter: saturate(180%) blur(20px);
-  -webkit-backdrop-filter: saturate(180%) blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.6);
-  box-shadow: var(--sh-overlay), inset 0 0 0 1px rgba(255, 255, 255, 0.3);
+  background: var(--variant-glass-bg);
+  backdrop-filter: var(--variant-glass-backdrop);
+  -webkit-backdrop-filter: var(--variant-glass-backdrop);
+  border: var(--variant-glass-border);
+  box-shadow: var(--variant-glass-shadow);
 }
 
 :root.dark .variant-glass,
@@ -327,9 +335,9 @@ onUnmounted(() => {
 html[data-theme="dark"] .variant-glass,
 html[data-theme="dark"] .variant-seamless,
 html[data-theme="dark"] .is-seamless {
-  background: rgba(28, 28, 30, 0.82);
+  background: var(--variant-glass-bg);
   border-color: rgba(255, 255, 255, 0.12);
-  box-shadow: var(--sh-overlay), inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+  box-shadow: var(--variant-glass-shadow);
 }
 
 /* Seamless Header / Body / Footer Hierarchy (No dividing lines) */
@@ -437,6 +445,36 @@ html[data-theme="dark"] .is-clean .modal-close-btn {
 html[data-theme="dark"] .is-clean .modal-close-btn:hover {
   background: rgba(255, 255, 255, 0.16);
   color: var(--text, #f5f5f7);
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   Solid Variant (Strong Accent Surface)
+   ═══════════════════════════════════════════════════════════════════ */
+.variant-solid {
+  background: var(--variant-solid-bg);
+  color: var(--variant-solid-color);
+  border: none;
+}
+.variant-solid .modal-title { color: #ffffff; }
+.variant-solid .modal-description { color: rgba(255, 255, 255, 0.8); }
+.variant-solid .modal-body-text { color: rgba(255, 255, 255, 0.9); }
+.variant-solid .modal-header { border-bottom-color: rgba(255, 255, 255, 0.2); }
+.variant-solid .modal-footer { border-top-color: rgba(255, 255, 255, 0.2); }
+.variant-solid .modal-close-btn {
+  background: rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.8);
+}
+.variant-solid .modal-close-btn:hover {
+  background: rgba(255, 255, 255, 0.25);
+  color: #ffffff;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   Borderless Variant (No Outer Border)
+   ═══════════════════════════════════════════════════════════════════ */
+.variant-borderless {
+  border: none !important;
+  box-shadow: var(--sh-overlay);
 }
 
 /* ═══════════════════════════════════════════════════════════════════

@@ -4,7 +4,9 @@
     :href="href"
     :class="[
       'id-project-card',
-      { 'is-interactive': interactive || href }
+      `variant-${currentVariant}`,
+      { 'is-interactive': interactive || href },
+      config.mergedUi.value.base
     ]"
     @click="$emit('click', $event)"
   >
@@ -60,16 +62,18 @@
 </template>
 
 <script setup>
+import { computed } from 'vue'
 import { ChevronRight } from '@lucide/vue'
+import { useIdesignConfig } from '../../composables/useIdesignConfig'
+import { resolveVariant } from '../../composables/useVariant'
 
-defineProps({
+const props = defineProps({
   title: { type: String, required: true },
   description: String,
   badge: String,
   badgeVariant: {
     type: String,
-    default: 'success',
-    validator: v => ['success', 'warning', 'info', 'accent', 'purple', 'neutral'].includes(v)
+    default: 'success'
   },
   logo: String,
   logoBg: String,
@@ -81,10 +85,21 @@ defineProps({
   interactive: {
     type: Boolean,
     default: true
+  },
+  variant: {
+    type: String,
+    default: undefined
+  },
+  ui: {
+    type: Object,
+    default: () => ({})
   }
 })
 
 defineEmits(['click'])
+
+const config = useIdesignConfig('ProjectCard', props)
+const currentVariant = computed(() => resolveVariant(props.variant || config.resolvedVariant.value || 'default'))
 </script>
 
 <style scoped>

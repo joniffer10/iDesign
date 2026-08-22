@@ -38,6 +38,7 @@
 import { watch, computed } from 'vue'
 import { X } from '@lucide/vue'
 import { useIdesignConfig } from '../../composables/useIdesignConfig'
+import { resolveVariant } from '../../composables/useVariant'
 
 const props = defineProps({
   modelValue: Boolean,
@@ -54,7 +55,13 @@ const props = defineProps({
 defineEmits(['update:modelValue'])
 
 const config = useIdesignConfig('Drawer', props)
-const currentVariant = computed(() => config.resolvedVariant.value || 'default')
+const currentVariant = computed(() => {
+  const raw = config.resolvedVariant.value || 'default'
+  return resolveVariant(raw, null, {
+    'no-dividers': 'seamless',
+    'no-divider': 'seamless'
+  })
+})
 const currentSize = computed(() => config.resolvedSize.value || 'md')
 
 watch(() => props.modelValue, (v) => {
@@ -92,10 +99,22 @@ watch(() => props.modelValue, (v) => {
 
 /* Variant Glass */
 .variant-glass {
-  background: rgba(255, 255, 255, 0.78); backdrop-filter: saturate(180%) blur(20px);
-  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  background: var(--variant-glass-bg); backdrop-filter: var(--variant-glass-backdrop);
+  -webkit-backdrop-filter: var(--variant-glass-backdrop); border: var(--variant-glass-border);
 }
-:root.dark .variant-glass { background: rgba(28, 28, 30, 0.82); }
+
+/* Variant Solid */
+.variant-solid {
+  background: var(--variant-solid-bg); color: var(--variant-solid-color); border: none;
+}
+.variant-solid .drawer-title { color: #ffffff; }
+.variant-solid .drawer-desc { color: rgba(255, 255, 255, 0.8); }
+.variant-solid .drawer-header { border-bottom-color: rgba(255, 255, 255, 0.2); }
+.variant-solid .drawer-footer { border-top-color: rgba(255, 255, 255, 0.2); }
+
+/* Variant Seamless */
+.variant-seamless .drawer-header { border-bottom: none; }
+.variant-seamless .drawer-footer { border-top: none; }
 
 .drawer-header {
   display: flex; align-items: flex-start; justify-content: space-between; gap: 12px;

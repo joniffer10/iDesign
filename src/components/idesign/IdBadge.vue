@@ -1,5 +1,5 @@
 <template>
-  <span :class="['id-badge', `badge-${currentColor}`, `size-${currentSize}`, { 'has-count': hasCount }, config.mergedUi.value.base]">
+  <span :class="['id-badge', `badge-${currentColor}`, `variant-${currentVariant}`, `size-${currentSize}`, { 'has-count': hasCount }, config.mergedUi.value.base]">
     <slot />
     <span v-if="hasCount" :class="['badge-count', config.mergedUi.value.count]">{{ displayCount }}</span>
     <span v-else-if="dot && showBadge" :class="['badge-dot', config.mergedUi.value.dot]" />
@@ -9,6 +9,7 @@
 <script setup>
 import { computed } from 'vue'
 import { useIdesignConfig } from '../../composables/useIdesignConfig'
+import { resolveVariant } from '../../composables/useVariant'
 
 const props = defineProps({
   variant: { type: String, default: undefined },
@@ -23,8 +24,9 @@ const props = defineProps({
 
 const config = useIdesignConfig('Badge', props)
 const currentSize = computed(() => config.resolvedSize.value || 'md')
+const currentVariant = computed(() => resolveVariant(props.variant || config.resolvedVariant.value || 'solid'))
 const currentColor = computed(() => {
-  const c = props.color || config.resolvedColor.value || props.variant || 'default'
+  const c = props.color || config.resolvedColor.value || 'default'
   if (c === 'primary') return 'accent'
   return c
 })
@@ -76,4 +78,8 @@ const displayCount = computed(() => {
 .badge-success .badge-count { background: #30d158; color: #fff; }
 .badge-warning .badge-count { background: #ff9f0a; color: #fff; }
 .badge-dot { position: absolute; top: -2px; right: -2px; width: 9px; height: 9px; border-radius: 50%; background: #ff3b30; border: 2px solid var(--surface); }
+
+/* Variant Overrides */
+.variant-soft .badge-count { background: var(--variant-soft-bg); color: var(--variant-soft-color); box-shadow: none; }
+.variant-outline .badge-count { background: var(--surface); color: var(--text); border: 1.5px solid var(--hairline); box-shadow: none; }
 </style>

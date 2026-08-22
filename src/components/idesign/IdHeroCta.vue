@@ -1,5 +1,5 @@
 <template>
-  <section :class="['id-hero-cta', `variant-${variant}`]">
+  <section :class="['id-hero-cta', `variant-${currentVariant}`, config.mergedUi.value.base]">
     <div class="blur-orb orb-top"></div>
     <div class="blur-orb orb-bottom"></div>
 
@@ -30,7 +30,11 @@
 </template>
 
 <script setup>
-defineProps({
+import { computed } from 'vue'
+import { useIdesignConfig } from '../../composables/useIdesignConfig'
+import { resolveVariant } from '../../composables/useVariant'
+
+const props = defineProps({
   title: {
     type: String,
     default: 'Build Production-Grade Apps'
@@ -47,12 +51,18 @@ defineProps({
   actionLabel: String,
   variant: {
     type: String,
-    default: 'glass', // 'glass' or 'gradient'
-    validator: v => ['glass', 'gradient'].includes(v)
+    default: undefined
+  },
+  ui: {
+    type: Object,
+    default: () => ({})
   }
 })
 
 defineEmits(['action'])
+
+const config = useIdesignConfig('HeroCta', props)
+const currentVariant = computed(() => resolveVariant(props.variant || config.resolvedVariant.value || 'glass'))
 </script>
 
 <style scoped>

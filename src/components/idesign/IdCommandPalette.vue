@@ -2,7 +2,7 @@
   <Teleport to="body">
     <Transition name="palette-fade">
       <div v-if="modelValue" class="command-backdrop" @click.self="close" @keydown.escape="close">
-        <div class="command-card" role="dialog" aria-modal="true" aria-label="Command Palette">
+        <div :class="['command-card', `variant-${currentVariant}`, config.mergedUi.value.base]" role="dialog" aria-modal="true" aria-label="Command Palette">
           <!-- Search Header -->
           <div class="command-header">
             <Search :size="18" class="search-icon" />
@@ -51,6 +51,8 @@
 <script setup>
 import { ref, computed, watch, nextTick, onMounted, onBeforeUnmount } from 'vue'
 import { Search } from '@lucide/vue'
+import { useIdesignConfig } from '../../composables/useIdesignConfig'
+import { resolveVariant } from '../../composables/useVariant'
 
 const props = defineProps({
   modelValue: Boolean,
@@ -58,6 +60,14 @@ const props = defineProps({
     type: Array,
     required: true
     // [{ title: 'Actions', items: [{ id: '1', label: 'Create File', shortcut: '⌘N', icon?: '' }] }]
+  },
+  variant: {
+    type: String,
+    default: undefined
+  },
+  ui: {
+    type: Object,
+    default: () => ({})
   }
 })
 
@@ -139,6 +149,40 @@ onBeforeUnmount(() => window.removeEventListener('keydown', handleGlobalHotkey))
   width: 90vw; max-width: 580px; background: var(--surface); border: 1px solid var(--hairline);
   border-radius: var(--r-panel); box-shadow: var(--sh-overlay); overflow: hidden;
   display: flex; flex-direction: column;
+}
+
+/* Variant Glass */
+.command-card.variant-glass {
+  background: var(--variant-glass-bg);
+  backdrop-filter: var(--variant-glass-backdrop);
+  -webkit-backdrop-filter: var(--variant-glass-backdrop);
+  border: var(--variant-glass-border);
+}
+.command-card.variant-glass .command-header {
+  background: transparent;
+}
+
+/* Variant Solid */
+.command-card.variant-solid {
+  background: var(--variant-solid-bg);
+  color: var(--variant-solid-color);
+  border: none;
+}
+.command-card.variant-solid .command-header {
+  background: transparent;
+  border-bottom-color: rgba(255, 255, 255, 0.2);
+}
+.command-card.variant-solid .command-input {
+  color: #ffffff;
+}
+.command-card.variant-solid .item-label,
+.command-card.variant-solid .search-icon {
+  color: #ffffff;
+}
+
+/* Variant Seamless */
+.command-card.variant-seamless .command-header {
+  border-bottom: none;
 }
 .command-header {
   display: flex; align-items: center; gap: 12px; padding: 14px 18px;

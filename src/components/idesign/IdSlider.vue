@@ -1,5 +1,5 @@
 <template>
-  <div :class="['id-slider-group', `size-${currentSize}`, `color-${currentColor}`, config.mergedUi.value.base]">
+  <div :class="['id-slider-group', `size-${currentSize}`, `variant-${currentVariant}`, `color-${currentColor}`, config.mergedUi.value.base]">
     <div v-if="label || showValue" :class="['slider-header', config.mergedUi.value.header]">
       <label v-if="label" :class="['slider-label', config.mergedUi.value.label]">{{ label }}</label>
       <span v-if="showValue" :class="['slider-value', config.mergedUi.value.value]">{{ modelValue }}</span>
@@ -13,6 +13,7 @@
 <script setup>
 import { computed } from 'vue'
 import { useIdesignConfig } from '../../composables/useIdesignConfig'
+import { resolveVariant } from '../../composables/useVariant'
 
 const props = defineProps({
   modelValue: { type: Number, default: 50 },
@@ -24,6 +25,7 @@ const props = defineProps({
   disabled: Boolean,
   size: { type: String, default: undefined },
   color: { type: String, default: undefined },
+  variant: { type: String, default: undefined },
   ui: { type: Object, default: () => ({}) }
 })
 
@@ -31,6 +33,7 @@ defineEmits(['update:modelValue'])
 
 const config = useIdesignConfig('Slider', props)
 const currentSize = computed(() => config.resolvedSize.value || 'md')
+const currentVariant = computed(() => resolveVariant(props.variant || config.resolvedVariant.value || 'default'))
 const currentColor = computed(() => {
   const c = config.resolvedColor.value || 'blue'
   if (c === 'default' || c === 'primary') return 'blue'

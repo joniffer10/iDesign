@@ -1,5 +1,5 @@
 <template>
-  <div class="id-project-section">
+  <div :class="['id-project-section', `variant-${currentVariant}`, config.mergedUi.value.base]">
     <!-- Section Header -->
     <div v-if="title || $slots.header" class="section-header">
       <slot name="header">
@@ -33,16 +33,24 @@
 </template>
 
 <script setup>
+import { computed } from 'vue'
 import { ArrowRight } from '@lucide/vue'
+import { useIdesignConfig } from '../../composables/useIdesignConfig'
+import { resolveVariant } from '../../composables/useVariant'
 
-defineProps({
+const props = defineProps({
   title: { type: String, default: 'Featured Projects' },
   icon: { type: [String, Object, Function], default: '📁' },
   actionLabel: String,
-  actionHref: String
+  actionHref: String,
+  variant: { type: String, default: undefined },
+  ui: { type: Object, default: () => ({}) }
 })
 
 defineEmits(['action-click'])
+
+const config = useIdesignConfig('ProjectSection', props)
+const currentVariant = computed(() => resolveVariant(props.variant || config.resolvedVariant.value || 'default'))
 </script>
 
 <style scoped>
@@ -56,6 +64,15 @@ defineEmits(['action-click'])
   flex-direction: column;
   gap: 20px;
   width: 100%;
+}
+
+.variant-glass {
+  background: var(--variant-glass-bg); backdrop-filter: var(--variant-glass-backdrop);
+  -webkit-backdrop-filter: var(--variant-glass-backdrop); border: var(--variant-glass-border);
+}
+
+.variant-subtle {
+  background: var(--variant-subtle-bg); border: var(--variant-subtle-border); box-shadow: none;
 }
 
 :root.dark .id-project-section {

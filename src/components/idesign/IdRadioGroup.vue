@@ -1,7 +1,7 @@
 <template>
   <div :class="['id-radio-group', config.mergedUi.value.base]" role="radiogroup" :aria-label="label">
     <span v-if="label" :class="['radio-group-label', config.mergedUi.value.label]">{{ label }}</span>
-    <div :class="['radio-options', currentDirection === 'horizontal' ? 'horizontal' : 'vertical', `size-${currentSize}`, `color-${currentColor}`]">
+    <div :class="['radio-options', currentDirection === 'horizontal' ? 'horizontal' : 'vertical', `size-${currentSize}`, `variant-${currentVariant}`, `color-${currentColor}`]">
       <label v-for="opt in normalizedOptions" :key="opt.value" :class="['radio-item', { 'is-selected': modelValue === opt.value, 'is-disabled': disabled }, config.mergedUi.value.option]">
         <input type="radio" :value="opt.value" :checked="modelValue === opt.value" :disabled="disabled" :name="groupName" :class="['sr-only', config.mergedUi.value.input]" @change="$emit('update:modelValue', opt.value)" />
         <span :class="['radio-circle', config.mergedUi.value.circle]"><span class="radio-dot" /></span>
@@ -14,6 +14,7 @@
 <script setup>
 import { computed } from 'vue'
 import { useIdesignConfig } from '../../composables/useIdesignConfig'
+import { resolveVariant } from '../../composables/useVariant'
 
 const props = defineProps({
   modelValue: { type: [String, Number], default: '' },
@@ -23,6 +24,7 @@ const props = defineProps({
   disabled: Boolean,
   size: { type: String, default: undefined },
   color: { type: String, default: undefined },
+  variant: { type: String, default: undefined },
   ui: { type: Object, default: () => ({}) }
 })
 
@@ -30,6 +32,7 @@ defineEmits(['update:modelValue'])
 
 const config = useIdesignConfig('RadioGroup', props)
 const currentSize = computed(() => config.resolvedSize.value || 'md')
+const currentVariant = computed(() => resolveVariant(props.variant || config.resolvedVariant.value || 'default'))
 const currentDirection = computed(() => config.resolvedDirection.value || 'vertical')
 const currentColor = computed(() => {
   const c = config.resolvedColor.value || 'blue'

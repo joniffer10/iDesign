@@ -139,8 +139,9 @@
 
 <script setup>
 import { ref, computed } from 'vue'
-import { Star } from '@lucide/vue'
+import { Star, Loader2 } from '@lucide/vue'
 import { useIdesignConfig } from '../../composables/useIdesignConfig'
+import { resolveVariant } from '../../composables/useVariant'
 
 const props = defineProps({
   modelValue: {
@@ -209,6 +210,7 @@ const props = defineProps({
 const emit = defineEmits(['update:modelValue', 'change', 'hover', 'clear'])
 
 const config = useIdesignConfig('Rating', props)
+const currentVariant = computed(() => resolveVariant(props.variant || config.resolvedVariant.value || 'default'))
 
 const totalStars = computed(() => {
   const c = props.max !== undefined ? props.max : props.count

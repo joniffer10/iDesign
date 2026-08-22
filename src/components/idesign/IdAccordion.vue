@@ -38,6 +38,7 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { useIdesignConfig } from '../../composables/useIdesignConfig'
+import { resolveVariant } from '../../composables/useVariant'
 
 const props = defineProps({
   items: { type: Array, required: true },
@@ -49,7 +50,13 @@ const props = defineProps({
 
 const config = useIdesignConfig('Accordion', props)
 const currentSize = computed(() => config.resolvedSize.value || 'md')
-const currentVariant = computed(() => config.resolvedVariant.value || 'default')
+const currentVariant = computed(() => {
+  const raw = config.resolvedVariant.value || 'default'
+  return resolveVariant(raw, null, {
+    'no-dividers': 'seamless',
+    'no-divider': 'seamless'
+  })
+})
 
 const uid = Math.random().toString(36).substring(2, 8)
 const openItems = ref([0])
@@ -98,10 +105,17 @@ const handleKeydown = (e, idx) => {
 .id-accordion { background: var(--surface); border-radius: var(--r-panel); box-shadow: var(--sh-panel); overflow: hidden; font-family: var(--font); }
 
 .variant-glass {
-  background: rgba(255, 255, 255, 0.75); backdrop-filter: saturate(180%) blur(20px);
-  -webkit-backdrop-filter: saturate(180%) blur(20px); border: 1px solid var(--hairline);
+  background: var(--variant-glass-bg); backdrop-filter: var(--variant-glass-backdrop);
+  -webkit-backdrop-filter: var(--variant-glass-backdrop); border: var(--variant-glass-border);
 }
-:root.dark .variant-glass { background: rgba(28, 28, 30, 0.78); }
+
+.variant-borderless {
+  border: none !important; box-shadow: none !important; background: transparent;
+}
+
+.variant-seamless:not(.variant-separated) .accordion-item + .accordion-item {
+  border-top: none !important;
+}
 
 .id-accordion.variant-separated { background: transparent; box-shadow: none; overflow: visible; display: flex; flex-direction: column; gap: 10px; }
 .id-accordion.variant-separated .accordion-item {
@@ -111,7 +125,7 @@ const handleKeydown = (e, idx) => {
   border: 1px solid var(--hairline);
   overflow: hidden;
 }
-.id-accordion:not(.variant-separated) .accordion-item + .accordion-item { border-top: 1px solid var(--hairline); }
+.id-accordion:not(.variant-separated):not(.variant-seamless) .accordion-item + .accordion-item { border-top: 1px solid var(--hairline); }
 
 .accordion-item > h3 {
   margin: 0;

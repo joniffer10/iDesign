@@ -5,8 +5,8 @@
     :subtitle="subtitle"
     :description="description"
     :max-width="maxWidth"
-    :size="size"
-    :variant="variant"
+    :size="currentSize"
+    :variant="currentVariant"
     :close-on-backdrop="closeOnBackdrop"
     :close-on-outside-click="closeOnOutsideClick"
     :close-on-escape="closeOnEscape"
@@ -45,6 +45,8 @@
 <script setup>
 import { computed } from 'vue'
 import IdModal from './IdModal.vue'
+import { useIdesignConfig } from '../../composables/useIdesignConfig'
+import { resolveVariant } from '../../composables/useVariant'
 
 const props = defineProps({
   modelValue: { type: Boolean, default: undefined },
@@ -54,7 +56,7 @@ const props = defineProps({
   description: String,
   maxWidth: String,
   size: String,
-  variant: { type: String, default: 'default' },
+  variant: { type: String, default: undefined },
   closeOnBackdrop: { type: Boolean, default: true },
   closeOnOutsideClick: { type: Boolean, default: undefined },
   closeOnEscape: { type: Boolean, default: true },
@@ -65,11 +67,19 @@ const props = defineProps({
 
 const emit = defineEmits(['update:modelValue', 'update:open', 'open', 'close'])
 
-const isOpen = computed(() => {
-  if (props.open !== undefined) return props.open
-  if (props.modelValue !== undefined) return props.modelValue
-  return false
+const config = useIdesignConfig('Dialog', props)
+const currentSize = computed(() => props.size || config.resolvedSize.value || 'md')
+const currentVariant = computed(() => {
+  const raw = props.variant || config.resolvedVariant.value || 'default'
+  return resolveVariant(raw, null, {
+    'clean': 'seamless',
+    'plain': 'seamless',
+    'no-divider': 'seamless',
+    'no-dividers': 'seamless'
+  })
 })
+
+const isOpen = computed(() => props.modelValue !== undefined ? props.modelValue : props.open || false)
 
 const handleUpdate = (val) => {
   emit('update:modelValue', val)
@@ -78,4 +88,3 @@ const handleUpdate = (val) => {
   else emit('close')
 }
 </script>
-

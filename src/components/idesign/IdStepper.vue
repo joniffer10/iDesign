@@ -112,14 +112,14 @@
 import { computed } from 'vue'
 import { Check, AlertCircle } from '@lucide/vue'
 import { useIdesignConfig } from '../../composables/useIdesignConfig'
+import { resolveVariant } from '../../composables/useVariant'
 
 const props = defineProps({
   steps: { type: Array, required: true },
   modelValue: { type: Number, default: 0 },
   orientation: {
     type: String,
-    default: undefined,
-    validator: v => ['horizontal', 'vertical'].includes(v)
+    default: undefined
   },
   clickable: Boolean,
   size: { type: String, default: undefined },
@@ -132,7 +132,7 @@ defineEmits(['update:modelValue'])
 
 const config = useIdesignConfig('Stepper', props)
 const currentSize = computed(() => config.resolvedSize.value || 'md')
-const currentVariant = computed(() => config.resolvedVariant.value || 'default')
+const currentVariant = computed(() => resolveVariant(props.variant || config.resolvedVariant.value || 'default'))
 const currentColor = computed(() => config.resolvedColor.value || 'blue')
 const currentOrientation = computed(() => props.orientation || config.resolvedDirection.value || 'horizontal')
 
@@ -265,22 +265,18 @@ const isComponent = (val) => typeof val === 'object' || typeof val === 'function
    VARIANTS — 1:1 aligned with Liquid Glass design system
    ────────────────────────────────────────────────────────── */
 .variant-glass {
-  padding: 16px 20px;
-  border-radius: var(--r-panel);
-  background: rgba(255, 255, 255, 0.65);
-  backdrop-filter: saturate(180%) blur(16px);
-  -webkit-backdrop-filter: saturate(180%) blur(16px);
-  border: 1px solid var(--hairline);
-  box-shadow: var(--sh-card);
+  padding: 12px 16px; border-radius: var(--r-panel); background: var(--variant-glass-bg);
+  backdrop-filter: var(--variant-glass-backdrop); -webkit-backdrop-filter: var(--variant-glass-backdrop);
+  border: var(--variant-glass-border); box-shadow: var(--variant-glass-shadow-subtle);
 }
-:root.dark .variant-glass {
-  background: rgba(28, 28, 30, 0.65);
+
+.variant-soft {
+  padding: 12px 16px; border-radius: var(--r-panel); background: var(--variant-soft-bg);
 }
 
 .variant-subtle {
-  padding: 14px 18px;
-  border-radius: var(--r-panel);
-  background: var(--track);
+  padding: 12px 16px; border-radius: var(--r-panel); background: var(--variant-subtle-bg);
+  border: var(--variant-subtle-border);
 }
 
 .variant-card {

@@ -169,6 +169,7 @@
 import { ref, computed } from 'vue'
 import { Search, MoreHorizontal, ChevronUp, ChevronDown, ChevronsUpDown, Filter } from '@lucide/vue'
 import { useIdesignConfig } from '../../composables/useIdesignConfig'
+import { resolveVariant } from '../../composables/useVariant'
 
 const props = defineProps({
   columns: { type: Array, required: true },
@@ -198,7 +199,13 @@ const emit = defineEmits(['update:selectedRows', 'row-click', 'sort', 'action-cl
 const config = useIdesignConfig('Table', props)
 const currentSize = computed(() => config.resolvedSize.value || 'md')
 const currentRadius = computed(() => config.resolvedRadius.value || 'xl')
-const currentVariant = computed(() => config.resolvedVariant.value || 'default')
+const currentVariant = computed(() => {
+  const raw = config.resolvedVariant.value || 'default'
+  return resolveVariant(raw, null, {
+    'no-dividers': 'seamless',
+    'no-divider': 'seamless'
+  })
+})
 const isCompact = computed(() => props.compact || currentSize.value === 'sm')
 
 const searchQuery = ref('')
@@ -316,14 +323,23 @@ const onActionClick = (row, evt) => {
 .radius-lg { border-radius: var(--r-card) !important; }
 .radius-full { border-radius: var(--r-pill) !important; }
 
-/* Glass Variant */
+/* Glass Variant — uses shared tokens */
 .variant-glass {
-  background: rgba(255, 255, 255, 0.75);
-  backdrop-filter: saturate(180%) blur(16px);
-  -webkit-backdrop-filter: saturate(180%) blur(16px);
+  background: var(--variant-glass-bg);
+  backdrop-filter: var(--variant-glass-backdrop);
+  -webkit-backdrop-filter: var(--variant-glass-backdrop);
 }
-:root.dark .variant-glass {
-  background: rgba(28, 28, 30, 0.75);
+
+/* Seamless Variant — removes row dividers, keeps outer structure */
+.variant-seamless .id-table td {
+  border-bottom: none;
+}
+.variant-seamless .id-table th {
+  border-bottom: none;
+  background: transparent;
+}
+.variant-seamless .table-header-bar {
+  border-bottom: none;
 }
 
 /* ──────────────────────────────────────────────────────────
